@@ -313,6 +313,42 @@ Two upstream defects to handle, neither a blocker:
 - "It runs" = recompiled code executes into the client's own startup. It does
   **not** render, reach `RunClientDLL`, or open a window.
 
+### P4 iteration log — 264 → 750 indirect calls
+- **Seeds fixed the first blocker.** A direct `call <imm>` to an address not in
+  the catalog becomes `RECOMP_ICALL(const) /* not lifted */`; at runtime it
+  resolves to nothing, the frame is popped, 0 is returned, and execution
+  continues with garbage — surfacing as a crash elsewhere. `run_lift.py` now
+  scrapes its own output for that marker into `analysis/missing_targets.json`
+  and `--seeds` injects them. Converges in two passes. Found 2 real
+  (`0x105C3C80`, `0x105C3CE2` — MSVC EH funclets inside
+  `??_L@YGXPAXIHP6EX0@Z1@Z`); `0x716FC971` is out-of-image and correctly dropped.
+- **Shim rounds**, each moving the blocker: path/identity
+  (`GetModuleFileNameA`, `GetCurrentDirectoryA`, `GetEnvironmentVariableA`,
+  `GetLastError`, `strncpy`, `fopen`, …) → 593; crash-reporter module walk
+  (`CreateToolhelp32Snapshot`, `Module32First/Next`, `CloseHandle`, `Sym*`) →
+  706; `_msize` + `SymLoadModule64` → 750.
+  **Forward toolhelp to the real API** — 32-bit host, 1:1 mapping, so the
+  client's `MODULEENTRY32` pointer is directly usable. A stubbed snapshot
+  returns 0 and the client calls `Module32First` on it *without checking*.
+- **Guard the allocator shims.** The first traced build died with
+  `STATUS_HEAP_CORRUPTION (0xC0000374)` in ntdll, not an AV. `free`, `realloc`,
+  `_aligned_free`, `_msize` now refuse pointers they did not hand out (leak
+  instead — a leak is visible and harmless over seconds, a bad free is neither).
+  `_msize` reading a foreign heap header was the likely culprit. Corruption
+  gone, zero bad frees.
+- **`build/mxo_trace.exe`** = `-DRECOMP_TRACE` + `recomp_trace.c`, giving a
+  40-deep entry-ring backtrace. **The simulated stack makes the host's own call
+  stack useless**, so this ring is the only backtrace available. Full traced
+  rebuild ≈ 6 min.
+- **Current blocker**: `sub_102C2210` is an inlined `strlen` (46 bytes) faulting
+  on a garbage pointer. Chain: `0x101F48A0` → `0x10001BC0` → `0x100017A0` →
+  `0x10001BC0` → `0x100017A0` → `0x102C2210`. `0x10001BC0` (112 B) and
+  `0x100017A0` (232 B) alternate through the whole trace — STLport string
+  helpers. `0x101F48A0` is near `SetMasterDatabase` (`0x101F1DB0`), so the path
+  is database/resource setup.
+- Batch-file trap: `%ERRORLEVEL%` after a pipe reports the *last* command in the
+  pipe (e.g. `findstr`), not `cl`. A reported `COMPILE=1` there was spurious.
+
 ## Working rules
 - Score function recovery (`disasm/score_recovery.py`) against an IDA export
   **before** lifting anything. On 7.64 MB of `.text` this is not optional.
