@@ -276,7 +276,7 @@ LithTech client-DLL contract:
 ```
 InitClientDLL    RVA 0x1270      RunClientDLL   RVA 0x1120
 TermClientDLL    RVA 0x1140      ErrorClientDLL RVA 0x1170
-SetMasterDatabase RVA 0x1F1BF0
+SetMasterDatabase RVA 0x1F1DB0
 ```
 
 The other five are `ILTCool` — constructor, copy constructor, assignment,

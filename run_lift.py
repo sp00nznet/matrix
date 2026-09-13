@@ -64,15 +64,20 @@ DLL = os.path.join(_HERE, 'game', 'client.dll')
 CATALOG = os.path.join(_HERE, 'analysis', 'functions_ida.json')
 OUT = os.path.join(_HERE, 'src', 'recomp', 'gen')
 
-# The LithTech client-DLL contract, as RVAs off the image base. These are the
-# five real entry points; see docs/RECON.md.
-EXPORT_RVAS = {
-    'RunClientDLL': 0x1120,
-    'TermClientDLL': 0x1140,
-    'ErrorClientDLL': 0x1170,
-    'InitClientDLL': 0x1270,
-    'SetMasterDatabase': 0x1F1BF0,
-}
+# The LithTech client-DLL contract. Names only: the addresses are read from the
+# PE export directory at runtime rather than written down here.
+#
+# The first version of this file did write them down, and got SetMasterDatabase
+# wrong -- 0x1F1BF0 for a function that lives at 0x1F1DB0. The catalog lookup
+# caught it, but only because a missing root happens to be checkable. There is
+# no reason to transcribe a table the binary already carries.
+ROOT_EXPORTS = (
+    'InitClientDLL',
+    'RunClientDLL',
+    'TermClientDLL',
+    'ErrorClientDLL',
+    'SetMasterDatabase',
+)
 
 
 def closure(byaddr, roots, limit):
@@ -124,13 +129,24 @@ def main():
     print('[*] catalog: %d functions, %d call edges'
           % (len(funcs), cat.get('stats', {}).get('total_edges', 0)))
 
-    roots = [info.image_base + rva for rva in EXPORT_RVAS.values()]
+    # analyze_pe yields ExportEntry objects; older callers saw plain dicts.
+    def _f(e, k):
+        return e[k] if isinstance(e, dict) else getattr(e, k)
+
+    by_name = {_f(e, 'name'): info.image_base + _f(e, 'rva')
+               for e in info.exports}
+    absent = [n for n in ROOT_EXPORTS if n not in by_name]
+    if absent:
+        print('[!] export(s) not present in this binary: %s' % ', '.join(absent))
+
     entry = info.image_base + info.entry_point_rva
+    roots = [by_name[n] for n in ROOT_EXPORTS if n in by_name]
     roots.append(entry)
     roots += [int(x, 0) for x in args.roots.split(',') if x.strip()]
-    named = ', '.join('%s@0x%08X' % (n, info.image_base + r)
-                      for n, r in EXPORT_RVAS.items())
-    print('[*] roots: %s, DllMain@0x%08X' % (named, entry))
+
+    print('[*] roots: %s, DllMain@0x%08X'
+          % (', '.join('%s@0x%08X' % (n, by_name[n])
+                       for n in ROOT_EXPORTS if n in by_name), entry))
     missing = [r for r in roots if r not in byaddr]
     if missing:
         print('[!] %d root(s) not in catalog: %s'

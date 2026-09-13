@@ -35,7 +35,7 @@ contract and nothing else of consequence:
 | `TermClientDLL` | `0x1140` | shutdown |
 | `ErrorClientDLL` | `0x1170` | error path |
 | `InitClientDLL` | `0x1270` | startup |
-| `SetMasterDatabase` | `0x1F1BF0` | hands the client its object database |
+| `SetMasterDatabase` | `0x1F1DB0` | hands the client its object database |
 | `ILTCool` ×5 | — | ctor, copy ctor, assignment, dtor, vtable |
 
 Four functions inside `0x150` bytes of each other are the entire startup
