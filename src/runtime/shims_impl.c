@@ -33,19 +33,92 @@
 #define ARGP(n)  ((void *)(uintptr_t)ARG(n))
 #define RETP(p)  RET((uint32_t)(uintptr_t)(p))
 
-/* ---- CRT memory (cdecl: pop 0) ------------------------------------- */
+/* ---- CRT memory (cdecl: pop 0) ------------------------------------- *
+ *
+ * Every live block is tracked, and free() refuses anything it did not hand
+ * out. That guard exists because the first traced run died with
+ * STATUS_HEAP_CORRUPTION (0xC0000374) inside ntdll rather than an access
+ * violation -- and heap corruption is the worst possible failure to debug,
+ * because the damage is done at one call and detected at a completely
+ * unrelated one. Refusing an unknown pointer turns that into a named report at
+ * the moment it happens.
+ *
+ * Leaking a block we cannot safely free is the right trade here: bring-up runs
+ * for seconds, and a leak is visible and harmless where a bad free is neither.
+ */
+#define TRACK_BITS 20
+#define TRACK_SLOTS (1u << TRACK_BITS)
+static uintptr_t g_live[TRACK_SLOTS];
+static uint32_t  g_live_n, g_bad_free;
 
-void imp_malloc(void)  { RETP(malloc(ARG(0)));            STDRET(0); }
-void imp_free(void)    { free(ARGP(0));          RET(0);  STDRET(0); }
-void imp_calloc(void)  { RETP(calloc(ARG(0), ARG(1)));    STDRET(0); }
-void imp_realloc(void) { RETP(realloc(ARGP(0), ARG(1)));  STDRET(0); }
+static uint32_t track_slot(uintptr_t p)
+{
+    uint32_t i = (uint32_t)((p >> 4) * 2654435761u) & (TRACK_SLOTS - 1);
+    while (g_live[i] && g_live[i] != p) i = (i + 1) & (TRACK_SLOTS - 1);
+    return i;
+}
+static void track_add(void *p)
+{
+    if (!p) return;
+    if (g_live_n * 4 > TRACK_SLOTS * 3) return;   /* table full: stop tracking */
+    g_live[track_slot((uintptr_t)p)] = (uintptr_t)p;
+    g_live_n++;
+}
+/* Returns 1 if we allocated it. Tombstones would be needed for a correct
+ * open-addressed delete; instead the slot is left set and re-checked, which
+ * over-accepts only if the exact address is reallocated -- which is fine,
+ * because then we *did* allocate it. */
+static int track_drop(void *p)
+{
+    if (!p) return 0;
+    uint32_t i = track_slot((uintptr_t)p);
+    if (g_live[i] != (uintptr_t)p) return 0;
+    return 1;
+}
+
+void recomp_heap_report(void)
+{
+    if (g_bad_free)
+        printf("  [heap] %u free() call(s) on pointers we never allocated\n",
+               g_bad_free);
+}
+
+void imp_malloc(void)  { void *p = malloc(ARG(0));  track_add(p); RETP(p); STDRET(0); }
+void imp_calloc(void)  { void *p = calloc(ARG(0), ARG(1)); track_add(p); RETP(p); STDRET(0); }
+
+void imp_free(void)
+{
+    void *p = ARGP(0);
+    if (p && !track_drop(p)) { g_bad_free++; RET(0); STDRET(0); return; }
+    free(p); RET(0); STDRET(0);
+}
+
+void imp_realloc(void)
+{
+    void *old = ARGP(0);
+    if (old && !track_drop(old)) {      /* not ours: copy forward, do not free */
+        g_bad_free++;
+        void *p = malloc(ARG(1));
+        track_add(p);
+        RETP(p); STDRET(0); return;
+    }
+    void *p = realloc(old, ARG(1));
+    track_add(p);
+    RETP(p); STDRET(0);
+}
+
 void imp_memmove(void) { RETP(memmove(ARGP(0), ARGP(1), ARG(2))); STDRET(0); }
 
 /* `_aligned_free` must pair with `_aligned_malloc`, never with plain free():
  * the aligned allocator stores its bookkeeping behind the returned pointer, so
  * freeing it the ordinary way corrupts the heap rather than failing. */
-void imp__aligned_malloc(void) { RETP(_aligned_malloc(ARG(0), ARG(1))); STDRET(0); }
-void imp__aligned_free(void)   { _aligned_free(ARGP(0)); RET(0);        STDRET(0); }
+void imp__aligned_malloc(void) { void *p = _aligned_malloc(ARG(0), ARG(1)); track_add(p); RETP(p); STDRET(0); }
+void imp__aligned_free(void)
+{
+    void *p = ARGP(0);
+    if (p && !track_drop(p)) { g_bad_free++; RET(0); STDRET(0); return; }
+    _aligned_free(p); RET(0); STDRET(0);
+}
 
 /* Not here on purpose: memset, memcpy, memcmp, strlen and operator new/delete
  * are NOT in this binary's import table. MSVC 7.1 emits them as intrinsics, so
@@ -200,7 +273,14 @@ void imp_SymSetOptions(void) { RET(ARG(0));      STDRET(1); }
 /* `_msize` reports the usable size of a block from this heap. Our malloc is the
  * host's, so its answer is the right one -- and a stub returning 0 would tell
  * the client every allocation is empty. */
-void imp__msize(void) { RET((uint32_t)_msize(ARGP(0))); STDRET(0); }
+/* _msize on a block we did not allocate would read the host heap's header off
+ * a foreign pointer, so it is guarded the same way. */
+void imp__msize(void)
+{
+    void *p = ARGP(0);
+    RET((p && track_drop(p)) ? (uint32_t)_msize(p) : 0u);
+    STDRET(0);
+}
 
 /* Crash-reporter symbol loading. Returning 0 means "no symbols for that
  * module", which is both true and a path the client already handles. */
