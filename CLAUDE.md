@@ -200,6 +200,34 @@ Two upstream defects to handle, neither a blocker:
   servers ran (mxoemu ships `Proxy/` and `Sniffer/`). That is why wire formats
   are well known and *rules* — damage, hit/miss, interlock, missions — are not.
 
+## P2/P3 done — the lift is clean
+- **IDA 9.1 via idalib finds 56,287 functions.** Median 28 bytes, 50.9% under
+  32 — STLport template expansion, not game code. 2,101 FLIRT library, 856
+  thunks, 75.2% byte coverage of `.text`.
+- **`tools/ida_to_catalog.py` merges `ida_funcs.json` + `ida_xrefs.json`** into
+  the toolbox catalog schema: 56,287 functions, 31,550 with call edges, 74,257
+  edges. We lift from IDA, not disasm32 — the reference *is* the better catalog,
+  so there is nothing to score against it. Everything is emitted as
+  `entry_kind: "start"` (IDA has no alias concept; claiming otherwise would make
+  a future score meaningless).
+- **`run_lift.py --all`: 56,287 lifted, 0 errors, 4,099,690 lines, 113 files,
+  43 s.** Largest clean lift in the collection. "0 errors" means the lifter did
+  not fault; it does **not** mean the C is correct and nothing has been run.
+- **No `true_extent()` branch walk needed.** IDA gives real extents, so
+  `f['end']` is used directly — unlike Force Commander, where disasm32's
+  reachability bound decoded a megabyte as one body. Residual risk: IDA's
+  `end_ea` ends the *main chunk*, so tail-chunked functions are under-read
+  (fails loudly as a missing tail, rather than silently swallowing a neighbour).
+- **Never hardcode the export RVAs.** The first `run_lift.py` did and got
+  `SetMasterDatabase` wrong (`0x1F1BF0` for `0x1F1DB0`). `ROOT_EXPORTS` is names
+  only; addresses come from the PE export directory at runtime. Note
+  `analyze_pe` yields `ExportEntry` **objects**, not dicts.
+- **disasm32 is not on the critical path for this target** and was abandoned
+  after ~30 min / 2.4 GB. Its only purpose was to be scored against IDA.
+- Correct export addresses: `RunClientDLL` 0x1120, `TermClientDLL` 0x1140,
+  `ErrorClientDLL` 0x1170, `InitClientDLL` 0x1270, `SetMasterDatabase` 0x1F1DB0,
+  `DllMain` entry RVA 0x5C3736. Image base `0x10000000`.
+
 ## Working rules
 - Score function recovery (`disasm/score_recovery.py`) against an IDA export
   **before** lifting anything. On 7.64 MB of `.text` this is not optional.
