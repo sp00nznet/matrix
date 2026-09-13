@@ -1,7 +1,9 @@
 {
- "catalog": 76528,
- "lifted": 76528,
+ "catalog": 76530,
+ "lifted": 76530,
  "errors": 0,
  "files": 154,
- "entries": 76528
+ "entries": 76530,
+ "seeded": 2,
+ "missing_found": 0
 }

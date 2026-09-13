@@ -46,8 +46,19 @@ import argparse
 import collections
 import json
 import os
+import re
 import sys
 import time
+
+# The lifter marks a direct `call <imm>` whose target is not in the catalog by
+# emitting an ICALL with a constant and a "not lifted" note. A direct call is
+# proof that a function starts there, so every one of these is a catalog gap --
+# and at runtime it resolves to nothing, the runtime pops the frame and returns
+# 0, and execution carries on with garbage. That is how a missing entry point
+# shows up as a crash somewhere else entirely.
+MISSING_CALL_RE = re.compile(
+    r'RECOMP_ICALL\((0x[0-9A-Fa-f]+)u\);\s*/\*[^*]*:\s*call\s+0x[0-9a-f]+\s*\*/'
+    r'\s*/\* not lifted \*/')
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _TOOLS = os.path.join(_HERE, '..', 'tools', 'tools')
@@ -110,6 +121,9 @@ def main():
     ap.add_argument('--all', action='store_true', help='lift every function')
     ap.add_argument('--skip-library', action='store_true',
                     help='stub FLIRT-identified CRT/STLport functions')
+    ap.add_argument('--seeds', default='analysis/missing_targets.json',
+                    help='addresses a previous lift proved are function starts')
+    ap.add_argument('--no-seeds', action='store_true')
     ap.add_argument('--split', type=int, default=400)
     args = ap.parse_args()
 
@@ -128,6 +142,25 @@ def main():
     byaddr = {f['address']: f for f in funcs}
     print('[*] catalog: %d functions, %d call edges'
           % (len(funcs), cat.get('stats', {}).get('total_edges', 0)))
+
+    # Seeds: addresses a previous lift proved are function starts because
+    # something called them directly. Each is bounded by the next known start,
+    # the only bound available that cannot swallow a neighbour.
+    seeded = 0
+    if not args.no_seeds and os.path.exists(args.seeds):
+        bounds = sorted(byaddr)
+        for a in json.load(open(args.seeds)):
+            a = int(a, 0) if isinstance(a, str) else a
+            if not (cs <= a < ce) or a in byaddr:
+                continue
+            i = next((b for b in bounds if b > a), ce)
+            byaddr[a] = {'address': a, 'end': min(i, ce), 'size': min(i, ce) - a,
+                         'name': 'sub_%08X' % a, 'calls_to': [],
+                         'is_thunk': False, 'is_library': False,
+                         'entry_kind': 'start', 'num_instructions': 0}
+            seeded += 1
+        funcs = sorted(byaddr.values(), key=lambda f: f['address'])
+        print('[*] seeds: %d injected from %s' % (seeded, args.seeds))
 
     # analyze_pe yields ExportEntry objects; older callers saw plain dicts.
     def _f(e, k):
@@ -177,6 +210,7 @@ def main():
     os.makedirs(args.out, exist_ok=True)
 
     entries, chunk, idx, errors, stubbed_lib = [], [], 0, 0, 0
+    missing = set()
     t0 = time.time()
 
     for addr in sorted(chosen_set):
@@ -201,8 +235,12 @@ def main():
             if not insns:
                 chunk.append(('void %s(void) { }\n' % name, addr, name))
             else:
-                chunk.append((lift_function_linear(lifter, name, insns,
-                                                   leaders, addr), addr, name))
+                body = lift_function_linear(lifter, name, insns, leaders, addr)
+                for m in MISSING_CALL_RE.finditer(body):
+                    t = int(m.group(1), 16)
+                    if cs <= t < ce and t not in byaddr:
+                        missing.add(t)
+                chunk.append((body, addr, name))
             entries.append((addr, name))
         except Exception as e:                               # noqa: BLE001
             chunk.append(('/* ERROR %s: %s */\nvoid %s(void) {}\n' % (name, e, name),
@@ -268,8 +306,25 @@ def main():
                         % (name, by_name[name]))
         f.write('const uint32_t mxo_dllmain_va = 0x%08Xu;\n' % entry)
 
+    # Anything still missing is a function start proved by a direct call. Write
+    # it out so the next run seeds it -- run twice and the set converges.
+    if missing:
+        prev = set()
+        if os.path.exists(args.seeds):
+            prev = {int(a, 0) if isinstance(a, str) else a
+                    for a in json.load(open(args.seeds))}
+        allm = sorted(prev | missing)
+        json.dump(['0x%08X' % a for a in allm], open(args.seeds, 'w'), indent=1)
+        print('[!] %d direct call target(s) not in the catalog -> %s'
+              % (len(missing), args.seeds))
+        for a in sorted(missing)[:10]:
+            print('      0x%08X' % a)
+        print('    Re-run to lift them; a missing entry point resolves to '
+              'nothing at\n    runtime and execution continues with garbage.')
+
     stats = {'catalog': len(funcs), 'lifted': len(chosen_set) - stubbed_lib,
-             'errors': errors, 'files': idx, 'entries': len(entries)}
+             'errors': errors, 'files': idx, 'entries': len(entries),
+             'seeded': seeded, 'missing_found': len(missing)}
     json.dump(stats, open(os.path.join(_HERE, 'analysis',
                                        'phase3_codegen.json'), 'w'), indent=1)
 
