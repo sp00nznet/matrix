@@ -275,6 +275,44 @@ Two upstream defects to handle, neither a blocker:
 - Generated/vendored and git-ignored: `src/runtime/imports_gen.c`,
   `src/runtime/recomp_types.h`, `src/recomp/gen/`, `build/`.
 
+## P4 — it runs; current state and blocker
+- **Build+run**: `cl /c /MP` all of `src/recomp/gen/*.c` + `src/runtime/*.c`,
+  then `link /SUBSYSTEM:CONSOLE /LARGEADDRESSAWARE:NO build/obj/*.obj
+  kernel32.lib user32.lib` → `build/mxo_host.exe` (121 MB). Run
+  `build/mxo_host.exe --init` (also `--run`, `--term`, `--va 0x...`).
+- **Three things the host must do, each of which failed separately first:**
+  1. Map `client.dll` at `0x10000000` (`recomp_load_image`).
+  2. **Build a simulated TIB and set `g_fs_base`.** `InitClientDLL`'s first
+     call (`sub_10322960`) opens with MSVC's SEH prologue and reads `fs:[0]`.
+     With `g_fs_base` = 0 that faults immediately. TIB at `0x0E800000`:
+     `[0]=0xFFFFFFFF` (SEH chain end), `[4]`=stack top, `[8]`=stack limit,
+     `[0x18]`=self, `[0x24]`=tid.
+     **Do not grep the lifted code for `g_fs_base`** — the lifter emits the
+     `FS_BASE` macro, and grepping the wrong token briefly ruled this out.
+  3. **Self-patch the IAT**: write each slot's own VA into itself, so
+     `call [slot]` becomes `ICALL(slot_va)` for `recomp_lookup_import`. 479
+     slots; data slots instead get the address of their storage.
+- `recomp_lookup` must be a **binary search** — 76,528 entries, and this binary
+  makes a great many indirect calls.
+- **Real shims unblock startup**: `malloc`/`free`/`calloc`/`realloc`/`memmove`,
+  `_aligned_malloc`/`_aligned_free` (never free an aligned block with `free()`),
+  and the five interlocked functions. Took the run from 9 → **264 indirect
+  calls**. Shim args: `ARG(n) = MEM32(g_esp + 4 + 4n)`; `STDRET(0)` cdecl,
+  `STDRET(argc)` stdcall.
+- **`memset`/`memcpy`/`memcmp`/`strlen`/operator `new`/`delete` are NOT
+  imported** — MSVC 7.1 emits them as intrinsics, so they are already inside
+  the lifted code. `gen_imports.py` now hard-fails on a `HAND_WRITTEN` name that
+  is not imported as code, because the stub silently stays otherwise.
+- **Current blocker:** dies in a `__thiscall` ctor zeroing a ~0x24-byte object
+  through a garbage `this`, reached from `eh vector constructor iterator`
+  (`??_L@YGXPAXIHP6EX0@Z1@Z` at `0x105C3C98`), which *also* makes an ICALL to
+  `0x105C3CE2` — an address inside itself. Two symptoms, one cause: the iterator
+  is getting bad arguments, i.e. a stack desync upstream (the signature of a
+  wrong `STDRET`). **Next:** a `RECOMP_TRACE` build for a real backtrace, and
+  harvest unresolved VAs back into the catalog as seeds.
+- "It runs" = recompiled code executes into the client's own startup. It does
+  **not** render, reach `RunClientDLL`, or open a window.
+
 ## Working rules
 - Score function recovery (`disasm/score_recovery.py`) against an IDA export
   **before** lifting anything. On 7.64 MB of `.text` this is not optional.
