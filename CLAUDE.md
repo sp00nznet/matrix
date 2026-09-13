@@ -246,6 +246,35 @@ Two upstream defects to handle, neither a blocker:
   `ErrorClientDLL` 0x1170, `InitClientDLL` 0x1270, `SetMasterDatabase` 0x1F1DB0,
   `DllMain` entry RVA 0x5C3736. Image base `0x10000000`.
 
+## P3b done — it compiles
+- **`cl /c /MP` over every generated file: EXITCODE=0, 156 objects, 197 MB**,
+  MSVC 2022 x86 via `vcvars32.bat` from the **BuildTools** install
+  (`C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/...`).
+  MinGW is also present at `/c/msys64/mingw64` but is 64-bit; use MSVC x86.
+- `run_lift.py` emits `recomp_funcs.h` + `recomp_dispatch.c`. It originally
+  collected the entry list and threw it away, which left indirect calls nothing
+  to resolve through.
+- **`gen_imports.py` sorts 479 imports three ways**: stdcall 226 (derived argc
+  — never typed by hand; a wrong count shifts the *caller's* frame and dies
+  somewhere unrelated), cdecl 237 (pop 0; 181 MSVCR71 + 56 pythonMXO), **data
+  16**.
+- **Data imports are the trap.** `pythonMXO` exports 693 from `.text` and 115
+  from `.data` — `PyType_Type`, `PyString_Type`, `PyExc_*`, `_Py_NoneStruct`,
+  `_Py_TrueStruct`, `_Py_ZeroStruct`. The client *dereferences* these. A
+  function shim there fails neither at build nor at the call site. They get
+  storage + their own table (`mxo_import_data`). MSVCR71 adds `_iob`,
+  `__pioinfo`, `_adjust_fdiv`.
+- **Classify exports by section characteristics (`0x20|0x20000000`), never by
+  name.** `binkw32.dll` has ~30 custom-named *executable* sections (`BINK`,
+  `BINK16`, `BINK4444`, `BINK32R`, …) at `0x60000020`. A `.text`-only test
+  mislabels 8 of its exports as data.
+- **Export names are not C identifiers.** Both kinds appear here: C++ mangling
+  (`?terminate@@YAXXZ`) and stdcall decoration (`_BinkOpenDirectSound@4`).
+  `c_ident()` sanitises with collision handling; the real name stays in the
+  `IMPORT_STUB` string.
+- Generated/vendored and git-ignored: `src/runtime/imports_gen.c`,
+  `src/runtime/recomp_types.h`, `src/recomp/gen/`, `build/`.
+
 ## Working rules
 - Score function recovery (`disasm/score_recovery.py`) against an IDA export
   **before** lifting anything. On 7.64 MB of `.text` this is not optional.
