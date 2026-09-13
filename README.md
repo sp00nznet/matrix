@@ -15,12 +15,12 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **It lifts clean.** 56,287 functions, 0 errors.
+## Project status: **It lifts clean.** 76,528 functions, 0 errors.
 
 Two results, and the second one is the interesting one.
 
-**The whole binary lifts.** 56,287 functions to 4.1 million lines of C with
-zero lift errors, in 43 seconds. Nothing has been *run* yet — that is P4.
+**The whole binary lifts.** 76,528 functions to 4.85 million lines of C with
+zero lift errors, in 49 seconds. Nothing has been *run* yet — that is P4.
 
 **The gameplay rules were never compiled in the first place.** Combat,
 abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
@@ -33,11 +33,11 @@ format that took about forty lines to unpack. See
 | `.text` | **7,642,490 bytes** |
 | imports | 479 across 19 DLLs |
 | protection | **none** |
-| functions recovered | **56,287** |
-| call edges | 74,257 |
-| **lifted** | **56,287** |
+| functions recovered | **76,528** (IDA 56,287 + 20,241 gap fill) |
+| call edges | 85,297 |
+| **lifted** | **76,528** |
 | **lift errors** | **0** |
-| generated C | 4,099,690 lines in 113 files |
+| generated C | 4,854,290 lines in 154 files |
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
@@ -248,8 +248,8 @@ instrument that makes the server track possible.
 | **P1a** | Python surface: unpack the `.ltp` archives | ✅ **57 game modules** |
 | **P1b** | Decompile them; recover the engine API they call | ✅ **70 subsystems** |
 | **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | ✅ [`docs/RECON.md`](docs/RECON.md) |
-| **P2** | Function recovery over 7.64 MB of `.text` | ✅ **56,287** |
-| **P3** | Lift to C | ✅ **0 errors, 4.1M lines** |
+| **P2** | Function recovery over 7.64 MB of `.text` | ✅ **76,528, scored** |
+| **P3** | Lift to C | ✅ **0 errors, 4.85M lines** |
 | **P3b** | Import bridges for 479 imports across 19 DLLs; build | next |
 | **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | |
 
@@ -258,14 +258,14 @@ instrument that makes the server track possible.
 ```
 $ python run_lift.py --all --split 500
   base=0x10000000 code=0x10001000-0x1074AD7A IAT=479
-  catalog: 56287 functions, 74257 call edges
+  catalog: 76528 functions, 85297 call edges
   roots: InitClientDLL@0x10001270, RunClientDLL@0x10001120,
          TermClientDLL@0x10001140, ErrorClientDLL@0x10001170,
          SetMasterDatabase@0x101F1DB0, DllMain@0x105C3736
-  56287 functions in 113 files, 56287 lifted, 0 stubs, 0 errors, 43s
+  76528 functions in 154 files, 76528 lifted, 0 stubs, 0 errors, 49s
 ```
 
-**4,099,690 lines of C, zero lift errors.** For scale, that is roughly ten
+**4,854,290 lines of C, zero lift errors.** For scale, that is roughly ten
 times Fury³ and about five times Crimson Skies, and it is the largest clean
 lift this toolchain has produced.
 
@@ -308,6 +308,52 @@ subsystems the Python calls — is the list that says which ones matter.
 **RTTI is a dead end here.** 7 type descriptors, 1 class. Unlike Force
 Commander, which handed over 567 classes for free, this build shipped without
 it. No shortcut to class recovery.
+
+#### IDA is not ground truth on this target, and scoring proved it
+
+The house rule is to score recovery before lifting. Doing it here produced a
+result worth the 40 minutes `disasm32.py` took to finish:
+
+| | IDA 9.1 | `disasm32.py` |
+|---|---:|---:|
+| functions | 56,287 | **78,105** |
+| byte coverage of `.text` | 75.2% | **95.9%** |
+
+Scored against IDA as reference, `disasm32` looks bad — 63.7% precision, with
+20,241 starts "invented" outside every known function. The toolbox's own
+documentation says not to stop there: *a reference is only ground truth if it
+came from symbols, otherwise it is a second opinion, and a disagreement means
+one of the two is wrong — go look at which.*
+
+Two things say it is IDA that is incomplete:
+
+* Where both tools agree a function exists, **they agree on its end 99.39% of
+  the time** (46,332 of 46,616 exact). This is not two tools disagreeing about
+  the same code; it is one tool seeing code the other never looked at.
+* `disasm32`'s own log explains where it found them: **~19,000 functions
+  reachable only through data pointers.** On an MSVC C++ binary that means
+  virtual methods nothing calls directly. IDA's auto-analysis is conservative
+  about those and never promotes them to functions — the same "vtable-only
+  functions" pattern the toolbox records for Rise of Legends.
+
+Measured properly, the extras fill **60% of the 1.9 MB IDA leaves
+unattributed**. So the first full lift, driven by IDA alone, silently stubbed
+about twenty thousand real functions.
+
+One correction worth recording because it nearly became the conclusion:
+naively summing the extras' sizes gives 6.28 MB against a 1.9 MB gap — 330%,
+which is impossible. `disasm32` records a *reachability bound*, not an extent,
+so those ranges overlap each other and run on into functions IDA already has.
+Only the merged union, intersected with the gap, means anything.
+
+`tools/ida_to_catalog.py --augment` now merges the two: IDA's extents where it
+has them, `disasm32`'s starts where it does not, each clamped to the next known
+start — the only bound available that cannot swallow a neighbour.
+
+```
+76,528 functions  39,401 with call edges  85,297 edges
+from IDA: 56,287   from disasm32 gap fill: 20,241 (853,418 bytes)
+```
 
 **But the door is tiny.** `client.dll` exports **10 symbols**, and five are the
 LithTech client-DLL contract:
