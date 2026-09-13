@@ -15,7 +15,7 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **It lifts clean.** 76,528 functions, 0 errors.
+## Project status: **It lifts and it compiles.** 76,528 functions, 0 errors.
 
 Two results, and the second one is the interesting one.
 
@@ -38,6 +38,7 @@ format that took about forty lines to unpack. See
 | **lifted** | **76,528** |
 | **lift errors** | **0** |
 | generated C | 4,854,290 lines in 154 files |
+| **compiles** | **156 objects, 0 errors** (MSVC 2022, x86) |
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
@@ -250,8 +251,8 @@ instrument that makes the server track possible.
 | **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | ✅ [`docs/RECON.md`](docs/RECON.md) |
 | **P2** | Function recovery over 7.64 MB of `.text` | ✅ **76,528, scored** |
 | **P3** | Lift to C | ✅ **0 errors, 4.85M lines** |
-| **P3b** | Import bridges for 479 imports across 19 DLLs; build | next |
-| **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | |
+| **P3b** | Import bridges for 479 imports; build | ✅ **compiles, 156 objects** |
+| **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | next |
 
 ### P3: it lifts clean
 
@@ -282,6 +283,59 @@ whole mechanism disappears. The residual risk is different and smaller: IDA's
 `end_ea` ends a function's *main chunk*, so a function with separated tail
 chunks is under-read rather than over-read. That fails loudly at runtime as a
 missing tail instead of silently swallowing its neighbour.
+
+### P3b: 479 imports bridged, and the whole thing builds
+
+```
+$ python gen_imports.py
+  imports: 479 across 19 DLLs
+    stdcall  226  (derived argc)
+    cdecl    237  (pop 0)
+    data      16  (storage, not shims)
+
+$ cl /c /MP src\recomp\gen\*.c src\runtime\imports_gen.c
+  EXITCODE=0     156 object files, 197 MB
+```
+
+**Every generated file compiles under MSVC 2022 x86 with zero errors.** That is
+a real check on the lift rather than a restatement of it: 4.85 million lines of
+machine-written C that a compiler accepts.
+
+The import layer has three cases and the third one is a trap worth naming.
+
+**stdcall (226)** — the callee pops, so a shim must pop exactly right. Getting
+it wrong does not fault at the call; it shifts the *caller's* frame, so the
+caller then reads its locals from the wrong slots and dies somewhere unrelated.
+None of these counts are typed by hand: `stdcall_argc.py` derives each from the
+`_Name@N` decoration in the Windows SDK import libraries.
+
+**cdecl (237)** — the caller cleans up, so these pop nothing, and the resolver
+*correctly* fails to derive a count because there is none. 181 come from
+`MSVCR71.dll` and 56 from `pythonMXO.dll`.
+
+**Data (16)** — the trap. Some of what the client imports is not code.
+`pythonMXO.dll` exports 693 symbols from `.text` and **115 from `.data`**:
+`PyType_Type`, `PyString_Type`, `PyExc_AttributeError`, `_Py_NoneStruct`,
+`_Py_TrueStruct`, `_Py_ZeroStruct`. The client *dereferences* those slots. A
+function shim there would not fail at build time and would not fail at the call
+site — it would hand the client a code address where a `PyTypeObject` belongs,
+and the first type check would read whatever the shim's prologue encodes. So
+data imports get storage and their own table, never a stub. (`MSVCR71`
+contributes three more: `_iob`, `__pioinfo`, `_adjust_fdiv`.)
+
+Two bugs this turned up, both of which would have been silent:
+
+* **Classify by section characteristics, never by section name.**
+  `binkw32.dll` puts its decoders in about thirty custom-named *executable*
+  sections — `BINK`, `BINK16`, `BINK4444`, `BINK32R` — all with
+  characteristics `0x60000020`. A `.text`-only test called eight of its exports
+  data and would have handed the client storage where Bink's entry points go.
+* **Export names are not C identifiers.** This binary imports both kinds that
+  break: MSVC C++ mangling (`?terminate@@YAXXZ`) and stdcall decoration
+  (`_BinkOpenDirectSound@4`). Emitted verbatim they produce `unknown character
+  '0x40'` by the hundred. `c_ident()` sanitises with collision handling and
+  keeps the real name in the stub string, so a stub report still prints what
+  was actually called.
 
 ### P2: 56,287 functions, and a very small door
 
