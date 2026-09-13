@@ -45,11 +45,32 @@ server is the goal.
   `launcher.exe` carry a `STLPORT_` section. Expect heavy template expansion;
   a large share of the 7.6 MB is container code, not game logic. Classification
   will matter.
-- **The client embeds Python 2.x.** `client.dll` imports the Python C API from
-  `pythonMXO.dll` — `Py_Initialize`, `Py_InitModule4`, `PyRun_String`,
-  `PyObject_CallObject`, `PyUnicodeUCS2_*`. Ships `resource/Python/Monolith.ltp`
-  and `standard.ltp`, `resource/Lua/client.lua`. **Script is not compiled code:
-  every line of it is a line nobody has to lift.** Highest-value lead.
+- **The gameplay rules are Python 2.3 bytecode, not machine code.** This is the
+  single most important fact about this target. `client.dll` imports the Python
+  C API from `pythonMXO.dll` (`Py_Initialize`, `Py_InitModule4`, `PyRun_String`,
+  `PyObject_CallObject`, `PyUnicodeUCS2_*`).
+- **`.ltp` format is solved**; `tools/ltp_extract.py` reads it and has a
+  `--selfcheck` that runs without game files. Not one archive with an index:
+  single-entry records concatenated, each with an 18-byte header
+  (`LTPb`, u32 20, u16 8, u16 0x08bc, u16 0x3252, two per-record u16s), then
+  u32 csize / u32 usize / u32 namelen / name / raw-deflate payload. A redundant
+  `LTPd` directory and one `LTPh` follow the data records — stop the walk there.
+- **382 modules: 325 are the Python 2.3 stdlib (ignore), 57 are the game.**
+  `Monolith.ltp` holds the 57: root (`combat`, `combatvalidate`,
+  `combat_defines`, `serverrules` 53 KB, `clientrules`, `experience`,
+  `abilities`, `augments`, `recipes`, `crafting_server`, `missionvalidate`,
+  `generic_free_attacks`, `tempmods`, `emotes`, `trgs`, `clhooks`, `rshooks`,
+  `ltfxmap`), `ability/` (24: hacker/soldier/spy/npc trees), `interlock/` (7,
+  including **`combat_resolution`**), `Missions/` (4). Manifest committed at
+  `analysis/python_modules.json`; extracted bytecode lives in `work/py/` and is
+  **never committed** — it is the game's own code.
+- **The community's "combat formulas are buried in the client exe" claim is
+  half right**: the formulas are in the client, but as decompilable bytecode,
+  not as functions anyone needed to disassemble. Nobody appears to have looked.
+- The recomp is still needed: the engine under the scripts is 7.6 MB of C++,
+  and `Py_InitModule4` is the seam. Every module the engine registers is a C++
+  subsystem the scripts drive — recovering that interface is the real P2/P3
+  target, and the script call sites give the priority order.
 - **`launcher.exe` is not the game** — 4 MB of its 4.8 MB is `.rsrc`, only
   574 KB of code.
 - **Retail 1.0 ships no `matrix.exe`.** Only `launcher.exe` + `client.dll`.

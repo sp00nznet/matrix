@@ -1,0 +1,2306 @@
+{
+ "Monolith.ltp": {
+  "archive_bytes": 195800,
+  "count": 57,
+  "modules": [
+   {
+    "name": "abilities.pyc",
+    "size": 1325,
+    "compressed": 523,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "augments.pyc",
+    "size": 1002,
+    "compressed": 408,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "clhooks.pyc",
+    "size": 4857,
+    "compressed": 1509,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "clientrules.pyc",
+    "size": 21144,
+    "compressed": 5260,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "combat.pyc",
+    "size": 7206,
+    "compressed": 2394,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "combatvalidate.pyc",
+    "size": 2018,
+    "compressed": 855,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "combat_defines.pyc",
+    "size": 585,
+    "compressed": 314,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "crafting_server.pyc",
+    "size": 8542,
+    "compressed": 2841,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "emotes.pyc",
+    "size": 29338,
+    "compressed": 6915,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "errtofile.pyc",
+    "size": 768,
+    "compressed": 314,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "experience.pyc",
+    "size": 2678,
+    "compressed": 845,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "followvalidate.pyc",
+    "size": 1148,
+    "compressed": 477,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "generic_free_attacks.pyc",
+    "size": 4295,
+    "compressed": 1480,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ltfxmap.pyc",
+    "size": 253607,
+    "compressed": 56235,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "missionvalidate.pyc",
+    "size": 2906,
+    "compressed": 743,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "NPCTypes.pyc",
+    "size": 433,
+    "compressed": 252,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "obj.pyc",
+    "size": 940,
+    "compressed": 422,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "recipes.pyc",
+    "size": 3456,
+    "compressed": 1374,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "rshooks.pyc",
+    "size": 16380,
+    "compressed": 5407,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "serverrules.pyc",
+    "size": 53735,
+    "compressed": 12219,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tempmods.pyc",
+    "size": 54784,
+    "compressed": 11008,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "trgs.pyc",
+    "size": 5498,
+    "compressed": 2060,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/__init__.pyc",
+    "size": 152,
+    "compressed": 112,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/defines.pyc",
+    "size": 2236,
+    "compressed": 821,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/effects.pyc",
+    "size": 3823,
+    "compressed": 1501,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/general.pyc",
+    "size": 8748,
+    "compressed": 2264,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/__init__.pyc",
+    "size": 159,
+    "compressed": 119,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/crafting.pyc",
+    "size": 1107,
+    "compressed": 472,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/health.pyc",
+    "size": 4348,
+    "compressed": 1070,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/misc.pyc",
+    "size": 3869,
+    "compressed": 1098,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/simulacra.pyc",
+    "size": 23468,
+    "compressed": 3071,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/virii.pyc",
+    "size": 5202,
+    "compressed": 1859,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/hacker/virii_defines.pyc",
+    "size": 8535,
+    "compressed": 2384,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/npc/__init__.pyc",
+    "size": 156,
+    "compressed": 116,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/npc/specialmoves.pyc",
+    "size": 8248,
+    "compressed": 2494,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/__init__.pyc",
+    "size": 160,
+    "compressed": 120,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/misc.pyc",
+    "size": 2461,
+    "compressed": 971,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/old_sm_aikido.pyc",
+    "size": 8918,
+    "compressed": 1778,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/old_sm_karate.pyc",
+    "size": 10242,
+    "compressed": 2351,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/old_sm_pistol.pyc",
+    "size": 8243,
+    "compressed": 1572,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/old_sm_rifle.pyc",
+    "size": 7679,
+    "compressed": 1373,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/soldier/old_sm_smg.pyc",
+    "size": 5935,
+    "compressed": 1028,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/spy/__init__.pyc",
+    "size": 156,
+    "compressed": 116,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/spy/misc.pyc",
+    "size": 38506,
+    "compressed": 9683,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/spy/sneaks.pyc",
+    "size": 11620,
+    "compressed": 2594,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ability/utility.pyc",
+    "size": 27260,
+    "compressed": 6857,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/__init__.pyc",
+    "size": 154,
+    "compressed": 115,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/combat_abil_level.pyc",
+    "size": 6697,
+    "compressed": 1909,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/combat_free_attacks.pyc",
+    "size": 4763,
+    "compressed": 1933,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/combat_innerstrength.pyc",
+    "size": 3268,
+    "compressed": 713,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/combat_modifiers.pyc",
+    "size": 7052,
+    "compressed": 1857,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/combat_resolution.pyc",
+    "size": 17066,
+    "compressed": 5596,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "interlock/combat_utility.pyc",
+    "size": 9458,
+    "compressed": 2575,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Missions/__init__.pyc",
+    "size": 153,
+    "compressed": 114,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Missions/Mission.pyc",
+    "size": 3132,
+    "compressed": 725,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Missions/Mission185.pyc",
+    "size": 21494,
+    "compressed": 6124,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Missions/Mission986.pyc",
+    "size": 32878,
+    "compressed": 7686,
+    "pyc": "py2.3"
+   }
+  ]
+ },
+ "standard.ltp": {
+  "archive_bytes": 1347127,
+  "count": 325,
+  "modules": [
+   {
+    "name": "aifc.pyc",
+    "size": 38019,
+    "compressed": 10212,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "anydbm.pyc",
+    "size": 3048,
+    "compressed": 1439,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "asynchat.pyc",
+    "size": 10695,
+    "compressed": 3164,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "asyncore.pyc",
+    "size": 22168,
+    "compressed": 6314,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "atexit.pyc",
+    "size": 2293,
+    "compressed": 891,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "audiodev.pyc",
+    "size": 11004,
+    "compressed": 3161,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "base64.pyc",
+    "size": 3521,
+    "compressed": 1414,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "BaseHTTPServer.pyc",
+    "size": 21308,
+    "compressed": 8136,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Bastion.pyc",
+    "size": 7599,
+    "compressed": 2643,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "bdb.pyc",
+    "size": 23410,
+    "compressed": 6645,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "binhex.pyc",
+    "size": 21658,
+    "compressed": 6062,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "bisect.pyc",
+    "size": 3199,
+    "compressed": 807,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "calendar.pyc",
+    "size": 12232,
+    "compressed": 3918,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "cgi.pyc",
+    "size": 40443,
+    "compressed": 12589,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "CGIHTTPServer.pyc",
+    "size": 11126,
+    "compressed": 4698,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "cgitb.pyc",
+    "size": 15429,
+    "compressed": 5631,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "chunk.pyc",
+    "size": 6591,
+    "compressed": 2450,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "cmd.pyc",
+    "size": 16123,
+    "compressed": 6156,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "code.pyc",
+    "size": 12297,
+    "compressed": 4422,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "codecs.pyc",
+    "size": 28922,
+    "compressed": 7295,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "codeop.pyc",
+    "size": 7988,
+    "compressed": 2629,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "colorsys.pyc",
+    "size": 4933,
+    "compressed": 1728,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "commands.pyc",
+    "size": 2649,
+    "compressed": 1062,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compileall.pyc",
+    "size": 5785,
+    "compressed": 2556,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ConfigParser.pyc",
+    "size": 27755,
+    "compressed": 7742,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Cookie.pyc",
+    "size": 26542,
+    "compressed": 8988,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "copy.pyc",
+    "size": 14413,
+    "compressed": 4806,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "copy_reg.pyc",
+    "size": 6436,
+    "compressed": 2432,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "csv.pyc",
+    "size": 16668,
+    "compressed": 5739,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "dbhash.pyc",
+    "size": 736,
+    "compressed": 406,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "difflib.pyc",
+    "size": 45067,
+    "compressed": 14450,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "dircache.pyc",
+    "size": 1862,
+    "compressed": 820,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "dis.pyc",
+    "size": 7246,
+    "compressed": 3019,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "doctest.pyc",
+    "size": 51039,
+    "compressed": 17280,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "DocXMLRPCServer.pyc",
+    "size": 13519,
+    "compressed": 4671,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "dumbdbm.pyc",
+    "size": 8018,
+    "compressed": 2722,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "dummy_thread.pyc",
+    "size": 6122,
+    "compressed": 2169,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "dummy_threading.pyc",
+    "size": 1366,
+    "compressed": 685,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "FCNTL.pyc",
+    "size": 620,
+    "compressed": 426,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "filecmp.pyc",
+    "size": 12392,
+    "compressed": 4221,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "fileinput.pyc",
+    "size": 15514,
+    "compressed": 4820,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "fnmatch.pyc",
+    "size": 3822,
+    "compressed": 1591,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "formatter.pyc",
+    "size": 26290,
+    "compressed": 5945,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "fpformat.pyc",
+    "size": 5565,
+    "compressed": 2271,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ftplib.pyc",
+    "size": 33912,
+    "compressed": 11012,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "getopt.pyc",
+    "size": 8070,
+    "compressed": 3167,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "getpass.pyc",
+    "size": 3825,
+    "compressed": 1649,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "gettext.pyc",
+    "size": 16973,
+    "compressed": 5633,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "glob.pyc",
+    "size": 2238,
+    "compressed": 977,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "gopherlib.pyc",
+    "size": 7910,
+    "compressed": 3035,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "gzip.pyc",
+    "size": 17433,
+    "compressed": 5889,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "heapq.pyc",
+    "size": 9413,
+    "compressed": 3964,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "hmac.pyc",
+    "size": 4541,
+    "compressed": 1779,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "htmlentitydefs.pyc",
+    "size": 6490,
+    "compressed": 3096,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "htmllib.pyc",
+    "size": 26681,
+    "compressed": 5276,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "HTMLParser.pyc",
+    "size": 15291,
+    "compressed": 4735,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "httplib.pyc",
+    "size": 44517,
+    "compressed": 12985,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ihooks.pyc",
+    "size": 28731,
+    "compressed": 7427,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "imaplib.pyc",
+    "size": 54086,
+    "compressed": 16341,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "imghdr.pyc",
+    "size": 5738,
+    "compressed": 1855,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "imputil.pyc",
+    "size": 21100,
+    "compressed": 6712,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "inspect.pyc",
+    "size": 40181,
+    "compressed": 12016,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "keyword.pyc",
+    "size": 2393,
+    "compressed": 1296,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "linecache.pyc",
+    "size": 3317,
+    "compressed": 1406,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "locale.pyc",
+    "size": 23157,
+    "compressed": 8382,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "macpath.pyc",
+    "size": 12018,
+    "compressed": 3972,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "macurl2path.pyc",
+    "size": 3153,
+    "compressed": 1337,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mailbox.pyc",
+    "size": 13314,
+    "compressed": 3642,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mailcap.pyc",
+    "size": 9019,
+    "compressed": 3534,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "markupbase.pyc",
+    "size": 11653,
+    "compressed": 3735,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mhlib.pyc",
+    "size": 43464,
+    "compressed": 13229,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mimetools.pyc",
+    "size": 9952,
+    "compressed": 3257,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mimetypes.pyc",
+    "size": 18695,
+    "compressed": 6071,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "MimeWriter.pyc",
+    "size": 8054,
+    "compressed": 2843,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mimify.pyc",
+    "size": 15034,
+    "compressed": 5245,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "modulefinder.pyc",
+    "size": 22291,
+    "compressed": 7515,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "multifile.pyc",
+    "size": 6556,
+    "compressed": 2283,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "mutex.pyc",
+    "size": 2760,
+    "compressed": 1081,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "netrc.pyc",
+    "size": 4435,
+    "compressed": 1870,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "new.pyc",
+    "size": 867,
+    "compressed": 466,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "nntplib.pyc",
+    "size": 24708,
+    "compressed": 7268,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "ntpath.pyc",
+    "size": 14721,
+    "compressed": 5125,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "nturl2path.pyc",
+    "size": 2128,
+    "compressed": 874,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "opcode.pyc",
+    "size": 6355,
+    "compressed": 2358,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "optparse.pyc",
+    "size": 56243,
+    "compressed": 15809,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "os.pyc",
+    "size": 27649,
+    "compressed": 7630,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "os2emxpath.pyc",
+    "size": 13193,
+    "compressed": 4384,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pdb.pyc",
+    "size": 43022,
+    "compressed": 12840,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pickle.pyc",
+    "size": 51392,
+    "compressed": 14752,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pickletools.pyc",
+    "size": 60734,
+    "compressed": 18097,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pipes.pyc",
+    "size": 11816,
+    "compressed": 4176,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pkgutil.pyc",
+    "size": 2931,
+    "compressed": 1459,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "platform.pyc",
+    "size": 36498,
+    "compressed": 12796,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "popen2.pyc",
+    "size": 9553,
+    "compressed": 2874,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "poplib.pyc",
+    "size": 12970,
+    "compressed": 4260,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "posixfile.pyc",
+    "size": 8783,
+    "compressed": 3207,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "posixpath.pyc",
+    "size": 14650,
+    "compressed": 4813,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pprint.pyc",
+    "size": 11681,
+    "compressed": 3987,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pre.pyc",
+    "size": 28017,
+    "compressed": 8123,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "profile.pyc",
+    "size": 18774,
+    "compressed": 6168,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pstats.pyc",
+    "size": 28503,
+    "compressed": 8891,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pty.pyc",
+    "size": 6339,
+    "compressed": 2389,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pyclbr.pyc",
+    "size": 11814,
+    "compressed": 4404,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "pydoc.pyc",
+    "size": 109081,
+    "compressed": 34791,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "py_compile.pyc",
+    "size": 7514,
+    "compressed": 2966,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "Queue.pyc",
+    "size": 8147,
+    "compressed": 2277,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "quopri.pyc",
+    "size": 8286,
+    "compressed": 3206,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "random.pyc",
+    "size": 26536,
+    "compressed": 8949,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "re.pyc",
+    "size": 348,
+    "compressed": 238,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "reconvert.pyc",
+    "size": 6158,
+    "compressed": 2790,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "regex_syntax.pyc",
+    "size": 1083,
+    "compressed": 574,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "regsub.pyc",
+    "size": 6003,
+    "compressed": 2225,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "repr.pyc",
+    "size": 5847,
+    "compressed": 1761,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "rexec.pyc",
+    "size": 30003,
+    "compressed": 8110,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "rfc822.pyc",
+    "size": 38567,
+    "compressed": 12678,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "rlcompleter.pyc",
+    "size": 6369,
+    "compressed": 2675,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "robotparser.pyc",
+    "size": 12505,
+    "compressed": 4130,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sched.pyc",
+    "size": 5145,
+    "compressed": 2008,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sets.pyc",
+    "size": 24011,
+    "compressed": 5732,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sgmllib.pyc",
+    "size": 18624,
+    "compressed": 5455,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "shelve.pyc",
+    "size": 12525,
+    "compressed": 3797,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "shlex.pyc",
+    "size": 9159,
+    "compressed": 3380,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "shutil.pyc",
+    "size": 7329,
+    "compressed": 2672,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "SimpleHTTPServer.pyc",
+    "size": 8462,
+    "compressed": 3326,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "SimpleXMLRPCServer.pyc",
+    "size": 20277,
+    "compressed": 6258,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "site.pyc",
+    "size": 11683,
+    "compressed": 4811,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "smtpd.pyc",
+    "size": 19753,
+    "compressed": 6778,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "smtplib.pyc",
+    "size": 32104,
+    "compressed": 10052,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sndhdr.pyc",
+    "size": 9117,
+    "compressed": 3178,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "socket.pyc",
+    "size": 14753,
+    "compressed": 5172,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "SocketServer.pyc",
+    "size": 25007,
+    "compressed": 6502,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sre.pyc",
+    "size": 15077,
+    "compressed": 4867,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sre_compile.pyc",
+    "size": 12787,
+    "compressed": 4687,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sre_constants.pyc",
+    "size": 7825,
+    "compressed": 2921,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sre_parse.pyc",
+    "size": 23226,
+    "compressed": 7757,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "stat.pyc",
+    "size": 3605,
+    "compressed": 970,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "statcache.pyc",
+    "size": 3401,
+    "compressed": 1246,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "statvfs.pyc",
+    "size": 619,
+    "compressed": 338,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "string.pyc",
+    "size": 14591,
+    "compressed": 3987,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "StringIO.pyc",
+    "size": 10298,
+    "compressed": 3462,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "stringold.pyc",
+    "size": 15058,
+    "compressed": 4208,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "stringprep.pyc",
+    "size": 17545,
+    "compressed": 6084,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sunau.pyc",
+    "size": 23649,
+    "compressed": 5838,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "sunaudio.pyc",
+    "size": 2310,
+    "compressed": 931,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "symbol.pyc",
+    "size": 3601,
+    "compressed": 1495,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "symtable.pyc",
+    "size": 17618,
+    "compressed": 4077,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tabnanny.pyc",
+    "size": 10522,
+    "compressed": 3832,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tarfile.pyc",
+    "size": 71002,
+    "compressed": 21696,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "telnetlib.pyc",
+    "size": 23801,
+    "compressed": 8252,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tempfile.pyc",
+    "size": 17265,
+    "compressed": 5855,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "TERMIOS.pyc",
+    "size": 632,
+    "compressed": 427,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "textwrap.pyc",
+    "size": 12477,
+    "compressed": 4551,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "this.pyc",
+    "size": 1307,
+    "compressed": 743,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "threading.pyc",
+    "size": 34812,
+    "compressed": 8416,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "timeit.pyc",
+    "size": 10856,
+    "compressed": 4621,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "toaiff.pyc",
+    "size": 3425,
+    "compressed": 1481,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "token.pyc",
+    "size": 4963,
+    "compressed": 2063,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tokenize.pyc",
+    "size": 11715,
+    "compressed": 4774,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "trace.pyc",
+    "size": 24822,
+    "compressed": 8597,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "traceback.pyc",
+    "size": 13572,
+    "compressed": 4396,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tty.pyc",
+    "size": 1664,
+    "compressed": 703,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "types.pyc",
+    "size": 3304,
+    "compressed": 1284,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "tzparse.pyc",
+    "size": 5343,
+    "compressed": 2073,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "unittest.pyc",
+    "size": 40672,
+    "compressed": 11337,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "urllib.pyc",
+    "size": 59096,
+    "compressed": 18420,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "urllib2.pyc",
+    "size": 53555,
+    "compressed": 15393,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "urlparse.pyc",
+    "size": 10313,
+    "compressed": 3763,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "user.pyc",
+    "size": 1640,
+    "compressed": 936,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "UserDict.pyc",
+    "size": 12152,
+    "compressed": 2707,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "UserList.pyc",
+    "size": 9198,
+    "compressed": 1760,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "UserString.pyc",
+    "size": 18887,
+    "compressed": 3536,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "uu.pyc",
+    "size": 4826,
+    "compressed": 2141,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "warnings.pyc",
+    "size": 10380,
+    "compressed": 3853,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "wave.pyc",
+    "size": 24346,
+    "compressed": 5910,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "weakref.pyc",
+    "size": 16822,
+    "compressed": 3373,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "webbrowser.pyc",
+    "size": 15639,
+    "compressed": 4392,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "whichdb.pyc",
+    "size": 2338,
+    "compressed": 1108,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "whrandom.pyc",
+    "size": 5745,
+    "compressed": 2255,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xdrlib.pyc",
+    "size": 15693,
+    "compressed": 3787,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xmllib.pyc",
+    "size": 35345,
+    "compressed": 10598,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xmlrpclib.pyc",
+    "size": 46325,
+    "compressed": 12272,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "zipfile.pyc",
+    "size": 24408,
+    "compressed": 8481,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "_strptime.pyc",
+    "size": 23204,
+    "compressed": 7002,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "__future__.pyc",
+    "size": 4122,
+    "compressed": 1595,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "__phello__.foo.pyc",
+    "size": 150,
+    "compressed": 111,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/__init__.pyc",
+    "size": 1207,
+    "compressed": 638,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/ast.pyc",
+    "size": 92936,
+    "compressed": 8489,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/consts.pyc",
+    "size": 876,
+    "compressed": 410,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/future.pyc",
+    "size": 3760,
+    "compressed": 1311,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/misc.pyc",
+    "size": 5134,
+    "compressed": 1353,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/pyassem.pyc",
+    "size": 36791,
+    "compressed": 10828,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/pycodegen.pyc",
+    "size": 70875,
+    "compressed": 17097,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/symbols.pyc",
+    "size": 21842,
+    "compressed": 5967,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/syntax.pyc",
+    "size": 2384,
+    "compressed": 970,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/transformer.pyc",
+    "size": 55265,
+    "compressed": 13889,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "compiler/visitor.pyc",
+    "size": 5277,
+    "compressed": 1931,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/__init__.pyc",
+    "size": 2247,
+    "compressed": 890,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/base64MIME.pyc",
+    "size": 6461,
+    "compressed": 2762,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Charset.pyc",
+    "size": 15811,
+    "compressed": 5007,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Encoders.pyc",
+    "size": 3562,
+    "compressed": 1166,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Errors.pyc",
+    "size": 1917,
+    "compressed": 520,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Generator.pyc",
+    "size": 13619,
+    "compressed": 4983,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Header.pyc",
+    "size": 17230,
+    "compressed": 6473,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Iterators.pyc",
+    "size": 1114,
+    "compressed": 565,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Message.pyc",
+    "size": 36720,
+    "compressed": 10834,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMEAudio.pyc",
+    "size": 3420,
+    "compressed": 1509,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMEBase.pyc",
+    "size": 1293,
+    "compressed": 574,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMEImage.pyc",
+    "size": 2371,
+    "compressed": 1031,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMEMessage.pyc",
+    "size": 1668,
+    "compressed": 737,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMEMultipart.pyc",
+    "size": 1855,
+    "compressed": 789,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMENonMultipart.pyc",
+    "size": 1085,
+    "compressed": 481,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/MIMEText.pyc",
+    "size": 2212,
+    "compressed": 965,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Parser.pyc",
+    "size": 9094,
+    "compressed": 3557,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/quopriMIME.pyc",
+    "size": 10562,
+    "compressed": 3967,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/Utils.pyc",
+    "size": 12861,
+    "compressed": 4865,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/_compat21.pyc",
+    "size": 3102,
+    "compressed": 1253,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/_compat22.pyc",
+    "size": 3064,
+    "compressed": 1256,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "email/_parseaddr.pyc",
+    "size": 16963,
+    "compressed": 5669,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/__init__.pyc",
+    "size": 4388,
+    "compressed": 1937,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/aliases.pyc",
+    "size": 6042,
+    "compressed": 2228,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/ascii.pyc",
+    "size": 1850,
+    "compressed": 574,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/base64_codec.pyc",
+    "size": 3671,
+    "compressed": 1038,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/charmap.pyc",
+    "size": 2952,
+    "compressed": 812,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp037.pyc",
+    "size": 5602,
+    "compressed": 2341,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1006.pyc",
+    "size": 4077,
+    "compressed": 1624,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1026.pyc",
+    "size": 5640,
+    "compressed": 2357,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1140.pyc",
+    "size": 2210,
+    "compressed": 703,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1250.pyc",
+    "size": 3779,
+    "compressed": 1487,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1251.pyc",
+    "size": 4449,
+    "compressed": 1782,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1252.pyc",
+    "size": 2884,
+    "compressed": 1080,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1253.pyc",
+    "size": 4253,
+    "compressed": 1690,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1254.pyc",
+    "size": 2988,
+    "compressed": 1125,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1255.pyc",
+    "size": 4061,
+    "compressed": 1594,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1256.pyc",
+    "size": 3911,
+    "compressed": 1548,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1257.pyc",
+    "size": 3858,
+    "compressed": 1518,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp1258.pyc",
+    "size": 3130,
+    "compressed": 1202,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp424.pyc",
+    "size": 5751,
+    "compressed": 2378,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp437.pyc",
+    "size": 4457,
+    "compressed": 1815,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp500.pyc",
+    "size": 5602,
+    "compressed": 2338,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp737.pyc",
+    "size": 4692,
+    "compressed": 1885,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp775.pyc",
+    "size": 4497,
+    "compressed": 1840,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp850.pyc",
+    "size": 4242,
+    "compressed": 1729,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp852.pyc",
+    "size": 4512,
+    "compressed": 1849,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp855.pyc",
+    "size": 4692,
+    "compressed": 1887,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp856.pyc",
+    "size": 4376,
+    "compressed": 1714,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp857.pyc",
+    "size": 4252,
+    "compressed": 1736,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp860.pyc",
+    "size": 4447,
+    "compressed": 1808,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp861.pyc",
+    "size": 4457,
+    "compressed": 1817,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp862.pyc",
+    "size": 4592,
+    "compressed": 1867,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp863.pyc",
+    "size": 4457,
+    "compressed": 1819,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp864.pyc",
+    "size": 4598,
+    "compressed": 1878,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp865.pyc",
+    "size": 4457,
+    "compressed": 1816,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp866.pyc",
+    "size": 4702,
+    "compressed": 1885,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp869.pyc",
+    "size": 4606,
+    "compressed": 1870,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp874.pyc",
+    "size": 4557,
+    "compressed": 1783,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/cp875.pyc",
+    "size": 5986,
+    "compressed": 2526,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/hex_codec.pyc",
+    "size": 3614,
+    "compressed": 1045,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/idna.pyc",
+    "size": 5709,
+    "compressed": 1991,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_1.pyc",
+    "size": 2311,
+    "compressed": 766,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_10.pyc",
+    "size": 3190,
+    "compressed": 1203,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_13.pyc",
+    "size": 3362,
+    "compressed": 1290,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_14.pyc",
+    "size": 2910,
+    "compressed": 1082,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_15.pyc",
+    "size": 2471,
+    "compressed": 858,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_2.pyc",
+    "size": 3398,
+    "compressed": 1300,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_3.pyc",
+    "size": 2952,
+    "compressed": 1107,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_4.pyc",
+    "size": 3258,
+    "compressed": 1239,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_5.pyc",
+    "size": 4098,
+    "compressed": 1604,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_6.pyc",
+    "size": 3868,
+    "compressed": 1443,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_7.pyc",
+    "size": 3814,
+    "compressed": 1491,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_8.pyc",
+    "size": 3426,
+    "compressed": 1259,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/iso8859_9.pyc",
+    "size": 2425,
+    "compressed": 832,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/koi8_r.pyc",
+    "size": 4700,
+    "compressed": 1889,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/koi8_u.pyc",
+    "size": 2462,
+    "compressed": 874,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/latin_1.pyc",
+    "size": 1872,
+    "compressed": 577,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mac_cyrillic.pyc",
+    "size": 4629,
+    "compressed": 1857,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mac_greek.pyc",
+    "size": 4531,
+    "compressed": 1846,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mac_iceland.pyc",
+    "size": 4251,
+    "compressed": 1732,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mac_latin2.pyc",
+    "size": 4550,
+    "compressed": 1852,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mac_roman.pyc",
+    "size": 4279,
+    "compressed": 1751,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mac_turkish.pyc",
+    "size": 4295,
+    "compressed": 1753,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/mbcs.pyc",
+    "size": 1927,
+    "compressed": 633,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/palmos.pyc",
+    "size": 2723,
+    "compressed": 978,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/punycode.pyc",
+    "size": 9627,
+    "compressed": 3261,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/quopri_codec.pyc",
+    "size": 3574,
+    "compressed": 1007,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/raw_unicode_escape.pyc",
+    "size": 1589,
+    "compressed": 542,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/rot_13.pyc",
+    "size": 3371,
+    "compressed": 1223,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/string_escape.pyc",
+    "size": 1473,
+    "compressed": 486,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/undefined.pyc",
+    "size": 2129,
+    "compressed": 718,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/unicode_escape.pyc",
+    "size": 1557,
+    "compressed": 536,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/unicode_internal.pyc",
+    "size": 1573,
+    "compressed": 537,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/utf_16.pyc",
+    "size": 3631,
+    "compressed": 1183,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/utf_16_be.pyc",
+    "size": 1807,
+    "compressed": 659,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/utf_16_le.pyc",
+    "size": 1807,
+    "compressed": 658,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/utf_7.pyc",
+    "size": 1426,
+    "compressed": 479,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/utf_8.pyc",
+    "size": 1485,
+    "compressed": 525,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/uu_codec.pyc",
+    "size": 4987,
+    "compressed": 1739,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "encodings/zlib_codec.pyc",
+    "size": 3612,
+    "compressed": 1031,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "hotshot/__init__.pyc",
+    "size": 4147,
+    "compressed": 1343,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "hotshot/log.pyc",
+    "size": 7364,
+    "compressed": 2555,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "hotshot/stats.pyc",
+    "size": 4504,
+    "compressed": 1467,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "hotshot/stones.pyc",
+    "size": 1356,
+    "compressed": 713,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "logging/__init__.pyc",
+    "size": 50680,
+    "compressed": 13844,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "logging/config.pyc",
+    "size": 9889,
+    "compressed": 4020,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "logging/handlers.pyc",
+    "size": 31324,
+    "compressed": 9664,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "CDROM.pyc",
+    "size": 10998,
+    "compressed": 3474,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "DLFCN.pyc",
+    "size": 3969,
+    "compressed": 1111,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "IN.pyc",
+    "size": 30551,
+    "compressed": 7163,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "TYPES.pyc",
+    "size": 8955,
+    "compressed": 2132,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/__init__.pyc",
+    "size": 1090,
+    "compressed": 678,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/__init__.pyc",
+    "size": 9456,
+    "compressed": 2256,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/domreg.pyc",
+    "size": 4079,
+    "compressed": 1713,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/expatbuilder.pyc",
+    "size": 47369,
+    "compressed": 12233,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/minicompat.pyc",
+    "size": 7130,
+    "compressed": 1913,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/minidom.pyc",
+    "size": 96024,
+    "compressed": 21692,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/NodeFilter.pyc",
+    "size": 1255,
+    "compressed": 607,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/pulldom.pyc",
+    "size": 18529,
+    "compressed": 4858,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/dom/xmlbuilder.pyc",
+    "size": 20321,
+    "compressed": 4917,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/parsers/__init__.pyc",
+    "size": 339,
+    "compressed": 245,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/parsers/expat.pyc",
+    "size": 318,
+    "compressed": 237,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/sax/__init__.pyc",
+    "size": 4877,
+    "compressed": 1830,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/sax/expatreader.pyc",
+    "size": 20068,
+    "compressed": 5307,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/sax/handler.pyc",
+    "size": 15114,
+    "compressed": 4183,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/sax/saxutils.pyc",
+    "size": 17531,
+    "compressed": 3994,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/sax/xmlreader.pyc",
+    "size": 24934,
+    "compressed": 5328,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "xml/sax/_exceptions.pyc",
+    "size": 7655,
+    "compressed": 2184,
+    "pyc": "py2.3"
+   }
+  ]
+ }
+}

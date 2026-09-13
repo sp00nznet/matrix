@@ -155,18 +155,45 @@ The testable prediction is clean: **if that is true, those functions are in
 renders numbers the server computed — the lift will show that too, by finding no
 such code. Either answer is worth having, and neither has been checked.
 
-Known-unknown list, to be struck through as the lift answers each:
+### Update: the hypothesis was half right, and the good half is better than expected
 
-- [ ] Damage, hit/miss and defence formulas
-- [ ] Interlock (the melee duel minigame) state machine and transitions
-- [ ] Ability trees, prerequisites and load-out validation rules
-- [ ] The mission/quest system: how missions are described, dispatched, tracked
-      and completed, and how much of that the client drives
-- [ ] XP, levelling and reputation curves
+The quote says those functions need disassembling out of the client. They do
+not. **They are Python 2.3 bytecode**, shipped in `resource/Python/Monolith.ltp`,
+and they decompile. See the README for the module list; the relevant names are
+`combat.pyc`, `combatvalidate.pyc`, `combat_defines.pyc`, the seven-module
+`interlock/` package including **`combat_resolution.pyc`**, the 24-module
+`ability/` tree, `experience.pyc`, `missionvalidate.pyc`, `Missions/`, and a
+53 KB `serverrules.pyc`.
+
+So the community's diagnosis of *where* the rules live was right, and its
+estimate of *how hard they are to get* was off by a wide margin. Seventeen
+years of guessing at damage formulas, next to an archive in the install
+directory.
+
+That deserves a caveat rather than a victory lap: these are the retail 1.0
+scripts, the emulators target the final live client, and four years of balance
+patches sit in between. And a rule present in the client is not automatically
+the rule the server enforced — see the last item below.
+
+Known-unknown list, struck through as each is answered:
+
+- [x] ~~Damage, hit/miss and defence formulas~~ — located, not yet read
+- [x] ~~Interlock state machine and transitions~~ — `interlock/`, 7 modules
+- [x] ~~Ability trees, prerequisites and load-out validation~~ — `ability/`, 24
+      modules across hacker / soldier / spy / npc
+- [x] ~~XP and levelling curves~~ — `experience.pyc`
+- [~] The mission/quest system — `Missions/` plus `missionvalidate.pyc` and
+      `resource/missions/definitions/sponsors.xml` are present; whether they
+      constitute a complete description of a mission is unknown
 - [ ] The GoProps object-property model in full
 - [ ] Hyperspace / hardline transit rules
-- [ ] Exactly which computations are client-authoritative (which is also the
-      cheat surface, and worth knowing before writing a server that trusts them)
+- [ ] Reputation curves
+- [ ] **Which side actually decides.** The open question is no longer where the
+      formulas are but which of them the client *evaluates* versus merely
+      *predicts* for responsiveness. `clientrules` and `serverrules` sitting in
+      the same archive suggests the split is explicit and named, which would be
+      a considerable gift. It also maps the cheat surface, which is worth
+      knowing before writing a server that trusts any of it.
 
 ## Why the client is the right place to look
 

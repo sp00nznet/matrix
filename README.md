@@ -15,9 +15,12 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **P0 complete.** Discs unpacked, client identified, no DRM.
+## Project status: **P1 started, and it opened with a bang.**
 
-Nothing lifts yet. What follows is the reconnaissance.
+The game's combat, ability, interlock and mission logic is **not compiled into
+`client.dll` at all.** It ships as Python 2.3 bytecode, in an archive format
+that took about forty lines to unpack. See
+[The rules are in the box](#the-rules-are-in-the-box).
 
 | | |
 |---|---:|
@@ -25,6 +28,7 @@ Nothing lifts yet. What follows is the reconnaissance.
 | `.text` | **7,642,490 bytes** |
 | imports | 479 across 19 DLLs |
 | protection | **none** |
+| game Python modules recovered | **57** |
 | functions recovered | — |
 | lift errors | — |
 
@@ -89,30 +93,55 @@ around 574 KB of code. It is a shell, not the game.
 * **Modern-ish compiler.** MSVC 7.1 from 2005 is far friendlier ground than the
   16-bit Borland and MSC 5.x targets in this collection.
 
-### The thing that changes the plan: the client embeds Python
+## The rules are in the box
 
 `client.dll` imports **the Python C API from `pythonMXO.dll`** — `Py_Initialize`,
 `Py_InitModule4`, `PyRun_SimpleString`, `PyRun_String`, `PyObject_CallObject`,
-`PyImport_ImportModule`, the type objects, the lot. `PyUnicodeUCS2_*` dates it
-to Python 2.x.
+`PyImport_ImportModule`, the type objects, the lot. That made the two `.ltp`
+files in `resource/Python/` the first thing to look at, ahead of any lifting.
 
-Alongside that, the install ships:
+They are archives. The format is simple enough to describe in a paragraph —
+single-entry records concatenated back to back, each with an 18-byte header,
+raw-deflate payload, followed by a redundant directory — and
+[`tools/ltp_extract.py`](tools/ltp_extract.py) reads it in about forty lines.
 
-```
-resource/Python/Monolith.ltp        resource/Python/standard.ltp
-resource/Lua/client.lua
-resource/GameObjects/Cookbook.cbb   resource/GameObjects/gocategories.gcb
-resource/missions/definitions/sponsors.xml
-```
+Inside: **382 Python 2.3 modules.** 325 of them are the Python standard library
+(`encodings`, `email`, `xml`, `compiler`, `logging`) and are of no interest.
+The other **57 are the game**, and the file names are the headline:
 
-So a meaningful slice of client behaviour is **script, not compiled code**, and
-it is sitting in the install in a form that may be readable without lifting
-anything. `Py_InitModule4` in particular means the engine exports its own
-modules into the Python interpreter — enumerate those and you have a
-machine-checked list of what the engine considers its scriptable surface.
+| Package | Modules | What is in there |
+|---|---:|---|
+| *(root)* | 23 | `combat`, `combatvalidate`, `combat_defines`, `serverrules`, `clientrules`, `experience`, `abilities`, `augments`, `recipes`, `crafting_server`, `missionvalidate`, `generic_free_attacks`, `tempmods`, `emotes`, `trgs`, `clhooks`, `rshooks`, `ltfxmap` |
+| `ability/` | 24 | `defines`, `effects`, `general`, `utility`, and the discipline trees: `hacker/` (virii, health, crafting, simulacra), `soldier/` (aikido, karate, pistol, rifle, smg), `spy/` (sneaks, misc), `npc/specialmoves` |
+| `interlock/` | 7 | **`combat_resolution`**, `combat_modifiers`, `combat_abil_level`, `combat_free_attacks`, `combat_innerstrength`, `combat_utility` |
+| `Missions/` | 4 | `Mission`, plus two shipped mission implementations |
 
-This is the highest-value / lowest-cost lead on the board and it is where P1
-starts.
+Recall the community's standing explanation for why combat has never been
+right, quoted in [`docs/SERVERS.md`](docs/SERVERS.md): that the damage formulas,
+hit/miss calculations and interlock state machine are buried in the client
+binary, and that without disassembling those specific functions everyone is
+guessing from player observation.
+
+They are not buried in the binary. There is a module called
+`interlock/combat_resolution.pyc`, and it decompiles.
+
+`serverrules.pyc` is 53,735 bytes — the largest game module after the effects
+table — and sits beside `clientrules.pyc`, `crafting_server.pyc` and
+`rshooks.pyc`. A retail client that ships something named *serverrules* is a
+strong lead, not yet a conclusion; what those modules actually contain is the
+next thing to establish and it has not been established yet.
+
+**This does not make the recompilation pointless — it re-targets it.** The
+engine underneath is still 7.6 MB of compiled C++, and the Python only means
+anything in terms of the engine API it calls into. `Py_InitModule4` is the
+seam: every module the engine registers is a C++ subsystem the scripts drive.
+Lifting the client is now about recovering *that* interface, with the scripts
+in hand telling us what it has to do.
+
+Extraction output goes to `work/py/` and stays there. Those modules are the
+game's own code and are not ours to publish; the committed artifact is
+`analysis/python_modules.json`, which records names and sizes — facts about the
+archive, not a copy of it.
 
 ### A second network stack
 
@@ -172,10 +201,16 @@ instrument that makes the server track possible.
 | Phase | What | State |
 |---|---|---|
 | **P0** | Unpack discs, identify binaries, rule out DRM | ✅ done |
-| **P1** | Recon: Python/Lua surface, string map, RTTI, the `Cool*` stack | next |
+| **P1a** | Python surface: unpack the `.ltp` archives | ✅ **57 game modules** |
+| **P1b** | Decompile those modules; recover the engine API they call | next |
+| **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | |
 | **P2** | Function recovery over 7.64 MB of `.text`, scored before lifting | |
 | **P3** | Lift to C; import bridges for 479 imports across 19 DLLs | |
 | **P4** | Bring-up: window, loop, renderer | |
+
+P1b is the pivot. The Python names the engine functions it calls; that list is
+the priority order for P2 and P3, and it is a far better one than "start at the
+entry point and work outwards" on a 7.6 MB binary.
 
 **P2 gets scored before anything is lifted.** `disasm/score_recovery.py`
 against an IDA export, splitting false positives into *split* and *invented* —
@@ -219,11 +254,18 @@ Carried here until answered, then moved into the docs with the answer.
 2. **Where is the game executable?** Retail ships `launcher.exe` + `client.dll`
    and no `matrix.exe`. Either the launcher hosts `client.dll` directly, or the
    real host arrives via the patcher. `launcher.exe`'s imports will say.
-3. How much of the game is Python? Every line that is script is a line nobody
-   has to lift.
+3. ~~How much of the game is Python?~~ **Answered: 57 modules, covering
+   combat, abilities, interlock, crafting and missions.** The follow-on
+   question is how much *engine* sits under them — which is P1b.
 4. Are the `Cool*` DLLs a second protocol a server must also speak?
-5. Do the combat formulas actually live in the client, as the community
-   believes? Nobody has checked. It is checkable.
+5. ~~Do the combat formulas actually live in the client?~~ **Answered: yes, and
+   as Python bytecode rather than machine code.** Still open: whether
+   `serverrules.pyc` is what its name suggests, and which side of the wire each
+   rule is actually evaluated on. A rule the client merely *predicts* and a rule
+   the client *decides* are very different things for a server.
+6. Do these retail-1.0 scripts match the final live client the emulators
+   target? Four years of patches sit in between, and gameplay rules are exactly
+   the sort of thing that gets rebalanced.
 
 ---
 
