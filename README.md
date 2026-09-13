@@ -240,9 +240,51 @@ instrument that makes the server track possible.
 | **P1a** | Python surface: unpack the `.ltp` archives | ✅ **57 game modules** |
 | **P1b** | Decompile them; recover the engine API they call | ✅ **70 subsystems** |
 | **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | |
-| **P2** | Function recovery over 7.64 MB of `.text`, scored before lifting | |
+| **P2** | Function recovery over 7.64 MB of `.text`, scored before lifting | in progress |
 | **P3** | Lift to C; import bridges for 479 imports across 19 DLLs | |
 | **P4** | Bring-up: window, loop, renderer | |
+
+### P2 so far: 56,287 functions, and a very small door
+
+IDA (9.1, headless via `idalib`) finds **56,287 functions** — more than any
+other target in this collection, Rise of Legends included. The distribution
+says why:
+
+| | |
+|---|---:|
+| functions | **56,287** |
+| byte coverage of `.text` | 75.2% |
+| median function size | **28 bytes** |
+| under 32 bytes | 50.9% |
+| FLIRT-identified library | 2,101 |
+| thunks | 856 |
+| largest function | 48,462 bytes |
+
+Half of all functions are under 32 bytes. That is STLport: the `STLPORT_`
+section seen in P0 cashes out as tens of thousands of inlined container
+accessors. The real game is a much smaller number of large functions, and
+separating the two is the whole P2 problem. `analysis/engine_api.json` — the 70
+subsystems the Python calls — is the list that says which ones matter.
+
+**RTTI is a dead end here.** 7 type descriptors, 1 class. Unlike Force
+Commander, which handed over 567 classes for free, this build shipped without
+it. No shortcut to class recovery.
+
+**But the door is tiny.** `client.dll` exports **10 symbols**, and five are the
+LithTech client-DLL contract:
+
+```
+InitClientDLL    RVA 0x1270      RunClientDLL   RVA 0x1120
+TermClientDLL    RVA 0x1140      ErrorClientDLL RVA 0x1170
+SetMasterDatabase RVA 0x1F1BF0
+```
+
+The other five are `ILTCool` — constructor, copy constructor, assignment,
+destructor and vtable — which confirms that the `Cool*` DLL stack from P0 is a
+LithTech engine interface rather than a bolted-on third-party library.
+
+Four entry points is a far better bring-up target than a 7.6 MB binary with one
+`DllMain`. It is the same shape that got Force Commander to its splash screen.
 
 P1b was the pivot, and it paid off. The scripts name the engine objects they
 call but never import — those are the C++ subsystems inside `client.dll`, and
