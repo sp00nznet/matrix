@@ -1,0 +1,118 @@
+{
+ "tally": {
+  "ok": 21,
+  "timeout": 1
+ },
+ "total_lines": 996,
+ "modules": [
+  {
+   "module": "st_aim.pyc",
+   "status": "ok",
+   "lines": 188
+  },
+  {
+   "module": "st_cin_0.pyc",
+   "status": "ok",
+   "lines": 21
+  },
+  {
+   "module": "st_cin_0102.pyc",
+   "status": "ok",
+   "lines": 23
+  },
+  {
+   "module": "st_cin_0103.pyc",
+   "status": "ok",
+   "lines": 9
+  },
+  {
+   "module": "st_cin_0201.pyc",
+   "status": "ok",
+   "lines": 28
+  },
+  {
+   "module": "st_cin_0203.pyc",
+   "status": "ok",
+   "lines": 12
+  },
+  {
+   "module": "st_elevatornames.pyc",
+   "status": "ok",
+   "lines": 9
+  },
+  {
+   "module": "st_floornames.pyc",
+   "status": "ok",
+   "lines": 12
+  },
+  {
+   "module": "st_hardlinenames.pyc",
+   "status": "ok",
+   "lines": 156
+  },
+  {
+   "module": "st_neighborhoodnames.pyc",
+   "status": "ok",
+   "lines": 66
+  },
+  {
+   "module": "st_poi_club.pyc",
+   "status": "ok",
+   "lines": 33
+  },
+  {
+   "module": "st_poi_dungeon.pyc",
+   "status": "ok",
+   "lines": 21
+  },
+  {
+   "module": "st_poi_gang.pyc",
+   "status": "ok",
+   "lines": 15
+  },
+  {
+   "module": "st_poi_monument.pyc",
+   "status": "ok",
+   "lines": 29
+  },
+  {
+   "module": "st_poi_park.pyc",
+   "status": "ok",
+   "lines": 24
+  },
+  {
+   "module": "st_poi_plaza.pyc",
+   "status": "ok",
+   "lines": 55
+  },
+  {
+   "module": "st_poi_town.pyc",
+   "status": "ok",
+   "lines": 25
+  },
+  {
+   "module": "st_subway_locations.pyc",
+   "status": "ok",
+   "lines": 66
+  },
+  {
+   "module": "st_subway_networks.pyc",
+   "status": "ok",
+   "lines": 14
+  },
+  {
+   "module": "stringtable_ccr.pyc",
+   "status": "ok",
+   "lines": 181
+  },
+  {
+   "module": "stringtable_client.pyc",
+   "status": "timeout"
+  },
+  {
+   "module": "test.pyc",
+   "status": "ok",
+   "lines": 9
+  }
+ ]
+}

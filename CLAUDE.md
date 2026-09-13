@@ -18,6 +18,26 @@ server is the goal.
 - `original/` discs, `disc/` ISO contents, `game/` installed client — all
   git-ignored, 5.2 GB, never committed.
 
+## Decision of record: fork mxo-hd for the plumbing, replace its rules
+Its network/world layer came from packet captures (the right method for a wire
+format) and works: auth, character select, three districts, movement, chat,
+doors, hardlines, vendors, inventory. Its combat came from `.rdata` debug
+strings (the wrong method for a formula) and is wrong in ways `docs/COMBAT.md`
+documents; its mission system is early-stage and its three mission XMLs are
+read by nothing. **Fork the first, replace the second from the recovered
+Python.** Do not rebuild S2/S3 from scratch.
+
+Two upstream defects to handle, neither a blocker:
+- **mxo-hd's `LICENSE` is AngularJS's** ("Copyright (c) 2010-2017 Google, Inc.
+  http://angularjs.org"). Intent to be MIT is unambiguous but the notice names
+  the wrong holder. Raise upstream; meanwhile document it rather than ignore it.
+- **`WorldEncryptionEnigma.cs` P/Invokes `enigmaLib.dll`**, a closed native lib
+  derived from rajkosto's work. It is a *binary dependency, not vendored AGPL
+  source*, so mxo-hd's own code is clean and the AGPL question does not reach
+  us — but a fork inherits an unrebuildable blob. Prefer the managed
+  `WorldEncryption.cs`, and verify crypto against `client.dll` (it imports
+  `CryptGenRandom`, `CryptAcquireContextA`).
+
 ## The licence rule — read this before touching prior art
 - **`rajkosto/mxoemu` is AGPL-3.0.** The licence file is
   `Reality/Source/LICENCE.TXT`, which is why GitHub's sidebar shows no licence
@@ -98,6 +118,37 @@ server is the goal.
 - `RewardSelection` remains unaccounted for as a script, and `rewardselection`
   appears in the engine-globals list — so it is a C++ subsystem, not a missing
   module. Lead closed.
+- `Strings.ltp` decompiles 21/22; `stringtable_client` (2.2 MB) times out. It is
+  content, not logic — leave it as bytecode, nothing needs its source.
+
+## P1 is complete — `docs/RECON.md` is the primary reference
+- **The mission system is fully mapped.** `Missions/Mission.py` is a base class
+  with **12 callbacks** (`OnStartOfMission`, `OnStartOfStage`, `OnGoalComplete`,
+  `OnPhaseComplete`, `OnMissionEvent`, `OnObjectTargeted`, `OnPlayerEnterZone`,
+  `OnModalDialogueAccepted`, `OnToggledViewActivated`, `OnInventoryItemsSwapped`,
+  `OnShortcutAdded`, `OnMovementUpdated`). Structure is
+  **mission → phase → stage → goal**, team-based throughout. Two complete
+  missions ship (465 and 871 lines), so we have worked examples of the idiom.
+- **The `mission` engine object is the quest verb set — 21 methods.** Flow
+  (`activateStage`, `completeGoal`, `isGoalComplete`, `sendMissionEvent`,
+  `scheduleEvent`), narrative (`playNarration`, `broadcastMessage`,
+  `sendModalMessage`, `toggleView`), world (`sealDoor`, `unlockDoor`,
+  `getDoorZoneIDs`, `teleportToMissionElement`, `setExclusiveWaypoint`,
+  `playLocalFX`), NPCs (`killNPC`, `respawnNPC`, `unkillNPC`), player
+  (`grantExperience`, `addTempAbility`, `bootPlayer`).
+  **Implementing those 21 + the 12 callbacks is most of implementing quests.**
+- Mission keys are structured (base + part); the same comparison decides team
+  membership and PvP opposition (`missionvalidate.py`).
+- Rewards are **encoded** and resolved against loot tables —
+  `rshooks.RunMissionRewards(encodedReward, subject)` plus the
+  `rewardselection` engine object.
+- `sponsors.xml` names the internal authoring tool: **Missile**
+  (`class="Missile.Model.ContactSetting"`). Contacts are per neighbourhood and
+  per organisation with a `min-rep`/`max-rep` availability window. It refers to
+  "procedural text", so MxO generated mission text from a grammar — consistent
+  with the `sentence`/`subject`/`directObject` convention everywhere else.
+- **`discovery.getGaussianRandomClamped`** — the RNG is not uniform. A server
+  must match the distribution, not just the range.
 - **Combat findings are in `docs/COMBAT.md`.** Interlock is 1,015 lines over 7
   modules; `ability/` is 3,064 over 24. Combat resolves **winner/loser per
   exchange**, not attacker-rolls-to-hit. HDS's `CombatFormulas.cs` (MIT) was

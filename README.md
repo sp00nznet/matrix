@@ -239,7 +239,7 @@ instrument that makes the server track possible.
 | **P0** | Unpack discs, identify binaries, rule out DRM | ✅ done |
 | **P1a** | Python surface: unpack the `.ltp` archives | ✅ **57 game modules** |
 | **P1b** | Decompile them; recover the engine API they call | ✅ **70 subsystems** |
-| **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | |
+| **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | ✅ [`docs/RECON.md`](docs/RECON.md) |
 | **P2** | Function recovery over 7.64 MB of `.text`, scored before lifting | in progress |
 | **P3** | Lift to C; import bridges for 479 imports across 19 DLLs | |
 | **P4** | Bring-up: window, loop, renderer | |
@@ -332,15 +332,47 @@ how this goes wrong. On a target this size that discipline is not optional.
 | Phase | What | State |
 |---|---|---|
 | **S0** | Survey prior art, settle the licence position | ✅ done — `docs/SERVERS.md` |
-| **S1** | Read the protocol out of the lifted client rather than off the wire | |
-| **S2** | Auth + character select — enough to reach the world | |
-| **S3** | World: districts, statics, movement, doors, hardlines | |
-| **S4** | Combat, from the client's own formulas | |
+| **S1** | Read the protocol out of the client rather than off the wire | |
+| **S2** | Auth + character select — **fork mxo-hd** | |
+| **S3** | World: districts, statics, movement, doors, hardlines — fork | |
+| **S4** | Combat, replaced with the client's own formulas | |
 | **S5** | **Missions.** The part nobody has finished. | |
 
-Track B leans on Track A from S1 onward. S2 and S3 could be started from the
-MIT prior art alone; S4 and S5 are precisely the parts that could not be built
-from packet captures, and they are the reason to do this at all.
+### Fork, don't rebuild
+
+mxo-hd already has auth, character select, three districts, movement, chat,
+doors, hardlines, vendors and inventory working. Rebuilding that to arrive at
+the same place would be months spent on the part that is *already solved*, and
+the ladder says reuse it. So: **fork mxo-hd for the transport and world layer,
+and replace its rules layer with what the client actually says.**
+
+That division falls out of the evidence rather than taste. Its network and
+world plumbing was built from packet captures, which is the right way to
+recover a wire format. Its combat was reconstructed from debug strings, which
+is the wrong way to recover a formula — and `docs/COMBAT.md` shows where that
+lands. Its mission system is early-stage and the three mission XML files it
+ships are not read by anything. Those are exactly the pieces P1 just recovered.
+
+Two defects to fix on the way in, neither a blocker:
+
+1. **The `LICENSE` file is AngularJS's** — *"Copyright (c) 2010-2017 Google,
+   Inc. http://angularjs.org"*, evidently pasted in. The intent to be MIT is
+   unambiguous, but the notice names the wrong copyright holder, so it grants
+   rights over AngularJS rather than over mxo-hd. Worth raising upstream and
+   getting corrected; until then our fork's MIT covers our own changes and the
+   upstream defect is documented rather than papered over.
+2. **`WorldEncryptionEnigma.cs` P/Invokes `enigmaLib.dll`**, a closed-source
+   native library derived from rajkosto's work. The good news is that it is a
+   *binary dependency*, not vendored AGPL source — so mxo-hd's own code is not
+   contaminated and the AGPL question does not reach us. But a fork inherits a
+   blob we cannot rebuild or relicense. There is a managed `WorldEncryption.cs`
+   beside it; prefer that path, and verify the crypto against `client.dll`
+   directly — it imports `CryptGenRandom` and `CryptAcquireContextA`, so the
+   client can settle what the handshake actually does.
+
+Track B leans on Track A from S4 onward. S2 and S3 come from the fork; S4 and
+S5 are precisely the parts that could not be built from packet captures, and
+they are the reason to do this at all.
 
 ### About the endless part
 
