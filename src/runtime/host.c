@@ -174,6 +174,19 @@ static void report(void)
     for (int i = 0; i < ICALL_TRACE_SIZE; i++)
         printf(" %08X", g_icall_trace[(g_icall_trace_idx + i) & (ICALL_TRACE_SIZE - 1)]);
     printf("\n");
+
+#ifdef RECOMP_TRACE
+    /* The entry ring is the only backtrace available here: the lifted code runs
+     * on a simulated stack, so the host's own call stack says nothing about
+     * which game function called which. Newest last. */
+    printf("\n  last 40 functions entered (oldest first):\n");
+    uint32_t n = g_enter_idx < 40 ? g_enter_idx : 40;
+    for (uint32_t i = n; i > 0; i--) {
+        uint32_t va = g_enter_trace[(g_enter_idx - i) & (RECOMP_ENTER_SIZE - 1)];
+        printf("    0x%08X%s", va, (i % 6) == 1 ? "\n" : "");
+    }
+    printf("\n");
+#endif
 }
 
 /* ---- image + IAT ---------------------------------------------------- */

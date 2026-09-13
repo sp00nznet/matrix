@@ -73,6 +73,13 @@ HAND_WRITTEN = {
     'InterlockedExchange', 'InterlockedExchangeAdd',
     'InterlockedIncrement', 'InterlockedDecrement',
     'InterlockedCompareExchange',
+    'GetModuleFileNameA', 'GetCurrentDirectoryA', 'GetEnvironmentVariableA',
+    'GetLastError', 'SetLastError', 'GetCurrentProcess', 'GetCurrentProcessId',
+    'GetCurrentThreadId', 'GetTickCount',
+    'strncpy', 'fopen', 'fclose', 'fread', 'fwrite', 'fseek', 'ftell', 'feof',
+    'SymInitialize', 'SymCleanup', 'SymGetOptions', 'SymSetOptions',
+    'CreateToolhelp32Snapshot', 'Module32First', 'Module32Next', 'CloseHandle',
+    '_msize', 'SymLoadModule64',
 }
 
 

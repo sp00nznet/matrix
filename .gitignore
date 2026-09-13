@@ -73,3 +73,5 @@ src/runtime/recomp_types.h
 # Copied from ../tools/runtime/recomp32/ at build time, not ours to fork.
 src/runtime/image_loader.c
 src/runtime/image_loader.h
+src/runtime/recomp_trace.c
+src/runtime/recomp_trace.h
