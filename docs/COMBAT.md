@@ -179,13 +179,68 @@ Two caveats to design around rather than discover later:
 
 ---
 
-## What this does not settle
+## Which side decides — answered
 
 `getTacticalMod` returning a flat bonus tells us how the client computes a
-modifier. It does not tell us whether the **server** used the same number, or
-whether the client was merely predicting for responsiveness and taking the
-server's answer when it arrived.
+modifier. It does not by itself tell us whether the **server** used the same
+number, or whether the client was merely predicting for responsiveness.
 
-`clientrules.py` and `serverrules.py` sit in the same archive, which suggests
-the split is explicit and named. Reading those two is the next task, and it is
-the one that determines how much of this a server can simply trust.
+`clientrules.py` and `serverrules.py` answer it, and the answer is better than
+hoped: **the split is explicit, named, and the client ships both halves.**
+
+| | defs | lines |
+|---|---:|---:|
+| `clientrules.py` | 42 | 552 |
+| `serverrules.py` | **82** | **1,397** |
+
+Comparing the two by function name:
+
+* **35 functions exist in both.** `DoorPickLock`, `CardKeyTest`,
+  `SecurityPBXDisable`, `TrapDisarm`, `ComputerInfect`, `HasToolForAbility`,
+  `HardlineHackControlNodeStage1/2/3`, `Repair`, `TurnLightOn`/`Off`,
+  `GetMissionItems`, … This is the predict/authorise pair: the client runs its
+  copy for immediate feedback, the server runs its own and its answer wins.
+* **47 are server-only** — `ComputerHack`, `CompileCode`, `DecompileCode`,
+  `EncryptCode`, `DecryptCode`, `CopyCode`, `FileDestroyRecords`,
+  `InvokeVendor`, `HardlineUpload`, `HardlineExit`, `MissionTeam_RequestJoin`,
+  `MissionTeamCheck`, `SendMissionText`, `InfoPickup`, `ReceptacleDropTest`,
+  `SwitchOn`/`Off`, `GetOnLadder`, … Anything that grants, consumes or reveals
+  is server-side only, which is the right instinct and tells us where the trust
+  boundary sat.
+* **7 are client-only** — presentation, e.g. `ElevShowPanelUI`,
+  `DecompileAbilityTest`.
+
+And `serverrules.py` has one function `clientrules.py` does not:
+**`evalContest(A, aMod, D, dMod)`** — attacker value and modifier against
+defender value and modifier. That is the contest primitive the whole
+interaction system resolves through, and it is on the server side only.
+
+**So the client ships the server's own rule code.** Not a reimplementation of
+it, not a prediction of it — the server-side module, in the retail client, in
+the same archive as everything else. For a server project that is close to the
+best possible outcome: the authoritative rules do not have to be inferred from
+packets or from the client's guesses, because they are right there.
+
+The companion module is **`rshooks.py`** (301 lines) — the ruleset hooks that
+sit behind the rules: `RunMissionRewards`, `RunReward`, `RunVendorList`,
+`RunCollectorPrizeList`, `RunPocketChange`, `TableImport`, `GoUpALevel`,
+`ComputeDownloadMissionMapOutcome`, `ComputeHackConstructOutcome`,
+`VendorBuyback`, `RecycleInfo`. Loot tables, vendor stock, mission rewards and
+levelling, all server-side.
+
+### One caveat that matters
+
+A function named `serverrules` in a *client* archive is not proof that the live
+server executed that exact file. It is very strong evidence — the naming, the
+split, the server-only trust-sensitive operations and the missing `evalContest`
+on the client side all point the same way — but the retail client is not the
+server, and four years of patches followed. Treat it as the best available
+specification of server behaviour, not as a recovered server.
+
+### The interaction grammar
+
+Nearly every rule function in both files takes a single parameter named
+`sentence`, and the ability functions take `subject`, `directObject` and
+`indirectObject`. The interaction system is built as a grammar: a sentence with
+an actor, a verb and objects, evaluated by a rule. That explains the shape of
+the mission and ability APIs, and it is likely the shape a server has to speak.

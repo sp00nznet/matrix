@@ -134,11 +134,38 @@ inventory, a point-by-point comparison against Hardline Dreams' reconstruction
 (which got the vulnerability system right and the tactic modifier wrong), and
 three ways to test the recovered rules against a running server.
 
-`serverrules.pyc` is 53,735 bytes — the largest game module after the effects
-table — and sits beside `clientrules.pyc`, `crafting_server.pyc` and
-`rshooks.pyc`. A retail client that ships something named *serverrules* is a
-strong lead, not yet a conclusion; what those modules actually contain is the
-next thing to establish and it has not been established yet.
+### And the client ships the server's rule code
+
+`serverrules.py` decompiles to **1,397 lines, 82 functions**. `clientrules.py`
+is 552 lines and 42. Comparing them by name:
+
+* **35 functions exist in both** — `DoorPickLock`, `CardKeyTest`, `TrapDisarm`,
+  `ComputerInfect`, `SecurityPBXDisable`, `HardlineHackControlNodeStage1/2/3`,
+  `Repair`, … The client predicts, the server authorises, and both halves are
+  in the retail install.
+* **47 are server-only** — `ComputerHack`, `CompileCode`, `DecryptCode`,
+  `InvokeVendor`, `HardlineUpload`, `MissionTeam_RequestJoin`, `SendMissionText`,
+  `InfoPickup`, … Everything that grants, consumes or reveals.
+* **7 are client-only**, all presentation.
+* `serverrules` has **`evalContest(A, aMod, D, dMod)`** and `clientrules` does
+  not. That is the contest primitive the interaction system resolves through,
+  and it is server-side only.
+
+Beside it, `rshooks.py` (301 lines) carries the reward machinery:
+`RunMissionRewards`, `RunReward`, `RunVendorList`, `RunPocketChange`,
+`RunCollectorPrizeList`, `TableImport`, `GoUpALevel`, `VendorBuyback`.
+
+For a server project this is close to the best available outcome: the
+authoritative rules need not be inferred from packet captures, because the
+retail client shipped them. The honest caveat is in
+[`docs/COMBAT.md`](docs/COMBAT.md) — a module named `serverrules` inside a
+client archive is very strong evidence, not proof, that the live server ran
+that exact code, and four years of patches followed these discs.
+
+One structural note that shapes everything else: nearly every rule function
+takes a single parameter named `sentence`, and ability functions take
+`subject`, `directObject`, `indirectObject`. **The interaction system is a
+grammar** — actor, verb, objects, evaluated by a rule.
 
 **This does not make the recompilation pointless — it re-targets it.** The
 engine underneath is still 7.6 MB of compiled C++, and the Python only means

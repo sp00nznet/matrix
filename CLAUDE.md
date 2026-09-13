@@ -103,6 +103,30 @@ server is the goal.
   ranged-vs-melee asymmetry.
 - Combat tuning constants are **not** in `combat_defines.py` (3 constants);
   they are in `ability/defines.py` (35) and the per-discipline modules.
+- **The client ships the server's rule code.** `serverrules.py` is 1,397 lines
+  / 82 defs; `clientrules.py` is 552 / 42. **35 functions exist in both** (the
+  predict/authorise pair), **47 are server-only** (anything that grants,
+  consumes or reveals: `ComputerHack`, `CompileCode`, `DecryptCode`,
+  `InvokeVendor`, `HardlineUpload`, `SendMissionText`, `MissionTeam_*`), **7
+  client-only** (presentation). `serverrules` has `evalContest(A, aMod, D,
+  dMod)` — the contest primitive — and `clientrules` does not.
+  Caveat to keep repeating: strong evidence, not proof, that the live server ran
+  that exact code, and these are retail 1.0.
+- `rshooks.py` (301 lines) is the reward machinery: `RunMissionRewards`,
+  `RunReward`, `RunVendorList`, `RunPocketChange`, `RunCollectorPrizeList`,
+  `TableImport`, `GoUpALevel`, `VendorBuyback`, `RecycleInfo`.
+- **The interaction system is a grammar.** Rule functions take one param named
+  `sentence`; ability functions take `subject`, `directObject`,
+  `indirectObject`. Actor / verb / objects, evaluated by a rule. This shape
+  will drive the server API.
+- **RTTI is a dead end on this target** — 7 type descriptors, 1 class. Unlike
+  Force Commander, no free class recovery. IDA is the reference instead.
+- **idalib works**: run `py-activate-idalib.py` from
+  `C:/Program Files/IDA Professional 9.1/idalib/python/` under `py -3.11`, then
+  `py -3.11 tools/ida/ida_funcs.py <bin> <out.json>`. `idat -A -S` is NOT
+  needed and would be wrong — the toolbox script calls `idapro.open_database`.
+  On a 9.5 MB image `auto_wait()` blocks for a long time with no output; that
+  is normal, do not assume it has stalled.
 - **`launcher.exe` is not the game** — 4 MB of its 4.8 MB is `.rsrc`, only
   574 KB of code.
 - **Retail 1.0 ships no `matrix.exe`.** Only `launcher.exe` + `client.dll`.

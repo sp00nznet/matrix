@@ -1,0 +1,13 @@
+{
+ "binary": "client.dll",
+ "classes": {
+  "type_info": {
+   "vtable": "0x107B7DF0",
+   "slots": 1,
+   "bases": []
+  }
+ },
+ "methods": {
+  "0x105C3521": "type_info"
+ }
+}
