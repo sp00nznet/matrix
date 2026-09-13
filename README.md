@@ -305,11 +305,22 @@ method counts. Ranked by how many modules use each:
 That is the lift-priority list for P2/P3, and it is a far better one than
 "start at the entry point and work outwards" on a 7.6 MB binary.
 
-Four modules the scripts import are **not** in this archive —
-`stringtable_client`, `ltfxmap`, `RewardSelection`, `st_neighborhoodnames`.
-`ltfxmap` is in the archive but was deferred (a quarter-megabyte of effect
-table); the other three are either engine built-ins or live somewhere else in
-the install. Open lead.
+Four modules the scripts import were **not** in `Monolith.ltp`. Three are now
+accounted for:
+
+* `ltfxmap` is in the archive, just deferred — a quarter-megabyte of effect
+  table that takes the decompiler longer than the other 56 modules combined.
+* `stringtable_client` and `st_neighborhoodnames` live in a **third archive**,
+  `resource/string_tables/Strings.ltp` — 22 more modules in the same LTPb
+  format. `stringtable_client` alone is 2.2 MB uncompressed: every string the
+  game displays, and with it the mission text, hardline names, neighbourhood
+  names and cinematic subtitles.
+* `RewardSelection` is still unaccounted for, and `rewardselection` also shows
+  up in the engine-globals list — so it is almost certainly a C++ subsystem
+  rather than a missing script.
+
+Total recovered so far: **404 Python modules across three archives**, of which
+79 are the game (57 + 22) and 325 are the Python 2.3 standard library.
 
 **P2 gets scored before anything is lifted.** `disasm/score_recovery.py`
 against an IDA export, splitting false positives into *split* and *invented* —

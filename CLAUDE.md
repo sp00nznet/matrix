@@ -89,10 +89,15 @@ server is the goal.
   (ability signatures use a subject/directObject convention) and they top the
   raw call counts. `mission` at 480 calls lives in only 2 modules. The tool
   flags any name that is bound as a local or parameter elsewhere.
-- Four modules are imported but absent from `Monolith.ltp`:
-  `stringtable_client`, `RewardSelection`, `st_neighborhoodnames` (and
-  `ltfxmap`, which is present but deferred). Engine built-ins or another
-  archive — unresolved.
+- **There is a third archive**: `resource/string_tables/Strings.ltp`, 22 modules,
+  same LTPb format. It holds `stringtable_client` (2.2 MB uncompressed — every
+  displayed string in the game) and `st_neighborhoodnames`, plus `st_aim`,
+  `st_hardlinenames`, `st_floornames`, `st_elevatornames`, `st_poi_*` and the
+  `st_cin_*` cinematic subtitle tables. **404 modules recovered across three
+  archives**: 57 game + 22 strings + 325 stdlib.
+- `RewardSelection` remains unaccounted for as a script, and `rewardselection`
+  appears in the engine-globals list — so it is a C++ subsystem, not a missing
+  module. Lead closed.
 - **Combat findings are in `docs/COMBAT.md`.** Interlock is 1,015 lines over 7
   modules; `ability/` is 3,064 over 24. Combat resolves **winner/loser per
   exchange**, not attacker-rolls-to-hit. HDS's `CombatFormulas.cs` (MIT) was

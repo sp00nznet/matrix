@@ -2302,5 +2302,143 @@
     "pyc": "py2.3"
    }
   ]
+ },
+ "Strings.ltp": {
+  "archive_bytes": 458578,
+  "count": 22,
+  "modules": [
+   {
+    "name": "stringtable_ccr.pyc",
+    "size": 11822,
+    "compressed": 3156,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "stringtable_client.pyc",
+    "size": 2241643,
+    "compressed": 437921,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_aim.pyc",
+    "size": 14840,
+    "compressed": 3528,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_cin_0.pyc",
+    "size": 1027,
+    "compressed": 316,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_cin_0102.pyc",
+    "size": 1148,
+    "compressed": 338,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_cin_0103.pyc",
+    "size": 322,
+    "compressed": 173,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_cin_0201.pyc",
+    "size": 1409,
+    "compressed": 385,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_cin_0203.pyc",
+    "size": 499,
+    "compressed": 218,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_elevatornames.pyc",
+    "size": 325,
+    "compressed": 198,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_floornames.pyc",
+    "size": 415,
+    "compressed": 247,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_hardlinenames.pyc",
+    "size": 9630,
+    "compressed": 2573,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_neighborhoodnames.pyc",
+    "size": 3188,
+    "compressed": 1232,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_club.pyc",
+    "size": 1454,
+    "compressed": 617,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_dungeon.pyc",
+    "size": 1141,
+    "compressed": 500,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_gang.pyc",
+    "size": 588,
+    "compressed": 314,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_monument.pyc",
+    "size": 1568,
+    "compressed": 591,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_park.pyc",
+    "size": 1219,
+    "compressed": 490,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_plaza.pyc",
+    "size": 3345,
+    "compressed": 1112,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_poi_town.pyc",
+    "size": 1354,
+    "compressed": 515,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_subway_locations.pyc",
+    "size": 4899,
+    "compressed": 1292,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "st_subway_networks.pyc",
+    "size": 558,
+    "compressed": 276,
+    "pyc": "py2.3"
+   },
+   {
+    "name": "test.pyc",
+    "size": 231,
+    "compressed": 152,
+    "pyc": "py2.3"
+   }
+  ]
  }
 }
