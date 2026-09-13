@@ -222,8 +222,26 @@ Two upstream defects to handle, neither a blocker:
   `SetMasterDatabase` wrong (`0x1F1BF0` for `0x1F1DB0`). `ROOT_EXPORTS` is names
   only; addresses come from the PE export directory at runtime. Note
   `analyze_pe` yields `ExportEntry` **objects**, not dicts.
-- **disasm32 is not on the critical path for this target** and was abandoned
-  after ~30 min / 2.4 GB. Its only purpose was to be scored against IDA.
+- **IDA is NOT ground truth here — it misses ~20,000 functions.** This was
+  nearly a silent defect. `disasm32.py` (40 min, 2.4 GB, but it finished) finds
+  **78,105** functions and **95.9%** byte coverage against IDA's 56,287 and
+  75.2%. Scored with IDA as reference it looks terrible — 63.7% precision,
+  20,241 "invented". It is IDA that is wrong:
+  - Where both agree a function exists, **they agree on its end 99.39% of the
+    time** (46,332/46,616 exact). One tool is seeing code the other never
+    looked at, not disagreeing about the same code.
+  - disasm32's log: **~19,000 functions reachable only via data pointers** —
+    i.e. virtual methods nothing calls directly. IDA's auto-analysis never
+    promotes those. Same vtable-only pattern as Rise of Legends.
+  - The extras fill **60% of the 1.9 MB IDA leaves unattributed**.
+- **Always use `ida_to_catalog.py --augment analysis/functions.json`.** Without
+  it the lift silently stubs ~20,000 real functions. Merged catalog: **76,528
+  functions, 85,297 edges** (56,287 IDA + 20,241 gap fill, 853,418 bytes).
+  Merged lift: **76,528 functions, 154 files, 0 errors, 49 s, 4,854,290 lines.**
+- **Do not sum disasm32's function sizes to measure coverage.** Its `end` is a
+  reachability bound, so ranges overlap and run into neighbours; the naive sum
+  gave 6.28 MB against a 1.9 MB gap (330%, impossible). Merge to a union and
+  intersect with the gap.
 - Correct export addresses: `RunClientDLL` 0x1120, `TermClientDLL` 0x1140,
   `ErrorClientDLL` 0x1170, `InitClientDLL` 0x1270, `SetMasterDatabase` 0x1F1DB0,
   `DllMain` entry RVA 0x5C3736. Image base `0x10000000`.
