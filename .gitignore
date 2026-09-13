@@ -1,0 +1,66 @@
+# --- Original retail files: NOT redistributed in this repo ---
+# The Matrix Online (c) 2005 Warner Bros. / Monolith / SEGA / SOE. In copyright.
+# Bring your own discs and drop them in original/; the pipeline unpacks them
+# into disc/ and game/ itself. None of it is ours to ship.
+original/
+disc/
+game/
+client/
+
+# Generated lifted C: a derivative work of client.dll, and millions of lines.
+src/recomp/gen/
+
+# Build artifacts
+build/
+out/
+cmake-build-*/
+*.obj
+*.o
+*.lib
+*.pdb
+*.ilk
+*.exp
+*.a
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+CMakeSettings.json
+CMakeUserPresets.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Scratch / regeneratable output
+work/
+gen/
+*.asm
+*.json.bak
+analysis/disasm.log
+analysis/functions.json
+
+# Belt and braces: no game material by extension, anywhere.
+*.iso
+*.ISO
+*.cab
+*.CAB
+*.pkb
+*.ltb
+*.exe
+*.EXE
+*.dll
+*.DLL
+*.bin
+*.cue
+*.img
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
