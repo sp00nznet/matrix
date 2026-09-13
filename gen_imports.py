@@ -60,7 +60,20 @@ SEARCH = ('', 'p_dlls')
 # Imports with real bodies in src/runtime/shims_impl.c get an extern declaration
 # instead of a stub. The bridge table still points at them, so promoting a stub
 # to a real body is a one-line change here.
-HAND_WRITTEN = set()
+#
+# A name in here that this binary does not import is a silent failure: the stub
+# stays, the hand-written body is never called, and it looks exactly like the
+# shim not working. main() refuses to generate in that case. That check earned
+# its keep immediately -- memset, memcpy, memcmp, strlen and operator
+# new/delete all looked like obvious entries and none of them are imported.
+# MSVC 7.1 emits them as intrinsics, so they are already inside the lifted code.
+HAND_WRITTEN = {
+    'malloc', 'free', 'calloc', 'realloc', 'memmove',
+    '_aligned_malloc', '_aligned_free',
+    'InterlockedExchange', 'InterlockedExchangeAdd',
+    'InterlockedIncrement', 'InterlockedDecrement',
+    'InterlockedCompareExchange',
+}
 
 
 # IMAGE_SCN_CNT_CODE | IMAGE_SCN_MEM_EXECUTE. Classify by these, never by
@@ -156,6 +169,22 @@ def main():
             data.append((va, dll, real, 0))
         else:
             cdecl.append((va, dll, real, 0))
+
+    # Refuse to generate if a hand-written name is not actually imported, or is
+    # classified as data. Both leave the stub in place and look identical to the
+    # shim simply not being called.
+    imported = {r for _, _, r, _ in stdcall + cdecl}
+    as_data = {r for _, _, r, _ in data}
+    bogus = sorted((HAND_WRITTEN - imported) | (HAND_WRITTEN & as_data))
+    if bogus:
+        print('[!] HAND_WRITTEN names this binary does not import as code:',
+              file=sys.stderr)
+        for b in bogus:
+            print('      %s' % b, file=sys.stderr)
+        print('    The stub would stay and the hand-written body would never\n'
+              '    be called, which looks exactly like the shim not working.',
+              file=sys.stderr)
+        raise SystemExit(1)
 
     lines = [HEADER % (len(iat), len(dlls), len(stdcall), len(cdecl), len(data))]
 

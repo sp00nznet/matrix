@@ -244,7 +244,13 @@ def main():
                 '/* A catalogued function outside the lifted closure. The stub\n'
                 ' * names itself and stops, so a run says which VA to add next. */\n'
                 'void recomp_not_lifted(uint32_t va);\n'
-                '#define RECOMP_NOT_LIFTED(va) recomp_not_lifted(va)\n\n')
+                '#define RECOMP_NOT_LIFTED(va) recomp_not_lifted(va)\n\n'
+                '/* The LithTech client-DLL contract, defined in '
+                'recomp_dispatch.c. */\n')
+        for name in ROOT_EXPORTS:
+            if name in by_name:
+                f.write('extern const uint32_t mxo_va_%s;\n' % name)
+        f.write('extern const uint32_t mxo_dllmain_va;\n\n')
         for a, n in entries:
             f.write('void %s(void);  /* 0x%08X */\n' % (n, a))
 

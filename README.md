@@ -15,12 +15,15 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **It lifts and it compiles.** 76,528 functions, 0 errors.
+## Project status: **It runs.** Lifted code executes; bring-up in progress.
 
 Two results, and the second one is the interesting one.
 
-**The whole binary lifts.** 76,528 functions to 4.85 million lines of C with
-zero lift errors, in 49 seconds. Nothing has been *run* yet — that is P4.
+**The whole binary lifts, compiles and links.** 76,528 functions to 4.85
+million lines of C with zero lift errors, into a 121 MB host. `InitClientDLL`
+executes real recompiled code and gets 264 indirect calls deep into the client's
+own startup before hitting the blocker described in
+[P4](#p4-it-runs-and-where-it-stops).
 
 **The gameplay rules were never compiled in the first place.** Combat,
 abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
@@ -39,6 +42,8 @@ format that took about forty lines to unpack. See
 | **lift errors** | **0** |
 | generated C | 4,854,290 lines in 154 files |
 | **compiles** | **156 objects, 0 errors** (MSVC 2022, x86) |
+| **links** | **mxo_host.exe, 121 MB** |
+| **runs** | executes lifted code, 264 indirect calls |
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
@@ -252,7 +257,7 @@ instrument that makes the server track possible.
 | **P2** | Function recovery over 7.64 MB of `.text` | ✅ **76,528, scored** |
 | **P3** | Lift to C | ✅ **0 errors, 4.85M lines** |
 | **P3b** | Import bridges for 479 imports; build | ✅ **compiles, 156 objects** |
-| **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | next |
+| **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | **runs; 264 calls in** |
 
 ### P3: it lifts clean
 
@@ -283,6 +288,72 @@ whole mechanism disappears. The residual risk is different and smaller: IDA's
 `end_ea` ends a function's *main chunk*, so a function with separated tail
 chunks is under-read rather than over-read. That fails loudly at runtime as a
 missing tail instead of silently swallowing its neighbour.
+
+### P4: it runs, and where it stops
+
+```
+$ build/mxo_host.exe --init
+  mapped game/client.dll: 0x10000000 + 10653696 bytes
+  stack: 0x0E000000..0x0E400000, esp=0x0E3FFF00
+  TIB:   0x0E800000 (fs base)
+  dispatch entries:      76528
+  import bridges:        463
+  data imports:          16
+  IAT slots patched:     479
+
+  calling 0x10001270 ...
+  indirect calls: 264
+```
+
+`client.dll` is a LithTech client DLL, so there is no `WinMain`. The engine
+loads it and calls five exports; [`src/runtime/host.c`](src/runtime/host.c)
+stands in for the engine and calls `InitClientDLL`, which is the first thing the
+game's own code does.
+
+Three things had to be true before a single instruction could run, and each was
+a distinct failure:
+
+**The image has to be mapped at `0x10000000`** so every `MEM*(va)` in the lifted
+code reads the program's real initial data.
+
+**It needs a TIB.** `InitClientDLL`'s very first call opens with MSVC's standard
+SEH prologue — `push -1`, push handler, then read and replace `fs:[0]`. With
+`g_fs_base` left at zero that dereferences address 0 and faults before anything
+useful happens. The host now builds a simulated TIB with the SEH chain
+terminated and the stack bounds filled in.
+
+**The IAT has to be self-patched.** A raw-mapped image's IAT slots hold
+name-table RVAs, not function pointers. Writing each slot's own VA into itself
+turns `call [slot]` into `ICALL(slot_va)`, which the bridge table resolves. All
+479 slots, and the indirect-call trace confirms it — the targets that show up
+are genuine IAT VAs in `.rdata`.
+
+After that it reached `malloc`, got `0` from the stub, and faulted on the
+dereference. Real bodies for `malloc`/`free`/`calloc`/`realloc`/`memmove`, the
+aligned pair and the five interlocked functions took it from 9 indirect calls
+to **264**.
+
+#### The current blocker, stated precisely
+
+Execution now dies in a `__thiscall` constructor that zeroes a ~0x24-byte
+object through a garbage `this`. It is reached from MSVC's
+`eh vector constructor iterator` (`??_L@YGXPAXIHP6EX0@Z1@Z`), which walks an
+array calling a per-element constructor through a function pointer — and that
+same iterator also makes an indirect call to an address *inside itself*, which
+is not a function pointer at all.
+
+Two symptoms, one cause: the iterator is receiving bad arguments. That is the
+signature of a stack desynchronisation somewhere upstream, which is exactly what
+a wrong `STDRET` count produces — it does not fault at the call, it shifts the
+*caller's* frame so every later read is off by a slot.
+
+Not yet diagnosed, and deliberately not guessed at. The next step is a
+`RECOMP_TRACE` build for a real backtrace, and harvesting unresolved VAs from
+the run back into the catalog as seeds.
+
+Worth being clear about what "it runs" does and does not mean: recompiled code
+executes and gets a long way into the client's own startup. It does not render,
+it does not reach `RunClientDLL`, and there is no window.
 
 ### P3b: 479 imports bridged, and the whole thing builds
 
