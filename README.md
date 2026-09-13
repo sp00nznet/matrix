@@ -15,11 +15,16 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **P1 started, and it opened with a bang.**
+## Project status: **It lifts clean.** 56,287 functions, 0 errors.
 
-The game's combat, ability, interlock and mission logic is **not compiled into
-`client.dll` at all.** It ships as Python 2.3 bytecode, in an archive format
-that took about forty lines to unpack. See
+Two results, and the second one is the interesting one.
+
+**The whole binary lifts.** 56,287 functions to 4.1 million lines of C with
+zero lift errors, in 43 seconds. Nothing has been *run* yet — that is P4.
+
+**The gameplay rules were never compiled in the first place.** Combat,
+abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
+format that took about forty lines to unpack. See
 [The rules are in the box](#the-rules-are-in-the-box).
 
 | | |
@@ -28,11 +33,14 @@ that took about forty lines to unpack. See
 | `.text` | **7,642,490 bytes** |
 | imports | 479 across 19 DLLs |
 | protection | **none** |
-| game Python modules recovered | **57** |
+| functions recovered | **56,287** |
+| call edges | 74,257 |
+| **lifted** | **56,287** |
+| **lift errors** | **0** |
+| generated C | 4,099,690 lines in 113 files |
+| game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
-| functions recovered | — |
-| lift errors | — |
 
 ---
 
@@ -240,11 +248,42 @@ instrument that makes the server track possible.
 | **P1a** | Python surface: unpack the `.ltp` archives | ✅ **57 game modules** |
 | **P1b** | Decompile them; recover the engine API they call | ✅ **70 subsystems** |
 | **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | ✅ [`docs/RECON.md`](docs/RECON.md) |
-| **P2** | Function recovery over 7.64 MB of `.text`, scored before lifting | in progress |
-| **P3** | Lift to C; import bridges for 479 imports across 19 DLLs | |
-| **P4** | Bring-up: window, loop, renderer | |
+| **P2** | Function recovery over 7.64 MB of `.text` | ✅ **56,287** |
+| **P3** | Lift to C | ✅ **0 errors, 4.1M lines** |
+| **P3b** | Import bridges for 479 imports across 19 DLLs; build | next |
+| **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | |
 
-### P2 so far: 56,287 functions, and a very small door
+### P3: it lifts clean
+
+```
+$ python run_lift.py --all --split 500
+  base=0x10000000 code=0x10001000-0x1074AD7A IAT=479
+  catalog: 56287 functions, 74257 call edges
+  roots: InitClientDLL@0x10001270, RunClientDLL@0x10001120,
+         TermClientDLL@0x10001140, ErrorClientDLL@0x10001170,
+         SetMasterDatabase@0x101F1DB0, DllMain@0x105C3736
+  56287 functions in 113 files, 56287 lifted, 0 stubs, 0 errors, 43s
+```
+
+**4,099,690 lines of C, zero lift errors.** For scale, that is roughly ten
+times Fury³ and about five times Crimson Skies, and it is the largest clean
+lift this toolchain has produced.
+
+Zero errors is a weaker claim than it sounds and is worth stating precisely: it
+means every function decoded and emitted C without the lifter faulting. It does
+not mean the C is correct, and nothing has been executed. That is P3b and P4.
+
+[`run_lift.py`](run_lift.py) is noticeably shorter than the sister projects'
+drivers, for one reason worth recording. Force Commander needs a branch-walking
+`true_extent()` because `disasm32` records a *reachability bound* rather than an
+extent — trusting it there decoded a megabyte of unrelated code as a single
+function body. IDA records real ranges, so `f['end']` is used directly and the
+whole mechanism disappears. The residual risk is different and smaller: IDA's
+`end_ea` ends a function's *main chunk*, so a function with separated tail
+chunks is under-read rather than over-read. That fails loudly at runtime as a
+missing tail instead of silently swallowing its neighbour.
+
+### P2: 56,287 functions, and a very small door
 
 IDA (9.1, headless via `idalib`) finds **56,287 functions** — more than any
 other target in this collection, Rise of Legends included. The distribution
