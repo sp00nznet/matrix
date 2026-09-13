@@ -29,6 +29,8 @@ that took about forty lines to unpack. See
 | imports | 479 across 19 DLLs |
 | protection | **none** |
 | game Python modules recovered | **57** |
+| decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
+| engine subsystems identified | **70** |
 | functions recovered | — |
 | lift errors | — |
 
@@ -123,7 +125,14 @@ binary, and that without disassembling those specific functions everyone is
 guessing from player observation.
 
 They are not buried in the binary. There is a module called
-`interlock/combat_resolution.pyc`, and it decompiles.
+`interlock/combat_resolution.pyc`, and it decompiles — 395 lines of it, with
+`calculateDamage`, `generateVulnerabilities`, `generateExploits` and
+`calcDamageResistFromLevelDifference` in plain sight.
+
+**[`docs/COMBAT.md`](docs/COMBAT.md)** is the write-up: the full function
+inventory, a point-by-point comparison against Hardline Dreams' reconstruction
+(which got the vulnerability system right and the tactic modifier wrong), and
+three ways to test the recovered rules against a running server.
 
 `serverrules.pyc` is 53,735 bytes — the largest game module after the effects
 table — and sits beside `clientrules.pyc`, `crafting_server.pyc` and
@@ -202,15 +211,36 @@ instrument that makes the server track possible.
 |---|---|---|
 | **P0** | Unpack discs, identify binaries, rule out DRM | ✅ done |
 | **P1a** | Python surface: unpack the `.ltp` archives | ✅ **57 game modules** |
-| **P1b** | Decompile those modules; recover the engine API they call | next |
+| **P1b** | Decompile them; recover the engine API they call | ✅ **70 subsystems** |
 | **P1c** | Recon the rest: string map, RTTI, the `Cool*` stack | |
 | **P2** | Function recovery over 7.64 MB of `.text`, scored before lifting | |
 | **P3** | Lift to C; import bridges for 479 imports across 19 DLLs | |
 | **P4** | Bring-up: window, loop, renderer | |
 
-P1b is the pivot. The Python names the engine functions it calls; that list is
-the priority order for P2 and P3, and it is a far better one than "start at the
-entry point and work outwards" on a 7.6 MB binary.
+P1b was the pivot, and it paid off. The scripts name the engine objects they
+call but never import — those are the C++ subsystems inside `client.dll`, and
+`analysis/engine_api.json` now lists **70** of them with call counts and
+method counts. Ranked by how many modules use each:
+
+| Subsystem | modules | methods | |
+|---|---:|---:|---|
+| `discovery` | 25 | 21 | |
+| `AbilityInv` | 18 | 41 | ability inventory |
+| `constants` | 17 | 12 | |
+| `CharMvt` | 13 | 21 | character movement |
+| `Interlock` | 12 | 28 | the combat minigame |
+| `consolevar` | 11 | 24 | |
+| `combat` | 7 | 34 | |
+| `Inventory`, `AI`, `PlayerCharacter`, `abilitylib`, `physics`, `Organization`, `MissionTeam`, `rewardselection`, `StateMachine`, `Chat`, … | | | |
+
+That is the lift-priority list for P2/P3, and it is a far better one than
+"start at the entry point and work outwards" on a 7.6 MB binary.
+
+Four modules the scripts import are **not** in this archive —
+`stringtable_client`, `ltfxmap`, `RewardSelection`, `st_neighborhoodnames`.
+`ltfxmap` is in the archive but was deferred (a quarter-megabyte of effect
+table); the other three are either engine built-ins or live somewhere else in
+the install. Open lead.
 
 **P2 gets scored before anything is lifted.** `disasm/score_recovery.py`
 against an IDA export, splitting false positives into *split* and *invented* —

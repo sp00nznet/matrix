@@ -71,6 +71,38 @@ server is the goal.
   and `Py_InitModule4` is the seam. Every module the engine registers is a C++
   subsystem the scripts drive — recovering that interface is the real P2/P3
   target, and the script call sites give the priority order.
+- **All 56 attempted modules decompile cleanly** with `uncompyle6` (10,026
+  lines). `ltfxmap.pyc` is deferred: 253 KB of effect-table literal that takes
+  uncompyle6 longer than the other 56 combined. `tools/decompile_ltp.py` gives
+  it a longer budget and `--skip-slow` defers it.
+  **`python -m uncompyle6` does not work** — it is a package with no
+  `__main__`; drive `uncompyle6.main.decompile_file` instead.
+- **70 engine subsystems recovered** into `analysis/engine_api.json` by
+  `tools/engine_api.py`. Ranked by module breadth (not call count — see below):
+  `discovery` 25 mods/21 methods, `AbilityInv` 18/41, `constants` 17/12,
+  `CharMvt` 13/21, `Interlock` 12/28, `consolevar` 11/24, `combat` 7/34, then
+  `Inventory`, `AI`, `PlayerCharacter`, `abilitylib`, `physics`, `Organization`,
+  `MissionTeam`, `rewardselection`, `StateMachine`, `Chat`, `Construct`.
+  **This is the P2/P3 lift-priority list.**
+- **Rank engine globals by module breadth, never by call count.** `subject`,
+  `directObject` and `indirectObject` are ability-function *parameters*
+  (ability signatures use a subject/directObject convention) and they top the
+  raw call counts. `mission` at 480 calls lives in only 2 modules. The tool
+  flags any name that is bound as a local or parameter elsewhere.
+- Four modules are imported but absent from `Monolith.ltp`:
+  `stringtable_client`, `RewardSelection`, `st_neighborhoodnames` (and
+  `ltfxmap`, which is present but deferred). Engine built-ins or another
+  archive — unresolved.
+- **Combat findings are in `docs/COMBAT.md`.** Interlock is 1,015 lines over 7
+  modules; `ability/` is 3,064 over 24. Combat resolves **winner/loser per
+  exchange**, not attacker-rolls-to-hit. HDS's `CombatFormulas.cs` (MIT) was
+  reconstructed from `.rdata` *debug strings* — it got the per-tactic
+  vulnerability system right, but models the tactic modifier as
+  `1.0 + vulnerability` when the real `getTacticalMod(mine, theirs)` is a
+  preferred-matchup flat bonus. HDS also lacks exploits, ganging penalties and
+  ranged-vs-melee asymmetry.
+- Combat tuning constants are **not** in `combat_defines.py` (3 constants);
+  they are in `ability/defines.py` (35) and the per-discipline modules.
 - **`launcher.exe` is not the game** — 4 MB of its 4.8 MB is `.rsrc`, only
   574 KB of code.
 - **Retail 1.0 ships no `matrix.exe`.** Only `launcher.exe` + `client.dll`.

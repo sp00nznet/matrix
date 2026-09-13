@@ -1,0 +1,293 @@
+{
+ "tally": {
+  "ok": 56,
+  "skipped": 1
+ },
+ "total_lines": 10026,
+ "modules": [
+  {
+   "module": "NPCTypes.pyc",
+   "status": "ok",
+   "lines": 13
+  },
+  {
+   "module": "abilities.pyc",
+   "status": "ok",
+   "lines": 34
+  },
+  {
+   "module": "augments.pyc",
+   "status": "ok",
+   "lines": 25
+  },
+  {
+   "module": "clhooks.pyc",
+   "status": "ok",
+   "lines": 36
+  },
+  {
+   "module": "clientrules.pyc",
+   "status": "ok",
+   "lines": 552
+  },
+  {
+   "module": "combat.pyc",
+   "status": "ok",
+   "lines": 137
+  },
+  {
+   "module": "combat_defines.pyc",
+   "status": "ok",
+   "lines": 9
+  },
+  {
+   "module": "combatvalidate.pyc",
+   "status": "ok",
+   "lines": 46
+  },
+  {
+   "module": "crafting_server.pyc",
+   "status": "ok",
+   "lines": 177
+  },
+  {
+   "module": "emotes.pyc",
+   "status": "ok",
+   "lines": 470
+  },
+  {
+   "module": "errtofile.pyc",
+   "status": "ok",
+   "lines": 22
+  },
+  {
+   "module": "experience.pyc",
+   "status": "ok",
+   "lines": 49
+  },
+  {
+   "module": "followvalidate.pyc",
+   "status": "ok",
+   "lines": 25
+  },
+  {
+   "module": "generic_free_attacks.pyc",
+   "status": "ok",
+   "lines": 75
+  },
+  {
+   "module": "ltfxmap.pyc",
+   "status": "skipped"
+  },
+  {
+   "module": "missionvalidate.pyc",
+   "status": "ok",
+   "lines": 73
+  },
+  {
+   "module": "obj.pyc",
+   "status": "ok",
+   "lines": 28
+  },
+  {
+   "module": "recipes.pyc",
+   "status": "ok",
+   "lines": 81
+  },
+  {
+   "module": "rshooks.pyc",
+   "status": "ok",
+   "lines": 301
+  },
+  {
+   "module": "serverrules.pyc",
+   "status": "ok",
+   "lines": 1397
+  },
+  {
+   "module": "tempmods.pyc",
+   "status": "ok",
+   "lines": 866
+  },
+  {
+   "module": "trgs.pyc",
+   "status": "ok",
+   "lines": 144
+  },
+  {
+   "module": "ability/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  },
+  {
+   "module": "ability/defines.pyc",
+   "status": "ok",
+   "lines": 41
+  },
+  {
+   "module": "ability/effects.pyc",
+   "status": "ok",
+   "lines": 78
+  },
+  {
+   "module": "ability/general.pyc",
+   "status": "ok",
+   "lines": 153
+  },
+  {
+   "module": "ability/utility.pyc",
+   "status": "ok",
+   "lines": 526
+  },
+  {
+   "module": "ability/hacker/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  },
+  {
+   "module": "ability/hacker/crafting.pyc",
+   "status": "ok",
+   "lines": 21
+  },
+  {
+   "module": "ability/hacker/health.pyc",
+   "status": "ok",
+   "lines": 66
+  },
+  {
+   "module": "ability/hacker/misc.pyc",
+   "status": "ok",
+   "lines": 46
+  },
+  {
+   "module": "ability/hacker/simulacra.pyc",
+   "status": "ok",
+   "lines": 318
+  },
+  {
+   "module": "ability/hacker/virii.pyc",
+   "status": "ok",
+   "lines": 97
+  },
+  {
+   "module": "ability/hacker/virii_defines.pyc",
+   "status": "ok",
+   "lines": 143
+  },
+  {
+   "module": "ability/npc/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  },
+  {
+   "module": "ability/npc/specialmoves.pyc",
+   "status": "ok",
+   "lines": 131
+  },
+  {
+   "module": "ability/soldier/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  },
+  {
+   "module": "ability/soldier/misc.pyc",
+   "status": "ok",
+   "lines": 33
+  },
+  {
+   "module": "ability/soldier/old_sm_aikido.pyc",
+   "status": "ok",
+   "lines": 101
+  },
+  {
+   "module": "ability/soldier/old_sm_karate.pyc",
+   "status": "ok",
+   "lines": 115
+  },
+  {
+   "module": "ability/soldier/old_sm_pistol.pyc",
+   "status": "ok",
+   "lines": 96
+  },
+  {
+   "module": "ability/soldier/old_sm_rifle.pyc",
+   "status": "ok",
+   "lines": 82
+  },
+  {
+   "module": "ability/soldier/old_sm_smg.pyc",
+   "status": "ok",
+   "lines": 67
+  },
+  {
+   "module": "ability/spy/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  },
+  {
+   "module": "ability/spy/misc.pyc",
+   "status": "ok",
+   "lines": 718
+  },
+  {
+   "module": "ability/spy/sneaks.pyc",
+   "status": "ok",
+   "lines": 202
+  },
+  {
+   "module": "interlock/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  },
+  {
+   "module": "interlock/combat_abil_level.pyc",
+   "status": "ok",
+   "lines": 126
+  },
+  {
+   "module": "interlock/combat_free_attacks.pyc",
+   "status": "ok",
+   "lines": 84
+  },
+  {
+   "module": "interlock/combat_innerstrength.pyc",
+   "status": "ok",
+   "lines": 71
+  },
+  {
+   "module": "interlock/combat_modifiers.pyc",
+   "status": "ok",
+   "lines": 136
+  },
+  {
+   "module": "interlock/combat_resolution.pyc",
+   "status": "ok",
+   "lines": 395
+  },
+  {
+   "module": "interlock/combat_utility.pyc",
+   "status": "ok",
+   "lines": 197
+  },
+  {
+   "module": "Missions/Mission.pyc",
+   "status": "ok",
+   "lines": 45
+  },
+  {
+   "module": "Missions/Mission185.pyc",
+   "status": "ok",
+   "lines": 465
+  },
+  {
+   "module": "Missions/Mission986.pyc",
+   "status": "ok",
+   "lines": 871
+  },
+  {
+   "module": "Missions/__init__.pyc",
+   "status": "ok",
+   "lines": 6
+  }
+ ]
+}
