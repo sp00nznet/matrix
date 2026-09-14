@@ -1,5 +1,32 @@
 # The Matrix Online Static Recompilation — Project Memory
 
+## ⚠ P6 IS BLOCKED BY A MISSING BINARY — `matrix.exe`
+**The engine executable is not on the retail discs.** `RunClientDLL` needs 28
+engine interfaces; nothing fills them because the thing that would is absent.
+`launcher.exe` carries one adjacent string block:
+`matrix.exe`, `launcher.exe`, `client.dll`, `ErrorClientDLL`, `TermClientDLL`,
+`RunClientDLL`, `InitClientDLL`, `cres.dll`,
+`http://update.beta.thematrixonline.com/`.
+`matrix.exe` is the LithTech engine host; the launcher downloads it. Not among
+the 2,716 unpacked files. (`update.beta.` also dates these discs to the
+pre-launch beta window.)
+
+**`launcher.exe` is NOT the engine** — tested: 0 hits for `INetMgr`,
+`ILTRenderDevice`, `ILTClassMgr`, `ILTWorldRep_Metro`, `ILTDrawPrim`; **11 for
+`ILTLoginMediator`**, the one interface it shares with the client. So login
+genuinely spans the launcher — that answers the open auth question.
+
+**Options, best first:**
+1. **Obtain the final client distribution** (includes `matrix.exe`). Unblocks
+   P6 *and* retires the roadmap's largest risk by making our target the same
+   version the emulators target. Turns P6 into a lifting problem.
+2. Write the 28 interfaces by hand — strictly worse on cost and risk; two
+   `INetMgr` slots took a session.
+3. Push the server track; it needs P6 only at step 3.
+
+The discs were still the right start — lift, Python rules, interface list and
+protocol surface all came from them. They are simply not a complete game.
+
 ## PLAN OF RECORD — `docs/ROADMAP.md`
 The two tracks are **not** parallel: P6 (engine interfaces) and the server's
 real task are the **same boundary from two sides**. The 70 subsystems in
