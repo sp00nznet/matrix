@@ -208,3 +208,60 @@ original did.
 
 Each of those is worth having on its own, which is the test a milestone has to
 pass to be on this list.
+
+
+---
+
+## Finding that reframes P6: the engine is not on the disc
+
+`RunClientDLL` needs 28 engine interfaces. Nothing in the retail install fills
+them, and that is not an oversight in our host — **the engine executable is
+missing from the retail discs.**
+
+`launcher.exe` carries this table, adjacent in one string block:
+
+```
+matrix.exe   launcher.exe   client.dll
+ErrorClientDLL   TermClientDLL   RunClientDLL   InitClientDLL
+cres.dll
+http://update.beta.thematrixonline.com/
+```
+
+**`matrix.exe` is the LithTech engine host**, it knows the four client-DLL
+exports by name, and it is nowhere in the 2,716 files we unpacked. The launcher
+downloads it. (The `update.beta.` URL dates these discs to the pre-launch beta
+window, which fits a 2005-02-21 master for a March 2005 launch.)
+
+`launcher.exe` itself is not the engine: it contains **none** of
+`INetMgr`, `ILTRenderDevice`, `ILTClassMgr`, `ILTWorldRep_Metro` or
+`ILTDrawPrim`. It does contain **`ILTLoginMediator`** (11 references), which is
+the one interface it shares with the client — so login genuinely does span the
+launcher, answering that open question from the other direction.
+
+### What this means
+
+P6 was never "write 28 interfaces from scratch". It is "the other half of this
+program is a separate binary we do not have".
+
+That changes the options:
+
+1. **Obtain the final client distribution.** It includes `matrix.exe`. This
+   both unblocks P6 *and* retires the roadmap's largest risk — that these
+   February 2005 discs differ from the client the emulators target — because it
+   settles the version question by making the target the same one. It also
+   turns P6 back into a lifting problem, which this project is good at, rather
+   than a specification problem.
+2. **Write the engine interfaces by hand.** Possible but expensive: arity is
+   mechanical, return *type* and object *shape* are semantic, and there are 28
+   interfaces of unknown size. Two `INetMgr` slots took a session.
+3. **Push the server track instead.** It does not need P6 until step 3.
+
+Option 1 is strictly better than 2 on both cost and risk, and it is the
+recommendation. Option 3 remains available in parallel either way.
+
+### Revised reading of the retail discs
+
+They remain the right thing to have started from — they gave the lift, the
+Python rules, the engine interface list and the protocol surface, none of which
+needed `matrix.exe`. But they are **not a complete game**, and any plan that
+assumed they were needs this correction.
