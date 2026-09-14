@@ -30,6 +30,32 @@ is the other reason sockets come before the renderer.
 may live in `launcher.exe`. `WININET` (wide-char HTTP) is a separate channel,
 probably patch/news.
 
+## The server fork — `../mxo-hd-recomp`
+**Private mirror**, not a GitHub fork: `sp00nznet/mxo-hd-recomp`, checked out at
+`G:/recomp/pc/mxo-hd-recomp`, `upstream` → `hdneo/mxo-hd` for syncing.
+**`gh repo fork` cannot be used** — forks of public repos are always public and
+cannot be made private. Upstream: 51 commits, last 2026-04-02 (combat
+data-model merge, i.e. the area we replace). Two large CSVs (72 MB, 60 MB)
+exceed GitHub's recommended file size; they pushed fine.
+Still to do: correct the AngularJS `LICENSE`; prefer managed
+`WorldEncryption.cs` over the `enigmaLib.dll` binary.
+
+## The socket layer — `src/runtime/shims_net.c` (P7, built)
+20 functions, UDP, forwarding to real Winsock (client holds genuine handles).
+`gethostbyname` + `inet_addr` answer with the loopback sidecar **and** `sendto`
+rewrites its destination — belt and braces, so a cached/hard-coded address can't
+escape and make the log meaningless. Logs every datagram (peer, length, hex
+window) to `work/packets.log`. Env: `MXO_SERVER`, `MXO_PACKET_LOG`,
+`MXO_PACKET_BYTES`. Link needs `ws2_32.lib`; `winsock2.h` **before**
+`windows.h`.
+Shape borrowed from **tstorecomp**: server inside the app as a loopback sidecar
+started at launch, not a service beside it.
+
+**Ordering fact, found by building it:** the client never calls `WSAStartup`
+during `InitClientDLL` — network init is behind the **same P6 wall** as
+`RunClientDLL`. Sockets are *not* gated on the renderer, but they *are* gated on
+P6. So **P6 is on the critical path for both tracks.**
+
 ## Standing Directive
 Keep the README's status table and numbers current with every phase. Commit and
 push to `main` on GitHub regularly. Repo is **private**.
