@@ -303,17 +303,26 @@ int main(int argc, char **argv)
         printf("DllMain returned eax=0x%08X, esp=0x%08X\n", g_eax, g_esp);
     }
 
-    uint32_t va = manual_va ? manual_va :
-                  !strcmp(what, "--run")  ? mxo_va_RunClientDLL  :
-                  !strcmp(what, "--term") ? mxo_va_TermClientDLL :
-                                            mxo_va_InitClientDLL;
-    recomp_func_t fn = recomp_lookup(va);
-    if (!fn) { fprintf(stderr, "no lifted body at 0x%08X\n", va); return 1; }
+    /* --boot follows the LithTech contract: Init, then Run. Calling Run on its
+     * own is not a shortcut -- InitClientDLL is what builds everything Run
+     * then uses. */
+    uint32_t seq[2] = {0, 0};
+    if (manual_va)                     seq[0] = manual_va;
+    else if (!strcmp(what, "--boot")) { seq[0] = mxo_va_InitClientDLL;
+                                        seq[1] = mxo_va_RunClientDLL; }
+    else if (!strcmp(what, "--run"))   seq[0] = mxo_va_RunClientDLL;
+    else if (!strcmp(what, "--term"))  seq[0] = mxo_va_TermClientDLL;
+    else                               seq[0] = mxo_va_InitClientDLL;
 
-    printf("\ncalling 0x%08X ...\n", va);
-    PUSH32(g_esp, RECOMP_RETADDR);
-    fn();
-    printf("returned, eax=0x%08X\n", g_eax);
+    for (int s = 0; s < 2 && seq[s]; s++) {
+        recomp_func_t fn = recomp_lookup(seq[s]);
+        if (!fn) { fprintf(stderr, "no lifted body at 0x%08X\n", seq[s]); return 1; }
+        printf("\ncalling 0x%08X ...\n", seq[s]);
+        PUSH32(g_esp, RECOMP_RETADDR);
+        fn();
+        printf("returned, eax=0x%08X  (esp=0x%08X, %u indirect calls)\n",
+               g_eax, g_esp, g_icall_count);
+    }
 
     report();
     return 0;
