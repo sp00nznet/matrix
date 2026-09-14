@@ -76,7 +76,30 @@ static uint32_t g_pending_va;
  * the client does with the result keeps reporting instead of faulting. That is
  * what lets one run advance past a slot rather than stopping at it.
  */
-typedef enum { RET_ZERO, RET_ONE, RET_OBJ } iface_ret_t;
+typedef enum {
+    RET_ZERO,     /* eax = 0 */
+    RET_ONE,      /* eax = 1 */
+    RET_OBJ,      /* eax = a fresh object with its own synthetic vtable */
+    RET_PTRNULL,  /* eax = a pointer to a word holding NULL */
+} iface_ret_t;
+
+/* These interfaces are COM-shaped, and the idiom shows up all over the client:
+ *
+ *     p = slot_n();            ; p points AT an interface pointer
+ *     if (*p != cur) {
+ *         if (cur) cur->vt[2]();   ; slot 2 = Release
+ *         cur = *p;
+ *         if (cur) cur->vt[1]();   ; slot 1 = AddRef
+ *     }
+ *
+ * So vtable slot 1 is AddRef and slot 2 is Release throughout, and a getter of
+ * this shape returns a pointer-to-pointer rather than the object itself.
+ *
+ * RET_PTRNULL answers that with a pointer to a NULL word -- "no object" -- which
+ * is a legitimate state the client already handles: it releases whatever it
+ * held, adopts NULL, and skips the AddRef. That walks the whole path without
+ * having to invent an object, and is why it beats RET_OBJ here.
+ */
 
 typedef struct {
     const char *iface;      /* substring match on the interface name */
@@ -86,14 +109,23 @@ typedef struct {
 } iface_impl_t;
 
 static const iface_impl_t g_impls[] = {
-    /* INetMgr slot 3: called from sub_10306720 with `ecx = this` and no
-     * arguments pushed, and its result is immediately used as an object. */
-    { "INetMgr", 3, 0, RET_OBJ },
+    /* INetMgr slot 3: called from sub_10306720 as "if the interface exists,
+     * call slot 3 on it", with no arguments pushed. The instruction after the
+     * call clears a local -- the return value is never read -- so RET_ZERO is
+     * both sufficient and safer.
+     *
+     * It was RET_OBJ first, and that was a mistake worth keeping the note for:
+     * handing back a fabricated object invites the client to use it, and its
+     * zeroed members then get read as function pointers. That produced
+     * "ICALL: unresolved VA 0x0099CCA0" (our own allocation, called as code)
+     * and "unresolved VA 0x00000000". Never invent an object for a result
+     * nobody reads. */
+    { "INetMgr", 3, 0, RET_ZERO },
     /* INetMgr slot 15: called from sub_103065E0 -- the function that was
      * faulting before any of this existed. One argument pushed (a pointer
      * to a caller local, i.e. an out-parameter), and the result is
      * dereferenced on the next instruction, so it must be a real object. */
-    { "INetMgr", 15, 1, RET_OBJ },
+    { "INetMgr", 15, 1, RET_PTRNULL },
 };
 
 /* Objects we hand out beyond the 28 holders (sub-objects returned by slots).
@@ -145,6 +177,9 @@ static void iface_slot_handler(void)
         else if (impl->ret == RET_OBJ) {
             if (g_extra_used < IFACE_MAX_OBJS)
                 r = make_object(mxo_iface_count + g_extra_used++);
+        } else if (impl->ret == RET_PTRNULL) {
+            uint32_t *cell = (uint32_t *)calloc(1, sizeof(uint32_t));
+            r = (uint32_t)(uintptr_t)cell;
         }
         g_eax = r;
         g_esp += 4u + impl->argc * 4u;      /* dummy return address + args */
