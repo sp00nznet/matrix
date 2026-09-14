@@ -381,6 +381,39 @@ Two upstream defects to handle, neither a blocker:
 - Host dumps simulated registers + faulting address on exception. `eax=0` /
   "reading 0x00000000" is what turns "crash in a strlen" into "who produced
   the NULL".
+### P5 done — Win32 layer + a real window
+- **`client.dll` never creates a window.** No `CreateWindowEx`, `RegisterClass`,
+  `GetMessage` or `DefWindowProc` in the import table — only window
+  *manipulation*. The LithTech **engine host** owns the window and the message
+  pump. `host.c` creates a 1024×768 window, publishes it via `host_hwnd()`, and
+  pumps the queue around each entry point.
+- **~215 of 479 imports now have real bodies** (`shims_win32.c` adds 71).
+- **The printf family cannot be forwarded** — varargs off a *simulated* stack,
+  so the host's `va_list` cannot be pointed at them. `fmt_from_stack()` walks
+  the format string, pulls each arg from `g_esp`, and hands one directive at a
+  time to the host `snprintf` (keeps flags/width/precision, avoids
+  reimplementing float formatting). Doubles read 2 slots, everything else 1.
+- **NEVER forward `LoadLibraryA` or `GetModuleHandleA` for foreign modules.**
+  A real `HMODULE` lets the client walk that module's real PE export table and
+  call a real **host** address — arriving as `ICALL(0x7610EC20)`, unresolvable
+  (the dispatch table knows only lifted VAs and IAT slots), and a host function
+  reached that way expects args on the *host* stack anyway. Both decline and log
+  now. `GetModuleHandleA(NULL)` must return the **guest image base**
+  (`0x10000000`). The client asks for `unicows.dll` (MS Layer for Unicode) ×6
+  and `kernel32.dll` ×1.
+- `MessageBoxA` routes to the console — a modal box blocks an automated run.
+- `SetUnhandledExceptionFilter` returns 0 (declined) so faults surface through
+  the host's VEH with the lifted VA.
+- `timeGetTime` needs `#include <mmsystem.h>` + `winmm.lib`, or it links as
+  cdecl `_timeGetTime` instead of the stdcall-decorated symbol.
+
+### P6 — the next wall, and it is architectural
+`RunClientDLL` faults along `0x10001120 → 0x10006640 → 0x10306720 →
+0x103065E0`, dereferencing a **null field inside a live `.data` object**. Not a
+bug: the client is reaching for **LithTech engine interfaces** that only the
+engine host supplies, and nothing supplies them yet. `SetMasterDatabase` and the
+exported `ILTCool` class are the visible edge of that surface.
+
 - **Heredoc trap that bit repeatedly:** writing C string escapes through
   `python - <<'PY'` eats a backslash level, turning `\n` into a real newline and
   producing `error C2001: newline in constant`. Use `chr(92) + 'n'`, or patch
