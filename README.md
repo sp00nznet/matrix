@@ -50,7 +50,8 @@ format that took about forty lines to unpack. See
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
-| engine interfaces the client waits for | **28** |
+| engine interfaces the client waits for | **28** (installable, one at a time) |
+| first interface method reached | **`INetMgr.Default` slot 3** |
 
 ---
 
@@ -288,7 +289,7 @@ later.
 | **P3b** | Import bridges for 479 imports; build | ✅ **compiles, 156 objects** |
 | **P4** | Bring-up: `InitClientDLL` | ✅ **completes** |
 | **P5** | Win32 layer + a real window | ✅ **71 shims, window up** |
-| **P6** | The LithTech engine interfaces `RunClientDLL` needs | **28 enumerated**; implementing |
+| **P6** | The LithTech engine interfaces `RunClientDLL` needs | **mechanism works**; filling slots |
 | **P7** | **The socket layer — 20 functions, UDP** | scheduled early |
 | **P8** | Renderer: D3D9 through COM vtables | deliberately late |
 

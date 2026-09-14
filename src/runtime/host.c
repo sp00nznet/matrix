@@ -39,6 +39,7 @@
 #include "recomp_types.h"
 #include "recomp_funcs.h"   /* generated: the mxo_va_* export addresses */
 #include "imports.h"
+#include "engine_iface.h"
 
 /* ---- the register model the lifted code runs on ---- */
 uint32_t  g_eax, g_ecx, g_edx, g_esp, g_ebx, g_esi, g_edi, g_ebp;
@@ -187,9 +188,17 @@ recomp_func_t recomp_lookup(uint32_t va)
     return NULL;
 }
 
-/* No overrides yet. This is where a hand-written replacement for a specific
- * lifted function goes when one turns out to need it. */
-recomp_func_t recomp_lookup_manual(uint32_t va) { (void)va; return NULL; }
+/* Consulted before the dispatch table and the import bridges.
+ *
+ * This is what the hook was for: engine interface vtable slots hold
+ * synthetic VAs rather than real addresses, because a host function
+ * pointer in a vtable is unreachable from lifted code -- the dispatch
+ * table knows only lifted VAs and IAT slots, and a host function would
+ * want its arguments on the host stack. */
+recomp_func_t recomp_lookup_manual(uint32_t va)
+{
+    return (recomp_func_t)mxo_iface_resolve(va);
+}
 
 recomp_func_t recomp_lookup_import(uint32_t va)
 {
@@ -383,6 +392,7 @@ int main(int argc, char **argv)
         PUSH32(g_esp, RECOMP_RETADDR);
         dm();
         watch_dump("after DllMain");
+        mxo_install_interfaces();
         printf("DllMain returned eax=0x%08X, esp=0x%08X\n", g_eax, g_esp);
     }
 
