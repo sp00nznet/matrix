@@ -1,5 +1,35 @@
 # The Matrix Online Static Recompilation — Project Memory
 
+## PLAN OF RECORD — `docs/ROADMAP.md`
+The two tracks are **not** parallel: P6 (engine interfaces) and the server's
+real task are the **same boundary from two sides**. The 70 subsystems in
+`analysis/engine_api.json` are what the client wants from its engine *and* what
+a server is the authoritative half of. Build each shared artifact once.
+
+**The lever: the client can talk long before it can draw.**
+`WSOCK32` is **20 functions** — `sendto`, `recvfrom`, `bind`, `select`,
+byte-order helpers — with **no `connect`/`send`/`recv`/`listen`/`accept`**, so
+the world protocol is **UDP** and the whole surface is an afternoon.
+Rendering is D3D9 through COM vtables + an asset pipeline. **So: sockets early
+(P7), renderer deliberately late (P8).**
+
+Ordering (each step unblocks the *other* track):
+1. **S1** fork mxo-hd — depends on nothing, start anytime.
+2. **P7/SP1** shim the 20 sockets + packet log.
+3. **Point the recompiled client at the forked server on `127.0.0.1`** —
+   `gethostbyname` and `inet_addr` are already shimmed. Closed loop under our
+   control. *This is where it stops being two efforts.*
+4. Differential protocol work (S2/S3 vs the real client's own code).
+5. Rules sidecar (`interlock/` + `ability/`) → S4.
+6. Missions → S5 (contract already recovered: 12 callbacks, 21 verbs).
+
+**Biggest risk, cheap to retire early:** these are Feb 2005 retail discs; the
+emulators target a client four years of patches later. Step 3 settles it — which
+is the other reason sockets come before the renderer.
+**Open:** no TCP anywhere in `client.dll`, yet the emulators' auth is TCP ⇒ auth
+may live in `launcher.exe`. `WININET` (wide-char HTTP) is a separate channel,
+probably patch/news.
+
 ## Standing Directive
 Keep the README's status table and numbers current with every phase. Commit and
 push to `main` on GitHub regularly. Repo is **private**.
