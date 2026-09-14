@@ -63,6 +63,29 @@ the pointer. `+4` stays NULL until something does. That is the entire P6 wall.
   themselves like missing imports. **Do `INetMgr` first** — it is what
   `RunClientDLL` reaches first, and it unblocks the whole server track.
 
+### P6 mechanism WORKS — `src/runtime/engine_iface.{c,h}`
+- Vtable slots hold **synthetic VAs** (`0x7E000000 + iface*4096 + slot*16`),
+  resolved by **`recomp_lookup_manual`** — the hook that returned NULL from the
+  start. A host function pointer cannot go in a vtable: dispatch knows only
+  lifted VAs and IAT slots, and a host function would want args on the *host*
+  stack.
+- **Unimplemented slot reports and `exit(0)` — never guesses the pop count.**
+  No SDK to derive arity from for a C++ virtual; a wrong pop shifts the
+  *caller's* frame and crashes elsewhere. One worklist entry per run; get arity
+  by reading the call site.
+- **`MXO_IFACES=INetMgr` / `all` / unset(none). Default none — installing all 28
+  is WORSE than none.** A non-NULL holder sends the client down its
+  "subsystem available" path, where it chases pointers *through* our object; a
+  bare vtable over zeroed members is callable but not usable. All-28 turned a
+  completing `InitClientDLL` into a crash in `ILTLoginMediator` (holder
+  `0x109961D8`, deref `+0x58`). Regression-checked: none installed ⇒
+  `InitClientDLL` still completes at 65,029 calls.
+- **First slot reached: `INetMgr.Default :: slot 3` (vtable +0xC)**,
+  `this=` our object, caller near `0x100064A0`. Next: read that call site for
+  arity, implement, re-run for the next slot.
+- `MXO_WATCH=0x...,0x...` dumps guest memory at phase boundaries.
+- `find_interfaces.py` emits `src/runtime/interfaces_gen.c` alongside the JSON.
+
 ## The server fork — `../mxo-hd-recomp`
 **Private mirror**, not a GitHub fork: `sp00nznet/mxo-hd-recomp`, checked out at
 `G:/recomp/pc/mxo-hd-recomp`, `upstream` → `hdneo/mxo-hd` for syncing.
