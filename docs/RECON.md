@@ -242,3 +242,62 @@ ability APIs.
    the generator lives in the client, in `Missile`, or only on the server is
    unknown, and it decides how much of "the missions" can be recovered at all
    versus regenerated.
+
+---
+
+## The engine interfaces: what P6 actually is (28 of them)
+
+`client.dll` does not create its engine interfaces. It declares **holders** for
+them — a small object with a vtable at `+0` and an interface pointer at `+4` —
+and waits for the engine to fill each one in. The interface pointer stays NULL
+until something installs it.
+
+That is the whole of the P6 wall. `RunClientDLL` faults at `0x103065E0` reaching
+a holder whose `+4` is still the zero its constructor left, and calling through
+it. Confirmed at runtime: the holder at `0x10857788` has its vtable set
+(`0x10780D38`) and `+4 = 00000000`, unchanged across `DllMain` and
+`InitClientDLL`.
+
+Each holder is registered by a static initialiser of the form
+`register(holder, "Name", flags)`, so the set is recoverable statically —
+[`tools/find_interfaces.py`](../tools/find_interfaces.py) finds the calls, walks
+back for the pushed operands, and reads the name out of the image.
+**28 holders**, in `analysis/engine_interfaces.json`:
+
+| Group | Interfaces |
+|---|---|
+| **Networking** | `INetMgr.Default`, `INetShell.Default`, `ILTMultiProtocolMgr.Default`, `ILTDistrObjExecutive.Default`, `CLTRemoteCommCtxMgr.Default`, `ILTCommHandleMgr.Default`, `ILTReactorHandleMgr.Default` |
+| **Login** | `ILTLoginMediator.Default` |
+| **Game objects** | `ILTGOGameObjMgr.Default`, `ILTGOComponentFactory.Default`, `ILTObjectMgr.Default`, `ILTClassMgr.Default`, `ILTRsetManager.Default` |
+| **World** | `ILTWorldRep_Metro.Default` / `.Internal` |
+| **Render** | `ILTRenderDevice.Default`, `ILTRenderStyles.Default`, `ILTTexture.Default`, `ILTDrawPrim.Default` / `.Internal`, `ILTFontManager.Default`, `ILTWidgetManager.Default` |
+| **Input** | `ILTInputMgr.Default`, `LTWinInputMgr.Default` |
+| **Misc** | `ILTEventScheduler.Default`, `ILTPredictViewMgr.Default`, `ILTDiagnosticMgr.DObSys`, `ICompress.Default` |
+
+Three things fall out of this list immediately.
+
+**It confirms the convergence thesis, by name.** Seven of the 28 are networking,
+and `ILTDistrObjExecutive` — a *distributed object executive* — is the
+client-side half of exactly the object replication a server performs. The
+server-facing surface is not something to infer; it is enumerated.
+
+**It explains why the socket layer never fired.** `WSAStartup` is not called
+during `InitClientDLL` because `INetMgr.Default` was never installed. The
+network is behind this wall, not beside it.
+
+**`ILTLoginMediator.Default` sharpens the auth question.** The client does have
+a login interface, so login is not purely the launcher's business — though with
+no TCP anywhere in `client.dll`, what that mediator speaks is still open.
+
+`ILTWorldRep_Metro` is worth noting for its name: Mega City is the "Metro" world
+representation, which is likely also the key to the `.pkb` world packs.
+
+### What P6 now is, concretely
+
+Not "reverse engineer the engine". It is: for each of 28 named holders, supply
+an object whose vtable has the methods the client calls, and install the pointer
+at `+4`. The client tells us which methods it needs by calling them — each one
+that is missing is a reported unresolved address rather than a guess, exactly
+like the import worklist.
+
+Order is set by what `RunClientDLL` reaches first, and that is `INetMgr`.

@@ -140,6 +140,35 @@ static void pump(void)
     }
 }
 
+
+/* ---- watch: dump guest memory at phase boundaries ------------------- *
+ *
+ * MXO_WATCH=0x10857788,0x108A54B8 dumps those addresses (and a short window
+ * after each) once per phase. Built for P6: the question there is always
+ * "is this engine-interface field still the null its constructor left, or did
+ * something install a pointer", and that is a two-word answer that no amount
+ * of reading lifted C will give as quickly as looking.
+ */
+static void watch_dump(const char *when)
+{
+    const char *spec = getenv("MXO_WATCH");
+    if (!spec || !*spec) return;
+
+    printf("  [watch @ %s]", when);
+    char buf[512];
+    snprintf(buf, sizeof buf, "%s", spec);
+    for (char *tok = strtok(buf, ","); tok; tok = strtok(NULL, ",")) {
+        uint32_t va = (uint32_t)strtoul(tok, NULL, 0);
+        printf("  %08X:", va);
+        /* Reading guest memory that may not be mapped: probe first rather than
+         * taking the fault we are trying to diagnose. */
+        if (IsBadReadPtr((void *)(uintptr_t)va, 16)) { printf(" <unmapped>"); continue; }
+        for (int i = 0; i < 4; i++)
+            printf(" %08X", *(uint32_t *)(uintptr_t)(va + 4u * i));
+    }
+    printf("\n");
+}
+
 /* ---- dispatch ------------------------------------------------------- */
 
 /* The generated table is address-sorted, so this is a binary search. With
@@ -353,6 +382,7 @@ int main(int argc, char **argv)
         PUSH32(g_esp, MXO_IMAGE_BASE);      /* hinstDLL */
         PUSH32(g_esp, RECOMP_RETADDR);
         dm();
+        watch_dump("after DllMain");
         printf("DllMain returned eax=0x%08X, esp=0x%08X\n", g_eax, g_esp);
     }
 
@@ -373,8 +403,10 @@ int main(int argc, char **argv)
         printf("\ncalling 0x%08X ...\n", seq[s]);
         PUSH32(g_esp, RECOMP_RETADDR);
         pump();
+        watch_dump("before");
         fn();
         pump();
+        watch_dump("after");
         printf("returned, eax=0x%08X  (esp=0x%08X, %u indirect calls)\n",
                g_eax, g_esp, g_icall_count);
     }
