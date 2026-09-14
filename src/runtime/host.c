@@ -320,6 +320,18 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
             g_eax, g_ecx, g_edx, g_ebx, g_esp, g_ebp, g_esi, g_edi);
     if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION &&
         ep->ExceptionRecord->NumberParameters >= 2) {
+        uint32_t bad = (uint32_t)ep->ExceptionRecord->ExceptionInformation[1];
+        if (bad >= MXO_IFACE_VA_BASE &&
+            bad < MXO_IFACE_VA_BASE + MXO_IFACE_STRIDE * 64u) {
+            uint32_t off = bad - MXO_IFACE_VA_BASE;
+            fprintf(stderr,
+                "    ^ that is a SYNTHETIC vtable-slot address, dereferenced as\n"
+                "      data (interface %u, slot %u). It means the object we handed\n"
+                "      back is being read as a struct rather than called as an\n"
+                "      interface -- so that slot's return type is wrong, not its\n"
+                "      arity. Read the caller to see what it expects.\n",
+                off / MXO_IFACE_STRIDE, (off % MXO_IFACE_STRIDE) / 16u);
+        }
         fprintf(stderr, "    %s 0x%08X\n",
                 ep->ExceptionRecord->ExceptionInformation[0] ? "writing" : "reading",
                 (uint32_t)ep->ExceptionRecord->ExceptionInformation[1]);

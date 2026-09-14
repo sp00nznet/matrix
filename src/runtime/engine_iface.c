@@ -65,6 +65,61 @@ static uint32_t  g_installed;
  */
 static uint32_t g_pending_va;
 
+
+/* ---- implemented slots ---------------------------------------------- *
+ *
+ * One line per slot the client has actually asked for. Arity comes from reading
+ * the call site in the lifted C -- count the PUSH32s between the `ecx = this`
+ * and the ICALL, ignoring the prologue's register saves -- never from guessing.
+ *
+ * RET_OBJ hands back a fresh object with its own synthetic vtable, so whatever
+ * the client does with the result keeps reporting instead of faulting. That is
+ * what lets one run advance past a slot rather than stopping at it.
+ */
+typedef enum { RET_ZERO, RET_ONE, RET_OBJ } iface_ret_t;
+
+typedef struct {
+    const char *iface;      /* substring match on the interface name */
+    uint32_t    slot;
+    uint32_t    argc;       /* stack args, excluding `this` (thiscall: callee pops) */
+    iface_ret_t ret;
+} iface_impl_t;
+
+static const iface_impl_t g_impls[] = {
+    /* INetMgr slot 3: called from sub_10306720 with `ecx = this` and no
+     * arguments pushed, and its result is immediately used as an object. */
+    { "INetMgr", 3, 0, RET_OBJ },
+    /* INetMgr slot 15: called from sub_103065E0 -- the function that was
+     * faulting before any of this existed. One argument pushed (a pointer
+     * to a caller local, i.e. an out-parameter), and the result is
+     * dereferenced on the next instruction, so it must be a real object. */
+    { "INetMgr", 15, 1, RET_OBJ },
+};
+
+/* Objects we hand out beyond the 28 holders (sub-objects returned by slots).
+ * They get their own indices so the report can tell them apart. */
+#define IFACE_MAX_OBJS 64
+static uint32_t g_extra_used;
+
+static uint32_t make_object(uint32_t idx)
+{
+    uint32_t *vt = (uint32_t *)calloc(MXO_IFACE_SLOTS, sizeof(uint32_t));
+    uint32_t *ob = (uint32_t *)calloc(IFACE_OBJ_WORDS, sizeof(uint32_t));
+    if (!vt || !ob) return 0;
+    for (uint32_t s = 0; s < MXO_IFACE_SLOTS; s++)
+        vt[s] = MXO_IFACE_VA_BASE + idx * MXO_IFACE_STRIDE + s * 16u;
+    ob[0] = (uint32_t)(uintptr_t)vt;
+    return (uint32_t)(uintptr_t)ob;
+}
+
+static const iface_impl_t *find_impl(const char *name, uint32_t slot)
+{
+    for (size_t i = 0; i < sizeof g_impls / sizeof g_impls[0]; i++)
+        if (g_impls[i].slot == slot && strstr(name, g_impls[i].iface))
+            return &g_impls[i];
+    return NULL;
+}
+
 static void iface_slot_handler(void);
 
 mxo_iface_fn mxo_iface_resolve(uint32_t va)
@@ -83,8 +138,22 @@ static void iface_slot_handler(void)
     uint32_t slot = (off % MXO_IFACE_STRIDE) / 16u;
     const char *name = idx < mxo_iface_count ? mxo_ifaces[idx].name : "?";
 
+    const iface_impl_t *impl = find_impl(name, slot);
+    if (impl) {
+        uint32_t r = 0;
+        if (impl->ret == RET_ONE) r = 1;
+        else if (impl->ret == RET_OBJ) {
+            if (g_extra_used < IFACE_MAX_OBJS)
+                r = make_object(mxo_iface_count + g_extra_used++);
+        }
+        g_eax = r;
+        g_esp += 4u + impl->argc * 4u;      /* dummy return address + args */
+        return;
+    }
+
     printf("\n[iface] %s :: slot %u  (vtable +0x%X)\n", name, slot, slot * 4u);
-    printf("        this=0x%08X  esp=0x%08X\n", g_ecx, g_esp);
+    printf("        this=0x%08X  esp=0x%08X  called from lifted 0x%08X\n",
+           g_ecx, g_esp, g_cur_func);
     printf("        stack:");
     for (int i = 0; i < 8; i++)
         printf(" %08X", MEM32(g_esp + 4u * (uint32_t)i));
