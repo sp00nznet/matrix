@@ -30,6 +30,39 @@ is the other reason sockets come before the renderer.
 may live in `launcher.exe`. `WININET` (wide-char HTTP) is a separate channel,
 probably patch/news.
 
+## P6 SOLVED IN SHAPE — 28 named engine interface holders
+**The client does not create its engine interfaces.** It declares **holders**
+(vtable at `+0`, interface pointer at `+4`) and waits for the engine to install
+the pointer. `+4` stays NULL until something does. That is the entire P6 wall.
+
+- Proven with `MXO_WATCH=0x10857788,...` (host dumps guest memory at phase
+  boundaries): vtable `0x10780D38` set by a static ctor, `+4 = 00000000`
+  unchanged across `DllMain` and `InitClientDLL`. `RunClientDLL` faults at
+  `0x103065E0` calling through it.
+- Registered by static initialisers shaped `register(holder, "Name", flags)` →
+  `sub_101F1A00`. **`tools/find_interfaces.py`** recovers all of them statically
+  into `analysis/engine_interfaces.json`. **28 holders.**
+- **Networking (7):** `INetMgr.Default` ← *the one that crashes*,
+  `INetShell.Default`, `ILTMultiProtocolMgr.Default`,
+  **`ILTDistrObjExecutive.Default`** (client half of server object replication),
+  `CLTRemoteCommCtxMgr.Default`, `ILTCommHandleMgr.Default`,
+  `ILTReactorHandleMgr.Default`.
+  **Login:** `ILTLoginMediator.Default`.
+  **Objects:** `ILTGOGameObjMgr`, `ILTGOComponentFactory`, `ILTObjectMgr`,
+  `ILTClassMgr`, `ILTRsetManager`. **World:** `ILTWorldRep_Metro.Default`/
+  `.Internal` (Mega City = "Metro"). **Render/UI:** `ILTRenderDevice`,
+  `ILTRenderStyles`, `ILTTexture`, `ILTDrawPrim.Default`/`.Internal`,
+  `ILTFontManager`, `ILTWidgetManager`. **Input:** `ILTInputMgr`,
+  `LTWinInputMgr`. **Misc:** `ILTEventScheduler`, `ILTPredictViewMgr`,
+  `ILTDiagnosticMgr.DObSys`, `ICompress`.
+- **Why the socket layer never fired:** `WSAStartup` isn't called during
+  `InitClientDLL` because `INetMgr.Default` was never installed. Network is
+  *behind* this wall, not beside it.
+- **P6 is now concrete:** per holder, supply an object whose vtable has the
+  methods the client calls, install the pointer at `+4`. Missing methods report
+  themselves like missing imports. **Do `INetMgr` first** — it is what
+  `RunClientDLL` reaches first, and it unblocks the whole server track.
+
 ## The server fork — `../mxo-hd-recomp`
 **Private mirror**, not a GitHub fork: `sp00nznet/mxo-hd-recomp`, checked out at
 `G:/recomp/pc/mxo-hd-recomp`, `upstream` → `hdneo/mxo-hd` for syncing.
