@@ -1,0 +1,188 @@
+# The path forward: client and server, stood up together
+
+Two tracks have been running in this repo since P0 — recompiling the client, and
+building a server. They have been described as parallel. They are not: they meet
+at a specific, enumerable boundary, and the fastest route to either runs through
+the other.
+
+This document is the plan of record for how they come together.
+
+---
+
+## The convergence thesis
+
+The client's next wall (P6) and the server's first real task (S1) are **the same
+boundary seen from two sides.**
+
+`RunClientDLL` faults dereferencing a null field inside a live object, because
+it is reaching for engine interfaces nobody supplies. Those interfaces are the
+same 70 subsystems the game's Python calls into — `discovery`, `AbilityInv`,
+`Interlock`, `CharMvt`, `mission` — catalogued in `analysis/engine_api.json`.
+
+A server is, functionally, the authoritative half of exactly those subsystems.
+When the client asks its engine "what type is this object", the answer comes
+from the object database. When it asks "did that attack land", the answer comes
+from the server. **Standing up the engine interface and specifying the server
+are the same act of reverse engineering**, and doing them separately would mean
+doing the work twice.
+
+### The lever: the client can talk long before it can draw
+
+The single most useful fact in this repo's network analysis:
+
+```
+WSOCK32.dll (20)
+  WSAStartup  WSACleanup  WSAGetLastError  socket  bind  closesocket
+  sendto  recvfrom  select  ioctlsocket  getsockname  getsockopt  setsockopt
+  gethostbyname  inet_addr  inet_ntoa  htonl  htons  ntohl  ntohs
+```
+
+**No `connect`, no `send`, no `recv`, no `listen`, no `accept`.** The world
+protocol is **UDP**, and the entire network surface is twenty functions — small
+enough to shim completely in an afternoon.
+
+That matters far more than it looks, because it **decouples "the client renders"
+from "the client talks."** Rendering is the expensive, open-ended half of the
+client track: D3D9 through COM vtables, shaders, the whole asset pipeline.
+Talking is twenty functions.
+
+So we do not have to finish the client to start testing the server against it.
+We can drive the client's own protocol code — the authoritative implementation
+of the wire format, which no packet capture can equal — while the screen is
+still black.
+
+Also worth noting: `WININET` appears separately (`InternetOpenW`,
+`InternetConnectW`, `HttpOpenRequestW`, `HttpSendRequestW`), wide-char, which is
+a *different* channel — almost certainly patch/news rather than gameplay. And
+there is **no TCP anywhere in `client.dll`**, which raises a specific,
+checkable question: if the emulators' auth handshake is TCP, then auth does not
+happen in the client at all — it happens in `launcher.exe`, which passes a
+token. That is worth confirming early because it decides what S2 has to build.
+
+---
+
+## The shared spine
+
+Four artifacts serve both tracks. Building each one is a single job, not two.
+
+| # | Artifact | Feeds the client | Feeds the server |
+|---|---|---|---|
+| **SP1** | **Socket shim + packet log** | Lets startup get past network init | Ground-truth wire format, from the client's own code |
+| **SP2** | **GameObject database** (`SetMasterDatabase`, `Cookbook.cbb`, `gocategories.gcb`) | `RunClientDLL` needs it to initialise | The server spawns and describes the same objects |
+| **SP3** | **The engine interface map** (the 70 subsystems) | The interfaces the host must implement | The vocabulary every server message manipulates |
+| **SP4** | **The Python rules as an executable spec** | Client-side prediction | Server-side authority |
+
+Everything below is scheduled around producing these four.
+
+---
+
+## Track A — the client
+
+| Phase | Work | State |
+|---|---|---|
+| P0–P5 | Discs → lift → compile → link → startup → Win32 layer | ✅ done |
+| **P6** | **Engine interfaces: make `RunClientDLL` survive** | next |
+| P7 | Socket layer *(this is **SP1**, and it is scheduled early)* | |
+| P8 | Renderer: D3D9 through COM vtables | |
+| P9 | Input, audio, the asset pipeline | |
+
+**P6 is the immediate task.** The approach is not to guess at the interface: it
+is to follow the null. The fault at `0x103065E0` is reached by a three-call path
+from `RunClientDLL`, and `SetMasterDatabase` is an *export* — the engine calls
+it to hand the client its object database. That is the thread to pull.
+
+**P8 is deliberately last of the big pieces.** A software-path renderer or even
+a black window that does not crash is enough for everything the server track
+needs. Chasing pixels first would be the expensive order.
+
+---
+
+## Track B — the server
+
+| Phase | Work | State |
+|---|---|---|
+| S0 | Prior art, licence position | ✅ done — `docs/SERVERS.md` |
+| **S1** | **Fork mxo-hd**; fix the two licence/provenance defects | next |
+| S2 | Auth + character select, verified against the real client | |
+| S3 | World: districts, statics, movement, doors, hardlines | |
+| S4 | Combat, from the recovered rules rather than reconstruction | |
+| S5 | **Missions** — the part nobody has finished | |
+
+S1 and S2 do not depend on the client track at all and can start immediately.
+S4 and S5 are where the recompilation pays for itself, because they are exactly
+the parts that could not be built from packet captures.
+
+---
+
+## How the two tracks interlock
+
+The order below is chosen so that each step unblocks something on the *other*
+track. That is the point.
+
+**Step 1 — Fork mxo-hd (S1).** Independent of everything else. Get a server
+running, with the AngularJS `LICENSE` corrected upstream or documented, and the
+managed `WorldEncryption.cs` path preferred over the `enigmaLib.dll` binary.
+
+**Step 2 — Shim the twenty sockets (P7 = SP1).** Every `sendto` and `recvfrom`
+logged, with the client's own encryption applied and stripped around them. This
+is the highest-leverage single job in the plan:
+
+* the client gets past network init (client track), and
+* we get a byte-exact protocol trace produced by the authoritative
+  implementation (server track).
+
+**Step 3 — Point the recompiled client at the forked server.** `gethostbyname`
+and `inet_addr` are both shimmed, so redirecting to `127.0.0.1` is two lines. Now
+there is a **closed loop entirely under our control**: our client, our server,
+and a packet log of every disagreement between them.
+
+This is the moment the project stops being two efforts.
+
+**Step 4 — Differential protocol work (S2/S3 against P7).** Every mismatch is a
+concrete, reproducible bug with both sides visible. This is how the emulators'
+inherited guesses get corrected — not by arguing from memory of 2005, but by
+running the client that was there.
+
+**Step 5 — The rules sidecar (SP4 → S4).** Stand the recovered `interlock/` and
+`ability/` modules up as a rules service the server delegates to, per
+`docs/COMBAT.md`. Differential-test it against mxo-hd's `CombatFormulas.cs` to
+enumerate where the reconstruction diverges.
+
+**Step 6 — Missions (S5).** The contract is already recovered: twelve callbacks
+and twenty-one engine verbs (`docs/RECON.md`). Implementing those verbs server-
+side, with the shipped example missions as the conformance tests, is the first
+time anyone has been able to run an MxO mission from its own definition.
+
+---
+
+## What is genuinely uncertain
+
+Stated plainly, because a plan that hides its risks is not a plan.
+
+* **Retail 1.0 versus the final live client.** These discs are February 2005;
+  the emulators target the client four years of patches later. The protocol
+  almost certainly moved. Step 3 is where this stops being theoretical — and it
+  may force a decision to re-target the whole client track. **This is the single
+  largest open risk, and it is cheap to retire early**, which is another reason
+  to do the socket shim before the renderer.
+* **Where auth happens.** No TCP in `client.dll` at all. If auth is in
+  `launcher.exe`, S2's shape changes.
+* **The `Cool*` / `ILTCool` stack.** Possibly a second protocol (chat/presence)
+  a server must also speak. Still unconfirmed.
+* **How much of the engine interface P6 needs.** The 70 subsystems are
+  enumerated but not sized. `RunClientDLL` may need a handful or most of them.
+* **D3D9 through COM vtables.** `Direct3DCreate9` is the only d3d9 import;
+  everything else is vtable dispatch, which the import-bridge machinery does not
+  reach. `runtime/hybrid/` (built for Encarta's MFC boundary) is the nearest
+  existing machinery.
+
+## What this is not
+
+This will not produce a playable MxO soon, and the roadmap does not pretend
+otherwise. What it produces, in order, is: a server we control, a client that
+talks to it, a byte-exact record of what they say, and then — using rules
+recovered rather than guessed — combat and missions that behave the way the
+original did.
+
+Each of those is worth having on its own, which is the test a milestone has to
+pass to be on this list.

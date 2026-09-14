@@ -249,6 +249,31 @@ those either.
 Two tracks that feed each other. The recomp is not the goal; it is the
 instrument that makes the server track possible.
 
+**[`docs/ROADMAP.md`](docs/ROADMAP.md) is the plan of record** for how the two
+are stood up together. The short version, because it changes the ordering:
+
+The client's next wall and the server's first real task are **the same boundary
+seen from two sides.** `RunClientDLL` is reaching for engine interfaces nobody
+supplies, and those interfaces are the same 70 subsystems the game's Python
+calls into — which is also, functionally, what a server is the authoritative
+half of.
+
+And there is a lever. The entire network surface is **twenty WSOCK32 functions**,
+with no `connect`, `send`, `recv`, `listen` or `accept` — so the world protocol
+is **UDP**, and shimming it is an afternoon rather than a project. That
+**decouples "the client renders" from "the client talks"**: rendering is D3D9
+through COM vtables and an asset pipeline, while talking is twenty functions.
+
+So the renderer is deliberately scheduled *late*. Shim the sockets, point the
+recompiled client at the forked server on `127.0.0.1` (both `gethostbyname` and
+`inet_addr` are already shimmed), and there is a closed loop under our control —
+our client, our server, and a byte-exact log of every disagreement — with the
+screen still black.
+
+That is also the cheapest way to retire the project's largest risk: these are
+the February 2005 discs and the emulators target a client four years of patches
+later.
+
 ### Track A — recompile the client
 
 | Phase | What | State |
@@ -263,6 +288,8 @@ instrument that makes the server track possible.
 | **P4** | Bring-up: `InitClientDLL` | ✅ **completes** |
 | **P5** | Win32 layer + a real window | ✅ **71 shims, window up** |
 | **P6** | The LithTech engine interfaces `RunClientDLL` needs | next |
+| **P7** | **The socket layer — 20 functions, UDP** | scheduled early |
+| **P8** | Renderer: D3D9 through COM vtables | deliberately late |
 
 ### P3: it lifts clean
 
@@ -552,11 +579,15 @@ how this goes wrong. On a target this size that discipline is not optional.
 | Phase | What | State |
 |---|---|---|
 | **S0** | Survey prior art, settle the licence position | ✅ done — `docs/SERVERS.md` |
-| **S1** | Read the protocol out of the client rather than off the wire | |
-| **S2** | Auth + character select — **fork mxo-hd** | |
-| **S3** | World: districts, statics, movement, doors, hardlines — fork | |
-| **S4** | Combat, replaced with the client's own formulas | |
+| **S1** | **Fork mxo-hd**; fix the two licence/provenance defects | next |
+| **S2** | Auth + character select, verified against the real client | |
+| **S3** | World: districts, statics, movement, doors, hardlines | |
+| **S4** | Combat, from the recovered rules rather than reconstruction | |
 | **S5** | **Missions.** The part nobody has finished. | |
+
+S1 depends on nothing and can start immediately. The two tracks meet at
+**step 3** of [`docs/ROADMAP.md`](docs/ROADMAP.md): the recompiled client
+pointed at the forked server, which is the moment this stops being two efforts.
 
 ### Fork, don't rebuild
 
