@@ -15,15 +15,14 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **It runs.** Lifted code executes; bring-up in progress.
+## Project status: **`InitClientDLL` completes.** 12,189 constructors, 64,377 calls.
 
 Two results, and the second one is the interesting one.
 
-**The whole binary lifts, compiles and links.** 76,528 functions to 4.85
-million lines of C with zero lift errors, into a 121 MB host. `InitClientDLL`
-executes real recompiled code and gets 264 indirect calls deep into the client's
-own startup before hitting the blocker described in
-[P4](#p4-it-runs-and-where-it-stops).
+**The whole binary lifts, compiles, links and starts up.** 76,530 functions to
+4.85 million lines of C with zero lift errors. The recompiled client now runs
+its 12,189 C++ static constructors and returns cleanly from `InitClientDLL`,
+64,377 indirect calls in. See [P4](#p4-it-runs-and-where-it-stops).
 
 **The gameplay rules were never compiled in the first place.** Combat,
 abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
@@ -36,14 +35,16 @@ format that took about forty lines to unpack. See
 | `.text` | **7,642,490 bytes** |
 | imports | 479 across 19 DLLs |
 | protection | **none** |
-| functions recovered | **76,528** (IDA 56,287 + 20,241 gap fill) |
+| functions recovered | **76,530** (IDA 56,287 + 20,241 gap fill + 2 seeds) |
 | call edges | 85,297 |
-| **lifted** | **76,528** |
+| **lifted** | **76,530** |
 | **lift errors** | **0** |
 | generated C | 4,854,290 lines in 154 files |
 | **compiles** | **156 objects, 0 errors** (MSVC 2022, x86) |
 | **links** | **mxo_host.exe, 121 MB** |
-| **runs** | executes lifted code, 264 indirect calls |
+| **runs** | **`DllMain` + `InitClientDLL` complete, exit 0** |
+| static constructors run | **12,189** |
+| indirect calls | **64,377** |
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
@@ -257,7 +258,8 @@ instrument that makes the server track possible.
 | **P2** | Function recovery over 7.64 MB of `.text` | ✅ **76,528, scored** |
 | **P3** | Lift to C | ✅ **0 errors, 4.85M lines** |
 | **P3b** | Import bridges for 479 imports; build | ✅ **compiles, 156 objects** |
-| **P4** | Bring-up: `InitClientDLL` → `RunClientDLL` | **runs; 264 calls in** |
+| **P4** | Bring-up: `InitClientDLL` | ✅ **completes** |
+| **P5** | `RunClientDLL` — the frame loop, a window | next |
 
 ### P3: it lifts clean
 
@@ -289,71 +291,76 @@ whole mechanism disappears. The residual risk is different and smaller: IDA's
 chunks is under-read rather than over-read. That fails loudly at runtime as a
 missing tail instead of silently swallowing its neighbour.
 
-### P4: it runs, and where it stops
+### P4: it runs, and `InitClientDLL` completes
 
 ```
-$ build/mxo_host.exe --init
+$ build/mxo_trace.exe --init
   mapped game/client.dll: 0x10000000 + 10653696 bytes
-  stack: 0x0E000000..0x0E400000, esp=0x0E3FFF00
   TIB:   0x0E800000 (fs base)
-  dispatch entries:      76528
-  import bridges:        463
-  data imports:          16
   IAT slots patched:     479
 
+  DllMain(0x10000000, DLL_PROCESS_ATTACH, NULL) ...
+    [_initterm] 0x1083B000..0x10847608: ran 12189 initialiser(s)
+  DllMain returned eax=0x00000001, esp=0x0E3FFF00
+
   calling 0x10001270 ...
-  indirect calls: 264
+  returned, eax=0x00000000
+
+  indirect calls: 64377      exit 0
 ```
 
-`client.dll` is a LithTech client DLL, so there is no `WinMain`. The engine
-loads it and calls five exports; [`src/runtime/host.c`](src/runtime/host.c)
-stands in for the engine and calls `InitClientDLL`, which is the first thing the
-game's own code does.
+**The recompiled client starts up.** 12,189 C++ static constructors run, and
+`InitClientDLL` returns cleanly 64,377 indirect calls later.
 
-Three things had to be true before a single instruction could run, and each was
-a distinct failure:
+Getting there took five distinct failures, and the shape of them is the useful
+part — every one was silent, and none faulted anywhere near its cause.
 
-**The image has to be mapped at `0x10000000`** so every `MEM*(va)` in the lifted
-code reads the program's real initial data.
+**1. No TIB.** `InitClientDLL`'s first call opens with MSVC's SEH prologue,
+reading and replacing `fs:[0]`. With `g_fs_base` at zero that dereferences
+address 0 before anything useful happens. The host now builds a simulated TIB.
 
-**It needs a TIB.** `InitClientDLL`'s very first call opens with MSVC's standard
-SEH prologue — `push -1`, push handler, then read and replace `fs:[0]`. With
-`g_fs_base` left at zero that dereferences address 0 and faults before anything
-useful happens. The host now builds a simulated TIB with the SEH chain
-terminated and the stack bounds filled in.
+**2. Unlifted entry points.** The lifted `eh vector constructor iterator`
+contained a *direct* `call` to an address the catalog did not have — an MSVC EH
+funclet. The lifter emits `ICALL(const) /* not lifted */` for that, the runtime
+resolves it to nothing, pops the frame, returns 0, and execution carries on with
+garbage. A direct call is *proof* a function starts there, so `run_lift.py` now
+scrapes its own output for that marker into `analysis/missing_targets.json` and
+re-seeds. Converges in two passes.
 
-**The IAT has to be self-patched.** A raw-mapped image's IAT slots hold
-name-table RVAs, not function pointers. Writing each slot's own VA into itself
-turns `call [slot]` into `ICALL(slot_va)`, which the bridge table resolves. All
-479 slots, and the indirect-call trace confirms it — the targets that show up
-are genuine IAT VAs in `.rdata`.
+**3. Stub imports returning 0.** A stub returning zero is not a neutral
+placeholder — zero is a plausible-looking answer for most of the CRT.
+`malloc` returning 0 faulted on the dereference; the fix is 121 real CRT bodies
+in [`src/runtime/shims_crt.c`](src/runtime/shims_crt.c) plus Win32 in
+[`shims_impl.c`](src/runtime/shims_impl.c).
 
-After that it reached `malloc`, got `0` from the stub, and faulted on the
-dereference. Real bodies for `malloc`/`free`/`calloc`/`realloc`/`memmove`, the
-aligned pair and the five interlocked functions took it from 9 indirect calls
-to **264**.
+**4. The instrumentation hid the bug.** The first traced build died with
+`STATUS_HEAP_CORRUPTION` inside ntdll instead of an access violation — the worst
+failure to chase, since the damage happens at one call and is detected at an
+unrelated one. The allocator shims now refuse any pointer they did not hand out
+and leak it instead; `_msize` reading a foreign heap header was the likely
+culprit.
 
-#### The current blocker, stated precisely
+**5. `_initterm` was a stub, and that was the real one.** `_initterm(pfbegin,
+pfend)` walks a table of function pointers and calls each — which is how C++
+static constructors run, and on a binary this size that is most of program
+initialisation. Stubbed, it does nothing at all, so every global a constructor
+would have built stayed the zero it was mapped as. That surfaced as a NULL
+string pointer four calls into `InitClientDLL`, in code doing a perfectly
+ordinary lazy-init check.
 
-Execution now dies in a `__thiscall` constructor that zeroes a ~0x24-byte
-object through a garbage `this`. It is reached from MSVC's
-`eh vector constructor iterator` (`??_L@YGXPAXIHP6EX0@Z1@Z`), which walks an
-array calling a per-element constructor through a function pointer — and that
-same iterator also makes an indirect call to an address *inside itself*, which
-is not a function pointer at all.
+It is also the one shim that has to **call back into lifted code** rather than
+out to the host: the table entries are VAs of recompiled functions.
 
-Two symptoms, one cause: the iterator is receiving bad arguments. That is the
-signature of a stack desynchronisation somewhere upstream, which is exactly what
-a wrong `STDRET` count produces — it does not fault at the call, it shifts the
-*caller's* frame so every later read is off by a slot.
+Two things follow from that, and they cost several rounds to learn:
 
-Not yet diagnosed, and deliberately not guessed at. The next step is a
-`RECOMP_TRACE` build for a real backtrace, and harvesting unresolved VAs from
-the run back into the catalog as seeds.
+* **`DllMain` must run before any export.** Calling `InitClientDLL` on its own
+  looks reasonable and skips the entire CRT startup path.
+* **A stub is a lie with a plausible return value.** Every one of these five
+  failed far from its cause. The host's per-import and per-address reporting
+  exists so a run ends with a worklist rather than a stack trace.
 
-Worth being clear about what "it runs" does and does not mean: recompiled code
-executes and gets a long way into the client's own startup. It does not render,
-it does not reach `RunClientDLL`, and there is no window.
+What this does *not* mean: nothing renders, there is no window, and
+`RunClientDLL` — the frame loop — has not been called yet. That is P5.
 
 ### P3b: 479 imports bridged, and the whole thing builds
 

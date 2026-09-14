@@ -219,6 +219,21 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
     fprintf(stderr, "\n[!] exception 0x%08lX at %p, in lifted 0x%08X\n",
             ep->ExceptionRecord->ExceptionCode,
             ep->ExceptionRecord->ExceptionAddress, g_cur_func);
+
+    /* The simulated registers, not the host's. For an access violation the
+     * faulting address is almost always sitting in one of them, and which one
+     * says which operand was wrong -- a null, a small integer used as a
+     * pointer, and a plausible-looking address that is simply unmapped are
+     * three different bugs. */
+    fprintf(stderr, "    eax=%08X ecx=%08X edx=%08X ebx=%08X\n"
+                    "    esp=%08X ebp=%08X esi=%08X edi=%08X\n",
+            g_eax, g_ecx, g_edx, g_ebx, g_esp, g_ebp, g_esi, g_edi);
+    if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION &&
+        ep->ExceptionRecord->NumberParameters >= 2) {
+        fprintf(stderr, "    %s 0x%08X\n",
+                ep->ExceptionRecord->ExceptionInformation[0] ? "writing" : "reading",
+                (uint32_t)ep->ExceptionRecord->ExceptionInformation[1]);
+    }
     report();
     fflush(stdout); fflush(stderr);
     return EXCEPTION_CONTINUE_SEARCH;
@@ -229,9 +244,11 @@ int main(int argc, char **argv)
     const char *path = "game/client.dll";
     const char *what = "--init";
     uint32_t manual_va = 0;
+    int no_dllmain = 0;
 
     for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "--va") && i + 1 < argc)
+        if (!strcmp(argv[i], "--no-dllmain")) no_dllmain = 1;
+        else if (!strcmp(argv[i], "--va") && i + 1 < argc)
             manual_va = (uint32_t)strtoul(argv[++i], NULL, 0);
         else if (argv[i][0] == '-') what = argv[i];
         else path = argv[i];
@@ -258,6 +275,33 @@ int main(int argc, char **argv)
     printf("import bridges:        %u\n", mxo_import_bridge_count);
     printf("data imports:          %u\n", mxo_import_data_count);
     printf("IAT slots patched:     %u\n", patch_iat());
+
+    /* DllMain first, always, unless explicitly skipped.
+     *
+     * Calling InitClientDLL on its own looks reasonable and is wrong: the CRT
+     * runs the C++ static constructors from DllMain via _initterm, so without
+     * it every global a static constructor would have populated is still the
+     * zero it was mapped as. That surfaced as a NULL string pointer four calls
+     * deep, in code doing a perfectly ordinary lazy-init check on a global that
+     * should already have been built.
+     *
+     * Signature is BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID) -- stdcall,
+     * three arguments, pushed right to left.
+     */
+    if (!no_dllmain) {
+        recomp_func_t dm = recomp_lookup(mxo_dllmain_va);
+        if (!dm) {
+            fprintf(stderr, "no lifted body at DllMain 0x%08X\n", mxo_dllmain_va);
+            return 1;
+        }
+        printf("\nDllMain(0x%08X, DLL_PROCESS_ATTACH, NULL) ...\n", MXO_IMAGE_BASE);
+        PUSH32(g_esp, 0u);                  /* lpvReserved */
+        PUSH32(g_esp, 1u);                  /* DLL_PROCESS_ATTACH */
+        PUSH32(g_esp, MXO_IMAGE_BASE);      /* hinstDLL */
+        PUSH32(g_esp, RECOMP_RETADDR);
+        dm();
+        printf("DllMain returned eax=0x%08X, esp=0x%08X\n", g_eax, g_esp);
+    }
 
     uint32_t va = manual_va ? manual_va :
                   !strcmp(what, "--run")  ? mxo_va_RunClientDLL  :

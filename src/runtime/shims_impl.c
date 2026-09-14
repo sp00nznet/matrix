@@ -285,3 +285,49 @@ void imp__msize(void)
 /* Crash-reporter symbol loading. Returning 0 means "no symbols for that
  * module", which is both true and a path the client already handles. */
 void imp_SymLoadModule64(void) { RET(0); STDRET(6); }
+
+/* ---- CRT startup: the shim that re-enters lifted code --------------- *
+ *
+ * `_initterm(pfbegin, pfend)` walks a table of function pointers and calls each
+ * non-null one. That table is how C++ static constructors run, and on a binary
+ * this size it is most of program initialisation.
+ *
+ * Stubbed, it silently does nothing -- and the consequence is not a crash at
+ * the call. It is that every global a static constructor would have built stays
+ * as the zero it was mapped as, so the failure surfaces arbitrarily far away.
+ * It cost several rounds here: a NULL string pointer four calls into
+ * InitClientDLL, in code doing an ordinary lazy-init check on a global that
+ * should already have been constructed.
+ *
+ * The entries are VAs of lifted functions, so this is the one shim that has to
+ * call back into the recompiled code rather than out to the host.
+ */
+extern recomp_func_t recomp_lookup(uint32_t va);
+
+void imp__initterm(void)
+{
+    uint32_t begin = ARG(0), end = ARG(1);
+    uint32_t ran = 0, missing = 0;
+
+    for (uint32_t p = begin; p + 4 <= end; p += 4) {
+        uint32_t va = MEM32(p);
+        if (!va) continue;                 /* padding: normal, skip quietly */
+        recomp_func_t f = recomp_lookup(va);
+        if (!f) { missing++; continue; }
+        PUSH32(g_esp, RECOMP_RETADDR);
+        f();
+        ran++;
+    }
+    printf("  [_initterm] 0x%08X..0x%08X: ran %u initialiser(s)%s\n",
+           begin, end, ran,
+           missing ? " (some targets not lifted)" : "");
+    if (missing)
+        printf("  [_initterm] %u target(s) had no lifted body\n", missing);
+    RET(0); STDRET(0);
+}
+
+/* Registers a destructor for DLL unload. Nothing here unloads, so recording it
+ * would be busywork; returning the function pointer is the success answer. */
+void imp___dllonexit(void) { RET(ARG(0)); STDRET(0); }
+
+void imp_DisableThreadLibraryCalls(void) { RET(1); STDRET(1); }
