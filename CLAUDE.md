@@ -86,6 +86,36 @@ the pointer. `+4` stays NULL until something does. That is the entire P6 wall.
 - `MXO_WATCH=0x...,0x...` dumps guest memory at phase boundaries.
 - `find_interfaces.py` emits `src/runtime/interfaces_gen.c` alongside the JSON.
 
+### P6 slot semantics — the COM refcount idiom
+**These interfaces are COM-shaped. `vtable[1] = AddRef`, `vtable[2] = Release`,
+throughout.** The recurring getter idiom:
+```
+p = slot_n();            ; p points AT an interface pointer
+if (*p != cur) { if (cur) cur->vt[2](); cur = *p; if (cur) cur->vt[1](); }
+```
+So such a getter returns a **pointer-to-pointer**, and `RET_PTRNULL` (pointer to
+a NULL word) answers it cleanly — "no object" is a state the client handles.
+
+**Arity is mechanical** (count `PUSH32` between `ecx = this` and the ICALL,
+excluding the prologue's register saves). **Return *type* is semantic** — read
+what the caller does with the result.
+
+**NEVER invent an object for a result nobody reads.** Slot 3's caller clears a
+local on the next instruction, so its result is unused ⇒ `RET_ZERO`. Using
+`RET_OBJ` there invited the client to use a fabricated object whose zeroed
+members were then read as function pointers → `ICALL: unresolved VA
+0x0099CCA0` (our own allocation, called as code) and `unresolved VA 0x00000000`.
+`ecx=DEAD0000` in a fault dump = the dummy return address leaked into a
+register = stack desync.
+
+Implemented so far: `INetMgr` slot 3 (argc 0, RET_ZERO), slot 15 (argc 1,
+RET_PTRNULL). The host names synthetic-VA-dereferenced-as-data faults
+explicitly.
+
+**Limit reached:** generic scaffolding gets every question asked precisely and
+cannot answer them. Past a couple of slots the client needs objects whose
+*shape* matches expectation — per-interface semantic work, not a default.
+
 ## The server fork — `../mxo-hd-recomp`
 **Private mirror**, not a GitHub fork: `sp00nznet/mxo-hd-recomp`, checked out at
 `G:/recomp/pc/mxo-hd-recomp`, `upstream` → `hdneo/mxo-hd` for syncing.
