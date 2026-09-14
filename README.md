@@ -44,6 +44,8 @@ format that took about forty lines to unpack. See
 | **links** | **mxo_host.exe, 121 MB** |
 | **runs** | **`DllMain` + `InitClientDLL` complete, exit 0** |
 | static constructors run | **12,189** |
+| import shims with real bodies | **~215 of 479** |
+| window | **1024x768, created by the host** |
 | indirect calls | **64,377** |
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
@@ -259,7 +261,8 @@ instrument that makes the server track possible.
 | **P3** | Lift to C | ✅ **0 errors, 4.85M lines** |
 | **P3b** | Import bridges for 479 imports; build | ✅ **compiles, 156 objects** |
 | **P4** | Bring-up: `InitClientDLL` | ✅ **completes** |
-| **P5** | `RunClientDLL` — the frame loop, a window | next |
+| **P5** | Win32 layer + a real window | ✅ **71 shims, window up** |
+| **P6** | The LithTech engine interfaces `RunClientDLL` needs | next |
 
 ### P3: it lifts clean
 

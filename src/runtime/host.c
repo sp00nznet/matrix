@@ -88,6 +88,58 @@ static void build_tib(void)
     t[0x30 / 4] = 0;                                 /* PEB: none yet */
 }
 
+
+/* ---- the window the engine would have owned ------------------------ *
+ *
+ * client.dll imports no CreateWindowEx, no RegisterClass, no GetMessage and no
+ * DefWindowProc -- only window manipulation. That is the LithTech split: the
+ * engine host owns the window and the message pump and hands the client an
+ * HWND. So the host creates one, and the user32 shims that take an HWND get a
+ * real one to work on.
+ */
+static HWND g_hwnd;
+
+HWND host_hwnd(void) { return g_hwnd; }
+
+static LRESULT CALLBACK wndproc(HWND h, UINT m, WPARAM w, LPARAM l)
+{
+    if (m == WM_CLOSE) { PostQuitMessage(0); return 0; }
+    return DefWindowProcA(h, m, w, l);
+}
+
+static void make_window(int width, int height)
+{
+    WNDCLASSA wc;
+    memset(&wc, 0, sizeof wc);
+    wc.lpfnWndProc   = wndproc;
+    wc.hInstance     = GetModuleHandleA(NULL);
+    wc.hCursor       = LoadCursorA(NULL, IDC_ARROW);
+    wc.lpszClassName = "MxORecompHost";
+    RegisterClassA(&wc);
+
+    RECT r = { 0, 0, width, height };
+    AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
+    g_hwnd = CreateWindowExA(0, "MxORecompHost", "The Matrix Online (recompiled)",
+                             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+                             r.right - r.left, r.bottom - r.top,
+                             NULL, NULL, wc.hInstance, NULL);
+    if (g_hwnd) {
+        ShowWindow(g_hwnd, SW_SHOW);
+        UpdateWindow(g_hwnd);
+    }
+    printf("window: %p (%dx%d)\n", (void *)g_hwnd, width, height);
+}
+
+/* Drain the queue so the window stays responsive while lifted code runs. */
+static void pump(void)
+{
+    MSG msg;
+    while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessageA(&msg);
+    }
+}
+
 /* ---- dispatch ------------------------------------------------------- */
 
 /* The generated table is address-sorted, so this is a binary search. With
@@ -269,6 +321,7 @@ int main(int argc, char **argv)
            MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE, g_esp);
 
     build_tib();
+    make_window(1024, 768);
     printf("TIB:   0x%08X (fs base)\n", g_fs_base);
 
     printf("dispatch entries:      %u\n", recomp_dispatch_count);
@@ -319,7 +372,9 @@ int main(int argc, char **argv)
         if (!fn) { fprintf(stderr, "no lifted body at 0x%08X\n", seq[s]); return 1; }
         printf("\ncalling 0x%08X ...\n", seq[s]);
         PUSH32(g_esp, RECOMP_RETADDR);
+        pump();
         fn();
+        pump();
         printf("returned, eax=0x%08X  (esp=0x%08X, %u indirect calls)\n",
                g_eax, g_esp, g_icall_count);
     }
