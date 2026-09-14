@@ -82,7 +82,7 @@ Everything below is scheduled around producing these four.
 |---|---|---|
 | P0–P5 | Discs → lift → compile → link → startup → Win32 layer | ✅ done |
 | **P6** | **Engine interfaces: make `RunClientDLL` survive** | next |
-| P7 | Socket layer *(this is **SP1**, and it is scheduled early)* | |
+| **P7** | Socket layer — 20 functions, UDP *(**SP1**)* | ✅ **built**, gated on P6 |
 | P8 | Renderer: D3D9 through COM vtables | |
 | P9 | Input, audio, the asset pipeline | |
 
@@ -102,7 +102,7 @@ needs. Chasing pixels first would be the expensive order.
 | Phase | Work | State |
 |---|---|---|
 | S0 | Prior art, licence position | ✅ done — `docs/SERVERS.md` |
-| **S1** | **Fork mxo-hd**; fix the two licence/provenance defects | next |
+| **S1** | **Fork mxo-hd**; fix the two licence/provenance defects | ✅ private mirror |
 | S2 | Auth + character select, verified against the real client | |
 | S3 | World: districts, statics, movement, doors, hardlines | |
 | S4 | Combat, from the recovered rules rather than reconstruction | |
@@ -119,17 +119,39 @@ the parts that could not be built from packet captures.
 The order below is chosen so that each step unblocks something on the *other*
 track. That is the point.
 
-**Step 1 — Fork mxo-hd (S1).** Independent of everything else. Get a server
-running, with the AngularJS `LICENSE` corrected upstream or documented, and the
-managed `WorldEncryption.cs` path preferred over the `enigmaLib.dll` binary.
+**Step 1 — Fork mxo-hd (S1).** ✅ Done, as a **private mirror** at
+`sp00nznet/mxo-hd-recomp`, checked out at `../mxo-hd-recomp` with `upstream`
+wired for syncing.
 
-**Step 2 — Shim the twenty sockets (P7 = SP1).** Every `sendto` and `recvfrom`
-logged, with the client's own encryption applied and stripped around them. This
-is the highest-leverage single job in the plan:
+A GitHub *fork* could not be used: forks of public repositories are always
+public and cannot be made private, so `gh repo fork` produced a public repo that
+had to be deleted and redone as a mirror. Upstream is 51 commits, last touched
+2026-04-02 — a merge of combat data-model work, which is precisely the area we
+intend to replace.
 
-* the client gets past network init (client track), and
-* we get a byte-exact protocol trace produced by the authoritative
-  implementation (server track).
+Still to do on the fork: correct the AngularJS `LICENSE`, and prefer the managed
+`WorldEncryption.cs` over the `enigmaLib.dll` binary.
+
+**Step 2 — Shim the twenty sockets (P7 = SP1).** ✅ *Built* —
+[`src/runtime/shims_net.c`](../src/runtime/shims_net.c).
+
+**Correction to the ordering, found by building it:** the socket layer compiles,
+links and is wired, but the client never calls `WSAStartup` during
+`InitClientDLL`. Network init happens later, behind the *same* P6 engine-
+interface wall that stops `RunClientDLL`. So sockets are not gated on the
+renderer — that part of the thesis holds — but they **are** gated on P6.
+
+The revised order is **P6 → step 3**, and P6 is now on the critical path for
+both tracks at once, which if anything strengthens the case for doing it next.
+The socket layer sits ready and will start logging the moment the client reaches
+network init.
+
+What it does once reached: every `sendto` and `recvfrom` logged with peer,
+length and a hex window to `work/packets.log`; `gethostbyname` and `inet_addr`
+answer with the sidecar so nothing leaves the machine; `MXO_SERVER` and
+`MXO_PACKET_BYTES` tune it without a rebuild. That gives the client its network
+init and gives the server track a byte-exact trace produced by the authoritative
+implementation.
 
 **Step 3 — Point the recompiled client at the forked server.** `gethostbyname`
 and `inet_addr` are both shimmed, so redirecting to `127.0.0.1` is two lines. Now

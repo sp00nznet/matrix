@@ -81,6 +81,11 @@ HAND_WRITTEN = {
     'CreateToolhelp32Snapshot', 'Module32First', 'Module32Next', 'CloseHandle',
     '_msize', 'SymLoadModule64',
     '_initterm', '__dllonexit', 'DisableThreadLibraryCalls',
+    # --- socket layer, bodies in shims_net.c ---
+    'WSAStartup', 'WSACleanup', 'WSAGetLastError', 'socket', 'bind', 'closesocket',
+    'sendto', 'recvfrom', 'select', 'ioctlsocket', 'getsockname', 'getsockopt',
+    'setsockopt', 'gethostbyname', 'inet_addr', 'inet_ntoa', 'htonl', 'htons',
+    'ntohl', 'ntohs',
     # --- Win32 layer, bodies in shims_win32.c ---
     'InitializeCriticalSection', 'DeleteCriticalSection', 'EnterCriticalSection', 'LeaveCriticalSection', 'TlsAlloc', 'TlsFree',
     'TlsGetValue', 'TlsSetValue', 'CreateEventA', 'SetEvent', 'WaitForSingleObject',
