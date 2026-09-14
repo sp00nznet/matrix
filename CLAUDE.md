@@ -349,6 +349,43 @@ Two upstream defects to handle, neither a blocker:
 - Batch-file trap: `%ERRORLEVEL%` after a pipe reports the *last* command in the
   pipe (e.g. `findstr`), not `cl`. A reported `COMPILE=1` there was spurious.
 
+### STARTUP WORKS — `InitClientDLL` completes
+- **`_initterm` was the whole blocker, and it must re-enter lifted code.** It
+  walks a table of function pointers calling each — that is how C++ static
+  constructors run. Stubbed, it does nothing, so every global a constructor
+  would have built stays zero and the symptom appears arbitrarily far away (a
+  NULL string four calls into `InitClientDLL`). Implemented in `shims_impl.c`
+  via `recomp_lookup` + `PUSH32(RECOMP_RETADDR)` + call.
+  **Result: 12,189 initialisers run.**
+- **`DllMain` must run before any export** (`--no-dllmain` to skip). Calling
+  `InitClientDLL` alone skips the entire CRT startup path. `DllMain` =
+  stdcall(hinst, DLL_PROCESS_ATTACH=1, NULL).
+- **`--boot`** = `DllMain` → `InitClientDLL` → `RunClientDLL`. Init returns
+  `eax=0`, which is **LT_OK in LithTech, i.e. success**, not failure.
+- **64,377 indirect calls, exit 0.** `RunClientDLL` then faults 1 call in at
+  `0x103065E0` (null field inside a live object) — it wants a window/renderer.
+  Remaining stubs are exactly that surface: `CreateEventA`, `GetStockObject`,
+  `GetSystemMetrics`, `LoadLibraryA`, `QueryPerformanceCounter`,
+  `InitializeCriticalSection`/`Enter`/`Leave`, `TlsAlloc`, `GetFileType`,
+  `SetUnhandledExceptionFilter`, `GetSystemTimeAsFileTime`, `_snprintf`.
+- **121 CRT bodies in `shims_crt.c`.** Doubles return in **ST(0)**, not EAX —
+  the lifter models x87 flat and only emits `_st[0]`, so `g_st[0] = result`.
+  The `_CIxxx` forms take their argument in ST(0) with nothing on the stack.
+  `_ftol` returns EAX:EDX.
+- **A stub is a lie with a plausible return value.** Zero is a valid-looking
+  answer for most of the CRT. Every failure this phase was silent and faulted
+  far from its cause.
+- Deliberately still stubs (need more than a forward): the `printf` family
+  (varargs off a simulated stack), `qsort` (callback into lifted code),
+  `setjmp`/`longjmp`, and the C++ EH machinery.
+- Host dumps simulated registers + faulting address on exception. `eax=0` /
+  "reading 0x00000000" is what turns "crash in a strlen" into "who produced
+  the NULL".
+- **Heredoc trap that bit repeatedly:** writing C string escapes through
+  `python - <<'PY'` eats a backslash level, turning `\n` into a real newline and
+  producing `error C2001: newline in constant`. Use `chr(92) + 'n'`, or patch
+  with `sed` on a backslash-free pattern.
+
 ## Working rules
 - Score function recovery (`disasm/score_recovery.py`) against an IDA export
   **before** lifting anything. On 7.64 MB of `.text` this is not optional.
