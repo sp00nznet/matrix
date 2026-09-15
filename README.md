@@ -29,10 +29,20 @@ abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
 format that took about forty lines to unpack. See
 [The rules are in the box](#the-rules-are-in-the-box).
 
-| | |
+All numbers below are the **retail 1.0** client (the three discs). A second
+target — the final community client, `MxO_7.6005` — is being brought up
+alongside it; see [`docs/PLAN-NOW.md`](docs/PLAN-NOW.md).
+
+| | retail 1.0 | final client |
+|---|---:|---:|
+| `client.dll` | 9,515,008 | 10,924,032 |
+| image base | `0x10000000` | `0x62000000` |
+| `.text` | **7,642,490** | 8,810,496 |
+| imports | 479 / 19 DLLs | 521 / 22 DLLs |
+| IDA functions | 56,287 (75.2%) | 64,735 (75.4%) |
+
+| | retail 1.0 |
 |---|---:|
-| target | `client.dll` |
-| `.text` | **7,642,490 bytes** |
 | imports | 479 across 19 DLLs |
 | protection | **none** |
 | functions recovered | **76,530** (IDA 56,287 + 20,241 gap fill + 2 seeds) |
