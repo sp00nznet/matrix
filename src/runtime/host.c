@@ -159,12 +159,23 @@ static void watch_dump(const char *when)
     char buf[512];
     snprintf(buf, sizeof buf, "%s", spec);
     for (char *tok = strtok(buf, ","); tok; tok = strtok(NULL, ",")) {
-        uint32_t va = (uint32_t)strtoul(tok, NULL, 0);
-        printf("  %08X:", va);
+        /* "@0x..." dereferences first: heap objects move between runs, so a
+         * literal address is only good for statics. */
+        int deref = (*tok == '@');
+        uint32_t va = (uint32_t)strtoul(deref ? tok + 1 : tok, NULL, 0);
+        if (deref) {
+            if (IsBadReadPtr((void *)(uintptr_t)va, 4)) { printf("  %08X:<unmapped>", va); continue; }
+            uint32_t p = *(uint32_t *)(uintptr_t)va;
+            printf("  [%08X]=%08X:", va, p);
+            va = p;
+        } else {
+            printf("  %08X:", va);
+        }
         /* Reading guest memory that may not be mapped: probe first rather than
          * taking the fault we are trying to diagnose. */
         if (IsBadReadPtr((void *)(uintptr_t)va, 16)) { printf(" <unmapped>"); continue; }
-        for (int i = 0; i < 4; i++)
+        int words = getenv("MXO_WATCH_WORDS") ? atoi(getenv("MXO_WATCH_WORDS")) : 4;
+        for (int i = 0; i < words; i++)
             printf(" %08X", *(uint32_t *)(uintptr_t)(va + 4u * i));
     }
     printf("\n");
