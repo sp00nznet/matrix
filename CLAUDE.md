@@ -224,6 +224,28 @@ during `InitClientDLL` — network init is behind the **same P6 wall** as
 `RunClientDLL`. Sockets are *not* gated on the renderer, but they *are* gated on
 P6. So **P6 is on the critical path for both tracks.**
 
+## ⚠ IGNORE RULES MUST BE PATTERNS, NOT FILENAMES
+Bitten twice in one session, same root cause: a rule written for the targets
+that existed when it was written.
+
+1. `.gitignore` had `game/` but not `game_final/` ⇒ **2,440 game files were
+   committed** across three commits. Caught by `audit_repo.py` one commit later.
+   Fixed with `game*/` **and** purged with
+   `python -m git_filter_repo --invert-paths --path game_final/ --force`
+   (note: filter-repo **removes the `origin` remote** — re-add and force-push).
+   `.git` went 275 MB → 5.3 MB. Verified zero objects remained.
+2. `analysis/functions.json` was listed by name, so `final_functions.json`
+   (~25 MB, second target) would have been committed on completion. Now
+   `analysis/*_functions.json`.
+
+**Run `python ../tools/tools/audit_repo.py .` before every commit.** It is the
+only thing that caught (1).
+
+**Two targets now, so nothing may assume one:** image base is read from the PE
+at runtime, `gen_imports.py` takes `--dll/--deps/-o`, `analysis/` uses the
+prefix convention (unprefixed = retail, `final_` = community client) documented
+in `analysis/README.md`.
+
 ## Standing Directive
 Keep the README's status table and numbers current with every phase. Commit and
 push to `main` on GitHub regularly. Repo is **private**.
