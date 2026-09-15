@@ -149,3 +149,46 @@ the convergence thesis showing up as a filename.
 
 Still outstanding on C: the AngularJS `LICENSE`, and preferring the managed
 `WorldEncryption.cs` over the `enigmaLib.dll` native dependency.
+
+
+---
+
+## The LithTech SDK route: checked, and it does not unblock us
+
+The public Jupiter SDK headers exist (mirrored at `jsj2008/lithtech`, with 30
+`ilt*.h` files). The hope was that they would give real vtable layouts instead
+of layouts derived one call site at a time.
+
+**They cover 4 of our 27 interfaces:**
+
+| Covered | Not covered — MxO/Discovery-specific |
+|---|---|
+| `ILTDrawPrim`, `ILTFontManager`, `ILTRenderStyles`, `ILTWidgetManager` | the other 23, including **`INetMgr`**, `INetShell`, `ILTGOGameObjMgr`, `ILTDistrObjExecutive`, `ILTWorldRep_Metro`, `ILTLoginMediator`, `ILTRenderDevice`, `ILTObjectMgr`, `ILTClassMgr`… |
+
+The four covered are the engine-generic drawing and UI interfaces. Everything
+MxO actually needs first is **not in the public SDK**, because it is not stock
+Jupiter — it is Monolith's Discovery branch plus MxO's own additions. `INetMgr`,
+the one interface that blocks `RunClientDLL`, is not there.
+
+One thing worth taking from it anyway: the SDK has `iltrefcount.h`, which is
+independent confirmation of the refcount convention we derived from the call
+sites (`vtable[1]` = AddRef, `vtable[2]` = Release). Good to have a second
+source on a convention the whole interface layer depends on.
+
+**Licence position:** that mirror carries no licence and the SDK is Monolith's
+copyrighted code. It may be **read** to learn an API's shape — method names and
+ordering are facts about an interface — but nothing from it gets vendored into
+this repository, exactly as `LICENSE` sets out for the emulators. Since it does
+not cover the blocker, the question is largely academic here.
+
+### So: B is genuinely expensive, and C is genuinely cheap
+
+That leaves P6 needing per-interface semantic work with no shortcut available —
+deriving each object's layout from how the client uses it, roughly a session per
+interface based on the two `INetMgr` slots so far, across 23 interfaces of
+unknown size.
+
+The server track needs none of it until roadmap step 3, and its fork builds
+today. **Recommendation: put B down and take C forward**, returning to B when
+either a better lead appears or the server work makes a specific interface
+worth the cost.
