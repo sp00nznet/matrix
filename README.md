@@ -37,9 +37,21 @@ alongside it; see [`docs/PLAN-NOW.md`](docs/PLAN-NOW.md).
 |---|---:|---:|
 | `client.dll` | 9,515,008 | 10,924,032 |
 | image base | `0x10000000` | `0x62000000` |
-| `.text` | **7,642,490** | 8,810,496 |
+| `.text` | 7,642,490 | 8,810,496 |
 | imports | 479 / 19 DLLs | 521 / 22 DLLs |
 | IDA functions | 56,287 (75.2%) | 64,735 (75.4%) |
+| **catalog (merged)** | **76,530** | **89,340** |
+| **lifted, errors** | **76,530, 0** | **89,340, 0** |
+| engine interfaces | 28 | 29 |
+| static ctors run | 12,189 | **14,536** |
+| indirect calls | 65,029 | **75,550** |
+| unimplemented imports hit | 15 | **1** |
+| `InitClientDLL` | ✅ completes | ✅ **completes** |
+
+**Both targets now lift, compile, link and complete startup.** The final client
+— the version the emulators target — reaches `InitClientDLL` with a *cleaner*
+run than retail: one unimplemented import (`GetFileVersionInfoSizeA`) against
+fifteen, and zero unlifted addresses.
 
 | | retail 1.0 |
 |---|---:|

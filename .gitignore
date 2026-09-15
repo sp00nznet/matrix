@@ -87,3 +87,4 @@ src/runtime/image_loader.c
 src/runtime/image_loader.h
 src/runtime/recomp_trace.c
 src/runtime/recomp_trace.h
+src/runtime/_*_active.c
