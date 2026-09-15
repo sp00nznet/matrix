@@ -56,7 +56,25 @@ uint32_t  g_icall_trace[ICALL_TRACE_SIZE];
 uint32_t  g_icall_trace_idx;
 uint32_t  g_icall_count;
 
-#define MXO_IMAGE_BASE 0x10000000u
+/* Read from the PE rather than hardcoded: there are two targets now. Retail
+ * links at 0x10000000 and the final client at 0x62000000, and a stale constant
+ * here would map the image somewhere the lifted code never looks -- which
+ * presents as every global reading zero, not as a load failure. */
+static uint32_t g_image_base = 0x10000000u;
+
+static uint32_t pe_image_base(const char *path)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) return 0;
+    uint32_t lfanew = 0, base = 0;
+    if (fseek(f, 0x3C, SEEK_SET) == 0 && fread(&lfanew, 4, 1, f) == 1 &&
+        fseek(f, (long)lfanew + 0x34, SEEK_SET) == 0)
+        fread(&base, 4, 1, f);          /* OptionalHeader.ImageBase (PE32) */
+    fclose(f);
+    return base;
+}
+
+#define MXO_IMAGE_BASE g_image_base
 #define MXO_STACK_BASE 0x0E000000u
 #define MXO_STACK_SIZE 0x00400000u          /* 4 MB */
 #define MXO_TIB_BASE   0x0E800000u
@@ -368,6 +386,10 @@ int main(int argc, char **argv)
     }
 
     AddVectoredExceptionHandler(1, veh);
+
+    uint32_t base = pe_image_base(path);
+    if (!base) { fprintf(stderr, "cannot read image base from %s\n", path); return 1; }
+    g_image_base = base;
 
     uint32_t span = recomp_load_image(path, MXO_IMAGE_BASE);
     if (!span) { fprintf(stderr, "could not map %s at 0x%08X\n", path, MXO_IMAGE_BASE); return 1; }

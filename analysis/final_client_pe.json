@@ -1,0 +1,5314 @@
+{
+  "filename": "client.dll",
+  "filepath": "G:\\recomp\\pc\\matrix\\work\\final\\client.dll",
+  "filesize": 10924032,
+  "md5": "",
+  "sha1": "",
+  "image_base": 1644167168,
+  "entry_point": 1651152468,
+  "entry_point_rva": 6985300,
+  "machine": "i386",
+  "pe_type": "PE32",
+  "is_dll": true,
+  "linker_version": "7.10",
+  "subsystem": "Windows GUI",
+  "timestamp": 1357442339,
+  "timestamp_str": "2013-01-06 03:18:59 UTC",
+  "packed_upx": false,
+  "overlay_size": 0,
+  "code_start": 1644171264,
+  "code_end": 1652981760,
+  "data_start": 1652981760,
+  "data_end": 1655865344,
+  "sections": [
+    {
+      "name": ".text",
+      "virtual_address": 4096,
+      "virtual_size": 8810496,
+      "raw_offset": 4096,
+      "raw_size": 8810496,
+      "characteristics": 1610612768
+    },
+    {
+      "name": ".rdata",
+      "virtual_address": 8814592,
+      "virtual_size": 1122304,
+      "raw_offset": 8814592,
+      "raw_size": 1122304,
+      "characteristics": 1073741888
+    },
+    {
+      "name": ".data",
+      "virtual_address": 9936896,
+      "virtual_size": 1757184,
+      "raw_offset": 9936896,
+      "raw_size": 409600,
+      "characteristics": 3221225536
+    },
+    {
+      "name": "STLPORT_",
+      "virtual_address": 11694080,
+      "virtual_size": 4096,
+      "raw_offset": 10346496,
+      "raw_size": 4096,
+      "characteristics": 3221225536
+    },
+    {
+      "name": ".rsrc",
+      "virtual_address": 11698176,
+      "virtual_size": 4096,
+      "raw_offset": 10350592,
+      "raw_size": 4096,
+      "characteristics": 1073741888
+    },
+    {
+      "name": ".reloc",
+      "virtual_address": 11702272,
+      "virtual_size": 568900,
+      "raw_offset": 10354688,
+      "raw_size": 569344,
+      "characteristics": 1107296320
+    }
+  ],
+  "imports": [
+    {
+      "dll": "WININET.dll",
+      "name": "HttpOpenRequestW",
+      "ordinal": null,
+      "iat_rva": 8816156
+    },
+    {
+      "dll": "WININET.dll",
+      "name": "InternetCloseHandle",
+      "ordinal": null,
+      "iat_rva": 8816160
+    },
+    {
+      "dll": "WININET.dll",
+      "name": "InternetConnectW",
+      "ordinal": null,
+      "iat_rva": 8816164
+    },
+    {
+      "dll": "WININET.dll",
+      "name": "InternetOpenW",
+      "ordinal": null,
+      "iat_rva": 8816168
+    },
+    {
+      "dll": "WININET.dll",
+      "name": "HttpSendRequestW",
+      "ordinal": null,
+      "iat_rva": 8816172
+    },
+    {
+      "dll": "WINMM.dll",
+      "name": "timeGetTime",
+      "ordinal": null,
+      "iat_rva": 8816180
+    },
+    {
+      "dll": "RPCRT4.dll",
+      "name": "UuidCreateSequential",
+      "ordinal": null,
+      "iat_rva": 8815972
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "inet_addr",
+      "ordinal": null,
+      "iat_rva": 8816188
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "gethostbyname",
+      "ordinal": null,
+      "iat_rva": 8816192
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "WSACleanup",
+      "ordinal": null,
+      "iat_rva": 8816196
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "connect",
+      "ordinal": null,
+      "iat_rva": 8816200
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "WSAGetLastError",
+      "ordinal": null,
+      "iat_rva": 8816204
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "WSAStartup",
+      "ordinal": null,
+      "iat_rva": 8816208
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "socket",
+      "ordinal": null,
+      "iat_rva": 8816212
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "ioctlsocket",
+      "ordinal": null,
+      "iat_rva": 8816216
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "recv",
+      "ordinal": null,
+      "iat_rva": 8816220
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "send",
+      "ordinal": null,
+      "iat_rva": 8816224
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "closesocket",
+      "ordinal": null,
+      "iat_rva": 8816228
+    },
+    {
+      "dll": "WS2_32.dll",
+      "name": "htons",
+      "ordinal": null,
+      "iat_rva": 8816232
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateEventA",
+      "ordinal": null,
+      "iat_rva": 8814680
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedIncrement",
+      "ordinal": null,
+      "iat_rva": 8814684
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedDecrement",
+      "ordinal": null,
+      "iat_rva": 8814688
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedExchangeAdd",
+      "ordinal": null,
+      "iat_rva": 8814692
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedExchange",
+      "ordinal": null,
+      "iat_rva": 8814696
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "Sleep",
+      "ordinal": null,
+      "iat_rva": 8814700
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "DeleteCriticalSection",
+      "ordinal": null,
+      "iat_rva": 8814704
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "LeaveCriticalSection",
+      "ordinal": null,
+      "iat_rva": 8814708
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "EnterCriticalSection",
+      "ordinal": null,
+      "iat_rva": 8814712
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "InitializeCriticalSection",
+      "ordinal": null,
+      "iat_rva": 8814716
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GlobalUnlock",
+      "ordinal": null,
+      "iat_rva": 8814720
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GlobalLock",
+      "ordinal": null,
+      "iat_rva": 8814724
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GlobalAlloc",
+      "ordinal": null,
+      "iat_rva": 8814728
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetTickCount",
+      "ordinal": null,
+      "iat_rva": 8814732
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "OutputDebugStringA",
+      "ordinal": null,
+      "iat_rva": 8814736
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetExitCodeProcess",
+      "ordinal": null,
+      "iat_rva": 8814740
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "WaitForSingleObject",
+      "ordinal": null,
+      "iat_rva": 8814744
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "TerminateThread",
+      "ordinal": null,
+      "iat_rva": 8814748
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetLastError",
+      "ordinal": null,
+      "iat_rva": 8814752
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "TerminateProcess",
+      "ordinal": null,
+      "iat_rva": 8814756
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentProcess",
+      "ordinal": null,
+      "iat_rva": 8814760
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetProcessAffinityMask",
+      "ordinal": null,
+      "iat_rva": 8814764
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetProcessAffinityMask",
+      "ordinal": null,
+      "iat_rva": 8814768
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "DeleteFileA",
+      "ordinal": null,
+      "iat_rva": 8814772
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "MoveFileA",
+      "ordinal": null,
+      "iat_rva": 8814776
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetThreadPriority",
+      "ordinal": null,
+      "iat_rva": 8814780
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "FreeLibrary",
+      "ordinal": null,
+      "iat_rva": 8814784
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CompareStringA",
+      "ordinal": null,
+      "iat_rva": 8814788
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetModuleHandleA",
+      "ordinal": null,
+      "iat_rva": 8814792
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetModuleFileNameA",
+      "ordinal": null,
+      "iat_rva": 8814796
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetWindowsDirectoryA",
+      "ordinal": null,
+      "iat_rva": 8814800
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemDirectoryA",
+      "ordinal": null,
+      "iat_rva": 8814804
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "LoadLibraryA",
+      "ordinal": null,
+      "iat_rva": 8814808
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetLastError",
+      "ordinal": null,
+      "iat_rva": 8814812
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetTimeFormatA",
+      "ordinal": null,
+      "iat_rva": 8814816
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemTime",
+      "ordinal": null,
+      "iat_rva": 8814820
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetVersion",
+      "ordinal": null,
+      "iat_rva": 8814824
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CloseHandle",
+      "ordinal": null,
+      "iat_rva": 8814828
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateThread",
+      "ordinal": null,
+      "iat_rva": 8814832
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "QueryPerformanceFrequency",
+      "ordinal": null,
+      "iat_rva": 8814836
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "QueryPerformanceCounter",
+      "ordinal": null,
+      "iat_rva": 8814840
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetEvent",
+      "ordinal": null,
+      "iat_rva": 8814844
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetExitCodeThread",
+      "ordinal": null,
+      "iat_rva": 8814848
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "ReadFile",
+      "ordinal": null,
+      "iat_rva": 8814852
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "TlsFree",
+      "ordinal": null,
+      "iat_rva": 8814856
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "TlsAlloc",
+      "ordinal": null,
+      "iat_rva": 8814860
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "TlsGetValue",
+      "ordinal": null,
+      "iat_rva": 8814864
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "TlsSetValue",
+      "ordinal": null,
+      "iat_rva": 8814868
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentDirectoryA",
+      "ordinal": null,
+      "iat_rva": 8814872
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetEnvironmentVariableA",
+      "ordinal": null,
+      "iat_rva": 8814876
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentProcessId",
+      "ordinal": null,
+      "iat_rva": 8814880
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateToolhelp32Snapshot",
+      "ordinal": null,
+      "iat_rva": 8814884
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "VirtualAlloc",
+      "ordinal": null,
+      "iat_rva": 8814888
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "VirtualFree",
+      "ordinal": null,
+      "iat_rva": 8814892
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "HeapFree",
+      "ordinal": null,
+      "iat_rva": 8814896
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "Module32First",
+      "ordinal": null,
+      "iat_rva": 8814900
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "HeapAlloc",
+      "ordinal": null,
+      "iat_rva": 8814904
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetFullPathNameA",
+      "ordinal": null,
+      "iat_rva": 8814908
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "FindResourceW",
+      "ordinal": null,
+      "iat_rva": 8814912
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "FindResourceA",
+      "ordinal": null,
+      "iat_rva": 8814916
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SizeofResource",
+      "ordinal": null,
+      "iat_rva": 8814920
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "LoadResource",
+      "ordinal": null,
+      "iat_rva": 8814924
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetLocalTime",
+      "ordinal": null,
+      "iat_rva": 8814928
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetProcessHeap",
+      "ordinal": null,
+      "iat_rva": 8814932
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "IsBadStringPtrA",
+      "ordinal": null,
+      "iat_rva": 8814936
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "LocalFree",
+      "ordinal": null,
+      "iat_rva": 8814940
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentThread",
+      "ordinal": null,
+      "iat_rva": 8814944
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "Module32Next",
+      "ordinal": null,
+      "iat_rva": 8814948
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "LockResource",
+      "ordinal": null,
+      "iat_rva": 8814952
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateFileW",
+      "ordinal": null,
+      "iat_rva": 8814956
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "IsProcessorFeaturePresent",
+      "ordinal": null,
+      "iat_rva": 8814960
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "OutputDebugStringW",
+      "ordinal": null,
+      "iat_rva": 8814964
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "DebugBreak",
+      "ordinal": null,
+      "iat_rva": 8814968
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemTimeAsFileTime",
+      "ordinal": null,
+      "iat_rva": 8814972
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "DisableThreadLibraryCalls",
+      "ordinal": null,
+      "iat_rva": 8814976
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "ExitProcess",
+      "ordinal": null,
+      "iat_rva": 8814980
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "Thread32First",
+      "ordinal": null,
+      "iat_rva": 8814984
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "OpenThread",
+      "ordinal": null,
+      "iat_rva": 8814988
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "Thread32Next",
+      "ordinal": null,
+      "iat_rva": 8814992
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetVersionExA",
+      "ordinal": null,
+      "iat_rva": 8814996
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetStringTypeA",
+      "ordinal": null,
+      "iat_rva": 8815000
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "LCMapStringA",
+      "ordinal": null,
+      "iat_rva": 8815004
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "EnumSystemLocalesA",
+      "ordinal": null,
+      "iat_rva": 8815008
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "lstrcmpiA",
+      "ordinal": null,
+      "iat_rva": 8815012
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetLocaleInfoA",
+      "ordinal": null,
+      "iat_rva": 8815016
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateFileMappingA",
+      "ordinal": null,
+      "iat_rva": 8815020
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "MapViewOfFile",
+      "ordinal": null,
+      "iat_rva": 8815024
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "UnmapViewOfFile",
+      "ordinal": null,
+      "iat_rva": 8815028
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetEndOfFile",
+      "ordinal": null,
+      "iat_rva": 8815032
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetFileType",
+      "ordinal": null,
+      "iat_rva": 8815036
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "RaiseException",
+      "ordinal": null,
+      "iat_rva": 8815040
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "ExitThread",
+      "ordinal": null,
+      "iat_rva": 8815044
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "ResumeThread",
+      "ordinal": null,
+      "iat_rva": 8815048
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentThreadId",
+      "ordinal": null,
+      "iat_rva": 8815052
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateProcessA",
+      "ordinal": null,
+      "iat_rva": 8815056
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetPriorityClass",
+      "ordinal": null,
+      "iat_rva": 8815060
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetProcessTimes",
+      "ordinal": null,
+      "iat_rva": 8815064
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "OpenProcess",
+      "ordinal": null,
+      "iat_rva": 8815068
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "OpenFile",
+      "ordinal": null,
+      "iat_rva": 8815072
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateDirectoryA",
+      "ordinal": null,
+      "iat_rva": 8815076
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetErrorMode",
+      "ordinal": null,
+      "iat_rva": 8815080
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetDriveTypeA",
+      "ordinal": null,
+      "iat_rva": 8815084
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemInfo",
+      "ordinal": null,
+      "iat_rva": 8815088
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetDiskFreeSpaceExA",
+      "ordinal": null,
+      "iat_rva": 8815092
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SuspendThread",
+      "ordinal": null,
+      "iat_rva": 8815096
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CopyFileA",
+      "ordinal": null,
+      "iat_rva": 8815100
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetUnhandledExceptionFilter",
+      "ordinal": null,
+      "iat_rva": 8815104
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedCompareExchange",
+      "ordinal": null,
+      "iat_rva": 8815108
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "FindFirstFileA",
+      "ordinal": null,
+      "iat_rva": 8815112
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "FindNextFileA",
+      "ordinal": null,
+      "iat_rva": 8815116
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "CreateFileA",
+      "ordinal": null,
+      "iat_rva": 8815120
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "GetFileSize",
+      "ordinal": null,
+      "iat_rva": 8815124
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "SetFilePointer",
+      "ordinal": null,
+      "iat_rva": 8815128
+    },
+    {
+      "dll": "KERNEL32.dll",
+      "name": "WriteFile",
+      "ordinal": null,
+      "iat_rva": 8815132
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "MoveWindow",
+      "ordinal": null,
+      "iat_rva": 8815988
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SetFocus",
+      "ordinal": null,
+      "iat_rva": 8815992
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "PostQuitMessage",
+      "ordinal": null,
+      "iat_rva": 8815996
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetKeyState",
+      "ordinal": null,
+      "iat_rva": 8816000
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "EnumDisplaySettingsA",
+      "ordinal": null,
+      "iat_rva": 8816004
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ShowCursor",
+      "ordinal": null,
+      "iat_rva": 8816008
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SetCursor",
+      "ordinal": null,
+      "iat_rva": 8816012
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetWindowRect",
+      "ordinal": null,
+      "iat_rva": 8816016
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetDesktopWindow",
+      "ordinal": null,
+      "iat_rva": 8816020
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "AdjustWindowRect",
+      "ordinal": null,
+      "iat_rva": 8816024
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SetWindowPos",
+      "ordinal": null,
+      "iat_rva": 8816028
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ReleaseDC",
+      "ordinal": null,
+      "iat_rva": 8816032
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetDC",
+      "ordinal": null,
+      "iat_rva": 8816036
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SystemParametersInfoA",
+      "ordinal": null,
+      "iat_rva": 8816040
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "DestroyCursor",
+      "ordinal": null,
+      "iat_rva": 8816044
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetCursorPos",
+      "ordinal": null,
+      "iat_rva": 8816048
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SetCursorPos",
+      "ordinal": null,
+      "iat_rva": 8816052
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ClientToScreen",
+      "ordinal": null,
+      "iat_rva": 8816056
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ClipCursor",
+      "ordinal": null,
+      "iat_rva": 8816060
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetClientRect",
+      "ordinal": null,
+      "iat_rva": 8816064
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "EmptyClipboard",
+      "ordinal": null,
+      "iat_rva": 8816068
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SetClipboardData",
+      "ordinal": null,
+      "iat_rva": 8816072
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "CloseClipboard",
+      "ordinal": null,
+      "iat_rva": 8816076
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "TranslateMessage",
+      "ordinal": null,
+      "iat_rva": 8816080
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ValidateRect",
+      "ordinal": null,
+      "iat_rva": 8816084
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "IsIconic",
+      "ordinal": null,
+      "iat_rva": 8816088
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetSystemMetrics",
+      "ordinal": null,
+      "iat_rva": 8816092
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ShowWindow",
+      "ordinal": null,
+      "iat_rva": 8816096
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "UpdateWindow",
+      "ordinal": null,
+      "iat_rva": 8816100
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "SetForegroundWindow",
+      "ordinal": null,
+      "iat_rva": 8816104
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "BringWindowToTop",
+      "ordinal": null,
+      "iat_rva": 8816108
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetAsyncKeyState",
+      "ordinal": null,
+      "iat_rva": 8816112
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "DrawTextA",
+      "ordinal": null,
+      "iat_rva": 8816116
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "OpenClipboard",
+      "ordinal": null,
+      "iat_rva": 8816120
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "GetForegroundWindow",
+      "ordinal": null,
+      "iat_rva": 8816124
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "MessageBoxA",
+      "ordinal": null,
+      "iat_rva": 8816128
+    },
+    {
+      "dll": "USER32.dll",
+      "name": "ScreenToClient",
+      "ordinal": null,
+      "iat_rva": 8816132
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "CreateFontA",
+      "ordinal": null,
+      "iat_rva": 8814628
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "DeleteObject",
+      "ordinal": null,
+      "iat_rva": 8814632
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "SetTextColor",
+      "ordinal": null,
+      "iat_rva": 8814636
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "SetBkMode",
+      "ordinal": null,
+      "iat_rva": 8814640
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "SetBkColor",
+      "ordinal": null,
+      "iat_rva": 8814644
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "SelectObject",
+      "ordinal": null,
+      "iat_rva": 8814648
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "DeleteDC",
+      "ordinal": null,
+      "iat_rva": 8814652
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "GetDIBits",
+      "ordinal": null,
+      "iat_rva": 8814656
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "BitBlt",
+      "ordinal": null,
+      "iat_rva": 8814660
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "CreateCompatibleBitmap",
+      "ordinal": null,
+      "iat_rva": 8814664
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "CreateCompatibleDC",
+      "ordinal": null,
+      "iat_rva": 8814668
+    },
+    {
+      "dll": "GDI32.dll",
+      "name": "GetStockObject",
+      "ordinal": null,
+      "iat_rva": 8814672
+    },
+    {
+      "dll": "ADVAPI32.dll",
+      "name": "CryptGenRandom",
+      "ordinal": null,
+      "iat_rva": 8814592
+    },
+    {
+      "dll": "ADVAPI32.dll",
+      "name": "RegOpenKeyA",
+      "ordinal": null,
+      "iat_rva": 8814596
+    },
+    {
+      "dll": "ADVAPI32.dll",
+      "name": "CryptAcquireContextA",
+      "ordinal": null,
+      "iat_rva": 8814600
+    },
+    {
+      "dll": "ADVAPI32.dll",
+      "name": "RegCloseKey",
+      "ordinal": null,
+      "iat_rva": 8814604
+    },
+    {
+      "dll": "ADVAPI32.dll",
+      "name": "CryptReleaseContext",
+      "ordinal": null,
+      "iat_rva": 8814608
+    },
+    {
+      "dll": "ADVAPI32.dll",
+      "name": "RegQueryValueExA",
+      "ordinal": null,
+      "iat_rva": 8814612
+    },
+    {
+      "dll": "ole32.dll",
+      "name": "CoCreateGuid",
+      "ordinal": null,
+      "iat_rva": 8816436
+    },
+    {
+      "dll": "ole32.dll",
+      "name": "CoInitialize",
+      "ordinal": null,
+      "iat_rva": 8816440
+    },
+    {
+      "dll": "ole32.dll",
+      "name": "CoUninitialize",
+      "ordinal": null,
+      "iat_rva": 8816444
+    },
+    {
+      "dll": "ole32.dll",
+      "name": "CoCreateInstance",
+      "ordinal": null,
+      "iat_rva": 8816448
+    },
+    {
+      "dll": "OLEAUT32.dll",
+      "name": "VariantClear",
+      "ordinal": null,
+      "iat_rva": 8815956
+    },
+    {
+      "dll": "OLEAUT32.dll",
+      "name": "SysFreeString",
+      "ordinal": null,
+      "iat_rva": 8815960
+    },
+    {
+      "dll": "OLEAUT32.dll",
+      "name": "VariantInit",
+      "ordinal": null,
+      "iat_rva": 8815964
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkWait@4",
+      "ordinal": null,
+      "iat_rva": 8816288
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkNextFrame@4",
+      "ordinal": null,
+      "iat_rva": 8816292
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkGoto@12",
+      "ordinal": null,
+      "iat_rva": 8816296
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkGetTrackID@8",
+      "ordinal": null,
+      "iat_rva": 8816300
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkSetVolume@12",
+      "ordinal": null,
+      "iat_rva": 8816304
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkSetPan@12",
+      "ordinal": null,
+      "iat_rva": 8816308
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkOpenDirectSound@4",
+      "ordinal": null,
+      "iat_rva": 8816312
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkSetSoundSystem@8",
+      "ordinal": null,
+      "iat_rva": 8816316
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkOpen@8",
+      "ordinal": null,
+      "iat_rva": 8816320
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkClose@4",
+      "ordinal": null,
+      "iat_rva": 8816324
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkDoFrame@4",
+      "ordinal": null,
+      "iat_rva": 8816328
+    },
+    {
+      "dll": "binkw32.dll",
+      "name": "_BinkCopyToBuffer@28",
+      "ordinal": null,
+      "iat_rva": 8816332
+    },
+    {
+      "dll": "dllMediaPlayer.dll",
+      "name": "?GetMediaPlayerLastError@@YAPBDXZ",
+      "ordinal": null,
+      "iat_rva": 8816416
+    },
+    {
+      "dll": "dllMediaPlayer.dll",
+      "name": "?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z",
+      "ordinal": null,
+      "iat_rva": 8816420
+    },
+    {
+      "dll": "dllWebBrowser.dll",
+      "name": "?CreateBrowser@@YAPAVIControl@Browser@@PAUHWND__@@KK@Z",
+      "ordinal": null,
+      "iat_rva": 8816428
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "Py_InitModule4",
+      "ordinal": null,
+      "iat_rva": 8816456
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyInt_FromLong",
+      "ordinal": null,
+      "iat_rva": 8816460
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyArg_ParseTuple",
+      "ordinal": null,
+      "iat_rva": 8816464
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "_Py_ZeroStruct",
+      "ordinal": null,
+      "iat_rva": 8816468
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "_Py_TrueStruct",
+      "ordinal": null,
+      "iat_rva": 8816472
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_Free",
+      "ordinal": null,
+      "iat_rva": 8816476
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_SetString",
+      "ordinal": null,
+      "iat_rva": 8816480
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyExc_IndexError",
+      "ordinal": null,
+      "iat_rva": 8816484
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "_Py_NoneStruct",
+      "ordinal": null,
+      "iat_rva": 8816488
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "_PyObject_New",
+      "ordinal": null,
+      "iat_rva": 8816492
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyType_Type",
+      "ordinal": null,
+      "iat_rva": 8816496
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyFloat_AsDouble",
+      "ordinal": null,
+      "iat_rva": 8816500
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyFloat_Type",
+      "ordinal": null,
+      "iat_rva": 8816504
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_AsUnsignedLong",
+      "ordinal": null,
+      "iat_rva": 8816508
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_Type",
+      "ordinal": null,
+      "iat_rva": 8816512
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyInt_AsLong",
+      "ordinal": null,
+      "iat_rva": 8816516
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyType_IsSubtype",
+      "ordinal": null,
+      "iat_rva": 8816520
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyInt_Type",
+      "ordinal": null,
+      "iat_rva": 8816524
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Occurred",
+      "ordinal": null,
+      "iat_rva": 8816528
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_CallObject",
+      "ordinal": null,
+      "iat_rva": 8816532
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_AddIntConstant",
+      "ordinal": null,
+      "iat_rva": 8816536
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_Size",
+      "ordinal": null,
+      "iat_rva": 8816540
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_AsString",
+      "ordinal": null,
+      "iat_rva": 8816544
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_SetItem",
+      "ordinal": null,
+      "iat_rva": 8816548
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_FromString",
+      "ordinal": null,
+      "iat_rva": 8816552
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_AsTuple",
+      "ordinal": null,
+      "iat_rva": 8816556
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_Append",
+      "ordinal": null,
+      "iat_rva": 8816560
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_New",
+      "ordinal": null,
+      "iat_rva": 8816564
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Clear",
+      "ordinal": null,
+      "iat_rva": 8816568
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "Py_FindMethod",
+      "ordinal": null,
+      "iat_rva": 8816572
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "Py_BuildValue",
+      "ordinal": null,
+      "iat_rva": 8816576
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_Type",
+      "ordinal": null,
+      "iat_rva": 8816580
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_GetAttrString",
+      "ordinal": null,
+      "iat_rva": 8816584
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_GetItem",
+      "ordinal": null,
+      "iat_rva": 8816588
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_Size",
+      "ordinal": null,
+      "iat_rva": 8816592
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_Type",
+      "ordinal": null,
+      "iat_rva": 8816596
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_Type",
+      "ordinal": null,
+      "iat_rva": 8816600
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_FromFormat",
+      "ordinal": null,
+      "iat_rva": 8816604
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyExc_AttributeError",
+      "ordinal": null,
+      "iat_rva": 8816608
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyType_Ready",
+      "ordinal": null,
+      "iat_rva": 8816612
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_AsUnsignedLongMask",
+      "ordinal": null,
+      "iat_rva": 8816616
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_SetItem",
+      "ordinal": null,
+      "iat_rva": 8816620
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyUnicodeUCS2_FromWideChar",
+      "ordinal": null,
+      "iat_rva": 8816624
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_FromStringAndSize",
+      "ordinal": null,
+      "iat_rva": 8816628
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_FromUnsignedLongLong",
+      "ordinal": null,
+      "iat_rva": 8816632
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_AddModule",
+      "ordinal": null,
+      "iat_rva": 8816636
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_SetItemString",
+      "ordinal": null,
+      "iat_rva": 8816640
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyEval_GetBuiltins",
+      "ordinal": null,
+      "iat_rva": 8816644
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "Py_Finalize",
+      "ordinal": null,
+      "iat_rva": 8816648
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_New",
+      "ordinal": null,
+      "iat_rva": 8816652
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_ImportModule",
+      "ordinal": null,
+      "iat_rva": 8816656
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PySys_SetPath",
+      "ordinal": null,
+      "iat_rva": 8816660
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyRun_SimpleString",
+      "ordinal": null,
+      "iat_rva": 8816664
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyNumber_Check",
+      "ordinal": null,
+      "iat_rva": 8816668
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_HasAttrString",
+      "ordinal": null,
+      "iat_rva": 8816672
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyUnicodeUCS2_AsWideChar",
+      "ordinal": null,
+      "iat_rva": 8816676
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_SetAttrString",
+      "ordinal": null,
+      "iat_rva": 8816680
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyFloat_FromDouble",
+      "ordinal": null,
+      "iat_rva": 8816684
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_FromUnsignedLong",
+      "ordinal": null,
+      "iat_rva": 8816688
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyBool_FromLong",
+      "ordinal": null,
+      "iat_rva": 8816692
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_New",
+      "ordinal": null,
+      "iat_rva": 8816696
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "Py_Initialize",
+      "ordinal": null,
+      "iat_rva": 8816700
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "Py_IsInitialized",
+      "ordinal": null,
+      "iat_rva": 8816704
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyCallable_Check",
+      "ordinal": null,
+      "iat_rva": 8816708
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_GetItemString",
+      "ordinal": null,
+      "iat_rva": 8816712
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_GetName",
+      "ordinal": null,
+      "iat_rva": 8816716
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_ReloadModule",
+      "ordinal": null,
+      "iat_rva": 8816720
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_Next",
+      "ordinal": null,
+      "iat_rva": 8816724
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_GetDict",
+      "ordinal": null,
+      "iat_rva": 8816728
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_Type",
+      "ordinal": null,
+      "iat_rva": 8816732
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_Import",
+      "ordinal": null,
+      "iat_rva": 8816736
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_CallFunctionObjArgs",
+      "ordinal": null,
+      "iat_rva": 8816740
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Fetch",
+      "ordinal": null,
+      "iat_rva": 8816744
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Print",
+      "ordinal": null,
+      "iat_rva": 8816748
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyRun_String",
+      "ordinal": null,
+      "iat_rva": 8816752
+    },
+    {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_GetItem",
+      "ordinal": null,
+      "iat_rva": 8816756
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIsinh",
+      "ordinal": null,
+      "iat_rva": 8815180
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CItanh",
+      "ordinal": null,
+      "iat_rva": 8815184
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_strdup",
+      "ordinal": null,
+      "iat_rva": 8815188
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIpow",
+      "ordinal": null,
+      "iat_rva": 8815192
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_controlfp",
+      "ordinal": null,
+      "iat_rva": 8815196
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_ftol",
+      "ordinal": null,
+      "iat_rva": 8815200
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIacos",
+      "ordinal": null,
+      "iat_rva": 8815204
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_stricmp",
+      "ordinal": null,
+      "iat_rva": 8815208
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_itoa",
+      "ordinal": null,
+      "iat_rva": 8815212
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_strnicmp",
+      "ordinal": null,
+      "iat_rva": 8815216
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wcsicmp",
+      "ordinal": null,
+      "iat_rva": 8815220
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "malloc",
+      "ordinal": null,
+      "iat_rva": 8815224
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "free",
+      "ordinal": null,
+      "iat_rva": 8815228
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_msize",
+      "ordinal": null,
+      "iat_rva": 8815232
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_snprintf",
+      "ordinal": null,
+      "iat_rva": 8815236
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "memmove",
+      "ordinal": null,
+      "iat_rva": 8815240
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "perror",
+      "ordinal": null,
+      "iat_rva": 8815244
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_errno",
+      "ordinal": null,
+      "iat_rva": 8815248
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strchr",
+      "ordinal": null,
+      "iat_rva": 8815252
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_assert",
+      "ordinal": null,
+      "iat_rva": 8815256
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_purecall",
+      "ordinal": null,
+      "iat_rva": 8815260
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_vsnprintf",
+      "ordinal": null,
+      "iat_rva": 8815264
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "cos",
+      "ordinal": null,
+      "iat_rva": 8815268
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIexp",
+      "ordinal": null,
+      "iat_rva": 8815272
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "sqrt",
+      "ordinal": null,
+      "iat_rva": 8815276
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "atan",
+      "ordinal": null,
+      "iat_rva": 8815280
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_ultoa",
+      "ordinal": null,
+      "iat_rva": 8815284
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "sprintf",
+      "ordinal": null,
+      "iat_rva": 8815288
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "atoi",
+      "ordinal": null,
+      "iat_rva": 8815292
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strtoul",
+      "ordinal": null,
+      "iat_rva": 8815296
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "printf",
+      "ordinal": null,
+      "iat_rva": 8815300
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fread",
+      "ordinal": null,
+      "iat_rva": 8815304
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "ftell",
+      "ordinal": null,
+      "iat_rva": 8815308
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fseek",
+      "ordinal": null,
+      "iat_rva": 8815312
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strstr",
+      "ordinal": null,
+      "iat_rva": 8815316
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strncpy",
+      "ordinal": null,
+      "iat_rva": 8815320
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "difftime",
+      "ordinal": null,
+      "iat_rva": 8815324
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "time",
+      "ordinal": null,
+      "iat_rva": 8815328
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "acos",
+      "ordinal": null,
+      "iat_rva": 8815332
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "pow",
+      "ordinal": null,
+      "iat_rva": 8815336
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "rand",
+      "ordinal": null,
+      "iat_rva": 8815340
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isalnum",
+      "ordinal": null,
+      "iat_rva": 8815344
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isalpha",
+      "ordinal": null,
+      "iat_rva": 8815348
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcscpy",
+      "ordinal": null,
+      "iat_rva": 8815352
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "ceil",
+      "ordinal": null,
+      "iat_rva": 8815356
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "swprintf",
+      "ordinal": null,
+      "iat_rva": 8815360
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "localtime",
+      "ordinal": null,
+      "iat_rva": 8815364
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wasctime",
+      "ordinal": null,
+      "iat_rva": 8815368
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "floor",
+      "ordinal": null,
+      "iat_rva": 8815372
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CxxThrowException",
+      "ordinal": null,
+      "iat_rva": 8815376
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wtoi",
+      "ordinal": null,
+      "iat_rva": 8815380
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_itow",
+      "ordinal": null,
+      "iat_rva": 8815384
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isdigit",
+      "ordinal": null,
+      "iat_rva": 8815388
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcstombs",
+      "ordinal": null,
+      "iat_rva": 8815392
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "iswspace",
+      "ordinal": null,
+      "iat_rva": 8815396
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "atof",
+      "ordinal": null,
+      "iat_rva": 8815400
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_beginthread",
+      "ordinal": null,
+      "iat_rva": 8815404
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fclose",
+      "ordinal": null,
+      "iat_rva": 8815408
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strtok",
+      "ordinal": null,
+      "iat_rva": 8815412
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fgets",
+      "ordinal": null,
+      "iat_rva": 8815416
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fopen",
+      "ordinal": null,
+      "iat_rva": 8815420
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fprintf",
+      "ordinal": null,
+      "iat_rva": 8815424
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_sleep",
+      "ordinal": null,
+      "iat_rva": 8815428
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcslen",
+      "ordinal": null,
+      "iat_rva": 8815432
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "mbstowcs",
+      "ordinal": null,
+      "iat_rva": 8815436
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_strdate",
+      "ordinal": null,
+      "iat_rva": 8815440
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_strtime",
+      "ordinal": null,
+      "iat_rva": 8815444
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "tan",
+      "ordinal": null,
+      "iat_rva": 8815448
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fwrite",
+      "ordinal": null,
+      "iat_rva": 8815452
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "feof",
+      "ordinal": null,
+      "iat_rva": 8815456
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_mkdir",
+      "ordinal": null,
+      "iat_rva": 8815460
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strftime",
+      "ordinal": null,
+      "iat_rva": 8815464
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "remove",
+      "ordinal": null,
+      "iat_rva": 8815468
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_utime",
+      "ordinal": null,
+      "iat_rva": 8815472
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_stat",
+      "ordinal": null,
+      "iat_rva": 8815476
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strrchr",
+      "ordinal": null,
+      "iat_rva": 8815480
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "asin",
+      "ordinal": null,
+      "iat_rva": 8815484
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "toupper",
+      "ordinal": null,
+      "iat_rva": 8815488
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fputws",
+      "ordinal": null,
+      "iat_rva": 8815492
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wfopen",
+      "ordinal": null,
+      "iat_rva": 8815496
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fwprintf",
+      "ordinal": null,
+      "iat_rva": 8815500
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fputc",
+      "ordinal": null,
+      "iat_rva": 8815504
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcsstr",
+      "ordinal": null,
+      "iat_rva": 8815508
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wsplitpath",
+      "ordinal": null,
+      "iat_rva": 8815512
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fflush",
+      "ordinal": null,
+      "iat_rva": 8815516
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "sscanf",
+      "ordinal": null,
+      "iat_rva": 8815520
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "realloc",
+      "ordinal": null,
+      "iat_rva": 8815524
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_gcvt",
+      "ordinal": null,
+      "iat_rva": 8815528
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strncat",
+      "ordinal": null,
+      "iat_rva": 8815532
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "vsprintf",
+      "ordinal": null,
+      "iat_rva": 8815536
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isxdigit",
+      "ordinal": null,
+      "iat_rva": 8815540
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fgetc",
+      "ordinal": null,
+      "iat_rva": 8815544
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "raise",
+      "ordinal": null,
+      "iat_rva": 8815548
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "clock",
+      "ordinal": null,
+      "iat_rva": 8815552
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "__CxxFrameHandler",
+      "ordinal": null,
+      "iat_rva": 8815556
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "log10",
+      "ordinal": null,
+      "iat_rva": 8815560
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isspace",
+      "ordinal": null,
+      "iat_rva": 8815564
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isprint",
+      "ordinal": null,
+      "iat_rva": 8815568
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_except_handler3",
+      "ordinal": null,
+      "iat_rva": 8815572
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_fsopen",
+      "ordinal": null,
+      "iat_rva": 8815576
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fputs",
+      "ordinal": null,
+      "iat_rva": 8815580
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fsetpos",
+      "ordinal": null,
+      "iat_rva": 8815584
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fgetpos",
+      "ordinal": null,
+      "iat_rva": 8815588
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "rename",
+      "ordinal": null,
+      "iat_rva": 8815592
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strncmp",
+      "ordinal": null,
+      "iat_rva": 8815596
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_chdir",
+      "ordinal": null,
+      "iat_rva": 8815600
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_getcwd",
+      "ordinal": null,
+      "iat_rva": 8815604
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_splitpath",
+      "ordinal": null,
+      "iat_rva": 8815608
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fmod",
+      "ordinal": null,
+      "iat_rva": 8815612
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "exit",
+      "ordinal": null,
+      "iat_rva": 8815616
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_iob",
+      "ordinal": null,
+      "iat_rva": 8815620
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "getenv",
+      "ordinal": null,
+      "iat_rva": 8815624
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "tmpfile",
+      "ordinal": null,
+      "iat_rva": 8815628
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_heapchk",
+      "ordinal": null,
+      "iat_rva": 8815632
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_findclose",
+      "ordinal": null,
+      "iat_rva": 8815636
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_findnext",
+      "ordinal": null,
+      "iat_rva": 8815640
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_findfirst",
+      "ordinal": null,
+      "iat_rva": 8815644
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_beginthreadex",
+      "ordinal": null,
+      "iat_rva": 8815648
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strerror",
+      "ordinal": null,
+      "iat_rva": 8815652
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "ungetc",
+      "ordinal": null,
+      "iat_rva": 8815656
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "getc",
+      "ordinal": null,
+      "iat_rva": 8815660
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fscanf",
+      "ordinal": null,
+      "iat_rva": 8815664
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "system",
+      "ordinal": null,
+      "iat_rva": 8815668
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "tmpnam",
+      "ordinal": null,
+      "iat_rva": 8815672
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIcosh",
+      "ordinal": null,
+      "iat_rva": 8815676
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "mktime",
+      "ordinal": null,
+      "iat_rva": 8815680
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "setlocale",
+      "ordinal": null,
+      "iat_rva": 8815684
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "atan2",
+      "ordinal": null,
+      "iat_rva": 8815688
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "log",
+      "ordinal": null,
+      "iat_rva": 8815692
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "exp",
+      "ordinal": null,
+      "iat_rva": 8815696
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "frexp",
+      "ordinal": null,
+      "iat_rva": 8815700
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "ldexp",
+      "ordinal": null,
+      "iat_rva": 8815704
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "srand",
+      "ordinal": null,
+      "iat_rva": 8815708
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "tolower",
+      "ordinal": null,
+      "iat_rva": 8815712
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "isupper",
+      "ordinal": null,
+      "iat_rva": 8815716
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "ispunct",
+      "ordinal": null,
+      "iat_rva": 8815720
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "iscntrl",
+      "ordinal": null,
+      "iat_rva": 8815724
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "islower",
+      "ordinal": null,
+      "iat_rva": 8815728
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "memchr",
+      "ordinal": null,
+      "iat_rva": 8815732
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strpbrk",
+      "ordinal": null,
+      "iat_rva": 8815736
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "longjmp",
+      "ordinal": null,
+      "iat_rva": 8815740
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_setjmp3",
+      "ordinal": null,
+      "iat_rva": 8815744
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strcoll",
+      "ordinal": null,
+      "iat_rva": 8815748
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strtod",
+      "ordinal": null,
+      "iat_rva": 8815752
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "strcspn",
+      "ordinal": null,
+      "iat_rva": 8815756
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "abort",
+      "ordinal": null,
+      "iat_rva": 8815760
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "puts",
+      "ordinal": null,
+      "iat_rva": 8815764
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "??1exception@@UAE@XZ",
+      "ordinal": null,
+      "iat_rva": 8815768
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "??0exception@@QAE@XZ",
+      "ordinal": null,
+      "iat_rva": 8815772
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "__pioinfo",
+      "ordinal": null,
+      "iat_rva": 8815776
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_get_osfhandle",
+      "ordinal": null,
+      "iat_rva": 8815780
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_finite",
+      "ordinal": null,
+      "iat_rva": 8815784
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_fpclass",
+      "ordinal": null,
+      "iat_rva": 8815788
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_copysign",
+      "ordinal": null,
+      "iat_rva": 8815792
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_isnan",
+      "ordinal": null,
+      "iat_rva": 8815796
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_ecvt",
+      "ordinal": null,
+      "iat_rva": 8815800
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_fcvt",
+      "ordinal": null,
+      "iat_rva": 8815804
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "setvbuf",
+      "ordinal": null,
+      "iat_rva": 8815808
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "putc",
+      "ordinal": null,
+      "iat_rva": 8815812
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcscmp",
+      "ordinal": null,
+      "iat_rva": 8815816
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "iswctype",
+      "ordinal": null,
+      "iat_rva": 8815820
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_snwprintf",
+      "ordinal": null,
+      "iat_rva": 8815824
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcsncpy",
+      "ordinal": null,
+      "iat_rva": 8815828
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "wcstoul",
+      "ordinal": null,
+      "iat_rva": 8815832
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "qsort",
+      "ordinal": null,
+      "iat_rva": 8815836
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIasin",
+      "ordinal": null,
+      "iat_rva": 8815840
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_CIfmod",
+      "ordinal": null,
+      "iat_rva": 8815844
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "ferror",
+      "ordinal": null,
+      "iat_rva": 8815848
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_access",
+      "ordinal": null,
+      "iat_rva": 8815852
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "??8type_info@@QBEHABV0@@Z",
+      "ordinal": null,
+      "iat_rva": 8815856
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "??9type_info@@QBEHABV0@@Z",
+      "ordinal": null,
+      "iat_rva": 8815860
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_aligned_free",
+      "ordinal": null,
+      "iat_rva": 8815864
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_aligned_malloc",
+      "ordinal": null,
+      "iat_rva": 8815868
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "?name@type_info@@QBEPBDXZ",
+      "ordinal": null,
+      "iat_rva": 8815872
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "calloc",
+      "ordinal": null,
+      "iat_rva": 8815876
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "rewind",
+      "ordinal": null,
+      "iat_rva": 8815880
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "__dllonexit",
+      "ordinal": null,
+      "iat_rva": 8815884
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_onexit",
+      "ordinal": null,
+      "iat_rva": 8815888
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "??1type_info@@UAE@XZ",
+      "ordinal": null,
+      "iat_rva": 8815892
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_initterm",
+      "ordinal": null,
+      "iat_rva": 8815896
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_adjust_fdiv",
+      "ordinal": null,
+      "iat_rva": 8815900
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "__CppXcptFilter",
+      "ordinal": null,
+      "iat_rva": 8815904
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "__security_error_handler",
+      "ordinal": null,
+      "iat_rva": 8815908
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "?terminate@@YAXXZ",
+      "ordinal": null,
+      "iat_rva": 8815912
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_ftime",
+      "ordinal": null,
+      "iat_rva": 8815916
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_strupr",
+      "ordinal": null,
+      "iat_rva": 8815920
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_fstat",
+      "ordinal": null,
+      "iat_rva": 8815924
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wcslwr",
+      "ordinal": null,
+      "iat_rva": 8815928
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_wcsupr",
+      "ordinal": null,
+      "iat_rva": 8815932
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "fabs",
+      "ordinal": null,
+      "iat_rva": 8815936
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "_vsnwprintf",
+      "ordinal": null,
+      "iat_rva": 8815940
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "sin",
+      "ordinal": null,
+      "iat_rva": 8815944
+    },
+    {
+      "dll": "MSVCR71.dll",
+      "name": "gmtime",
+      "ordinal": null,
+      "iat_rva": 8815948
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymGetModuleInfo64",
+      "ordinal": null,
+      "iat_rva": 8816348
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "StackWalk64",
+      "ordinal": null,
+      "iat_rva": 8816352
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymFromAddr",
+      "ordinal": null,
+      "iat_rva": 8816356
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymFunctionTableAccess64",
+      "ordinal": null,
+      "iat_rva": 8816360
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "UnDecorateSymbolName",
+      "ordinal": null,
+      "iat_rva": 8816364
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymSetContext",
+      "ordinal": null,
+      "iat_rva": 8816368
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymEnumSymbols",
+      "ordinal": null,
+      "iat_rva": 8816372
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymGetTypeInfo",
+      "ordinal": null,
+      "iat_rva": 8816376
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymCleanup",
+      "ordinal": null,
+      "iat_rva": 8816380
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "MiniDumpWriteDump",
+      "ordinal": null,
+      "iat_rva": 8816384
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymInitialize",
+      "ordinal": null,
+      "iat_rva": 8816388
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymGetOptions",
+      "ordinal": null,
+      "iat_rva": 8816392
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymSetOptions",
+      "ordinal": null,
+      "iat_rva": 8816396
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymLoadModule64",
+      "ordinal": null,
+      "iat_rva": 8816400
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymGetModuleBase64",
+      "ordinal": null,
+      "iat_rva": 8816404
+    },
+    {
+      "dll": "mxowrap.dll",
+      "name": "SymGetLineFromAddr64",
+      "ordinal": null,
+      "iat_rva": 8816408
+    },
+    {
+      "dll": "VERSION.dll",
+      "name": "GetFileVersionInfoSizeA",
+      "ordinal": null,
+      "iat_rva": 8816140
+    },
+    {
+      "dll": "VERSION.dll",
+      "name": "GetFileVersionInfoA",
+      "ordinal": null,
+      "iat_rva": 8816144
+    },
+    {
+      "dll": "VERSION.dll",
+      "name": "VerQueryValueA",
+      "ordinal": null,
+      "iat_rva": 8816148
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "recvfrom",
+      "ordinal": null,
+      "iat_rva": 8816240
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "ntohs",
+      "ordinal": null,
+      "iat_rva": 8816244
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "sendto",
+      "ordinal": null,
+      "iat_rva": 8816248
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "getsockname",
+      "ordinal": null,
+      "iat_rva": 8816252
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "select",
+      "ordinal": null,
+      "iat_rva": 8816256
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "ntohl",
+      "ordinal": null,
+      "iat_rva": 8816260
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "inet_ntoa",
+      "ordinal": null,
+      "iat_rva": 8816264
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "getsockopt",
+      "ordinal": null,
+      "iat_rva": 8816268
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "setsockopt",
+      "ordinal": null,
+      "iat_rva": 8816272
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "bind",
+      "ordinal": null,
+      "iat_rva": 8816276
+    },
+    {
+      "dll": "WSOCK32.dll",
+      "name": "htonl",
+      "ordinal": null,
+      "iat_rva": 8816280
+    },
+    {
+      "dll": "r3d9.dll",
+      "name": "RajkoD3DCreate9",
+      "ordinal": null,
+      "iat_rva": 8816340
+    },
+    {
+      "dll": "DINPUT8.dll",
+      "name": "DirectInput8Create",
+      "ordinal": null,
+      "iat_rva": 8814620
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverEnum",
+      "ordinal": null,
+      "iat_rva": 8815140
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverOpen",
+      "ordinal": null,
+      "iat_rva": 8815144
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamConvert",
+      "ordinal": null,
+      "iat_rva": 8815148
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverDetailsA",
+      "ordinal": null,
+      "iat_rva": 8815152
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverClose",
+      "ordinal": null,
+      "iat_rva": 8815156
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmFormatSuggest",
+      "ordinal": null,
+      "iat_rva": 8815160
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamOpen",
+      "ordinal": null,
+      "iat_rva": 8815164
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamPrepareHeader",
+      "ordinal": null,
+      "iat_rva": 8815168
+    },
+    {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamClose",
+      "ordinal": null,
+      "iat_rva": 8815172
+    },
+    {
+      "dll": "SHELL32.dll",
+      "name": "ShellExecuteA",
+      "ordinal": null,
+      "iat_rva": 8815980
+    }
+  ],
+  "exports": [
+    {
+      "name": "ErrorClientDLL",
+      "ordinal": 1,
+      "rva": 4560
+    },
+    {
+      "name": "InitClientDLL",
+      "ordinal": 2,
+      "rva": 4768
+    },
+    {
+      "name": "RunClientDLL",
+      "ordinal": 3,
+      "rva": 4480
+    },
+    {
+      "name": "SetMasterDatabase",
+      "ordinal": 4,
+      "rva": 2742112
+    },
+    {
+      "name": "TermClientDLL",
+      "ordinal": 5,
+      "rva": 4512
+    }
+  ],
+  "iat_map": {
+    "0x6286861C": {
+      "dll": "WININET.dll",
+      "name": "HttpOpenRequestW"
+    },
+    "0x62868620": {
+      "dll": "WININET.dll",
+      "name": "InternetCloseHandle"
+    },
+    "0x62868624": {
+      "dll": "WININET.dll",
+      "name": "InternetConnectW"
+    },
+    "0x62868628": {
+      "dll": "WININET.dll",
+      "name": "InternetOpenW"
+    },
+    "0x6286862C": {
+      "dll": "WININET.dll",
+      "name": "HttpSendRequestW"
+    },
+    "0x62868634": {
+      "dll": "WINMM.dll",
+      "name": "timeGetTime"
+    },
+    "0x62868564": {
+      "dll": "RPCRT4.dll",
+      "name": "UuidCreateSequential"
+    },
+    "0x6286863C": {
+      "dll": "WS2_32.dll",
+      "name": "inet_addr"
+    },
+    "0x62868640": {
+      "dll": "WS2_32.dll",
+      "name": "gethostbyname"
+    },
+    "0x62868644": {
+      "dll": "WS2_32.dll",
+      "name": "WSACleanup"
+    },
+    "0x62868648": {
+      "dll": "WS2_32.dll",
+      "name": "connect"
+    },
+    "0x6286864C": {
+      "dll": "WS2_32.dll",
+      "name": "WSAGetLastError"
+    },
+    "0x62868650": {
+      "dll": "WS2_32.dll",
+      "name": "WSAStartup"
+    },
+    "0x62868654": {
+      "dll": "WS2_32.dll",
+      "name": "socket"
+    },
+    "0x62868658": {
+      "dll": "WS2_32.dll",
+      "name": "ioctlsocket"
+    },
+    "0x6286865C": {
+      "dll": "WS2_32.dll",
+      "name": "recv"
+    },
+    "0x62868660": {
+      "dll": "WS2_32.dll",
+      "name": "send"
+    },
+    "0x62868664": {
+      "dll": "WS2_32.dll",
+      "name": "closesocket"
+    },
+    "0x62868668": {
+      "dll": "WS2_32.dll",
+      "name": "htons"
+    },
+    "0x62868058": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateEventA"
+    },
+    "0x6286805C": {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedIncrement"
+    },
+    "0x62868060": {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedDecrement"
+    },
+    "0x62868064": {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedExchangeAdd"
+    },
+    "0x62868068": {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedExchange"
+    },
+    "0x6286806C": {
+      "dll": "KERNEL32.dll",
+      "name": "Sleep"
+    },
+    "0x62868070": {
+      "dll": "KERNEL32.dll",
+      "name": "DeleteCriticalSection"
+    },
+    "0x62868074": {
+      "dll": "KERNEL32.dll",
+      "name": "LeaveCriticalSection"
+    },
+    "0x62868078": {
+      "dll": "KERNEL32.dll",
+      "name": "EnterCriticalSection"
+    },
+    "0x6286807C": {
+      "dll": "KERNEL32.dll",
+      "name": "InitializeCriticalSection"
+    },
+    "0x62868080": {
+      "dll": "KERNEL32.dll",
+      "name": "GlobalUnlock"
+    },
+    "0x62868084": {
+      "dll": "KERNEL32.dll",
+      "name": "GlobalLock"
+    },
+    "0x62868088": {
+      "dll": "KERNEL32.dll",
+      "name": "GlobalAlloc"
+    },
+    "0x6286808C": {
+      "dll": "KERNEL32.dll",
+      "name": "GetTickCount"
+    },
+    "0x62868090": {
+      "dll": "KERNEL32.dll",
+      "name": "OutputDebugStringA"
+    },
+    "0x62868094": {
+      "dll": "KERNEL32.dll",
+      "name": "GetExitCodeProcess"
+    },
+    "0x62868098": {
+      "dll": "KERNEL32.dll",
+      "name": "WaitForSingleObject"
+    },
+    "0x6286809C": {
+      "dll": "KERNEL32.dll",
+      "name": "TerminateThread"
+    },
+    "0x628680A0": {
+      "dll": "KERNEL32.dll",
+      "name": "GetLastError"
+    },
+    "0x628680A4": {
+      "dll": "KERNEL32.dll",
+      "name": "TerminateProcess"
+    },
+    "0x628680A8": {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentProcess"
+    },
+    "0x628680AC": {
+      "dll": "KERNEL32.dll",
+      "name": "SetProcessAffinityMask"
+    },
+    "0x628680B0": {
+      "dll": "KERNEL32.dll",
+      "name": "GetProcessAffinityMask"
+    },
+    "0x628680B4": {
+      "dll": "KERNEL32.dll",
+      "name": "DeleteFileA"
+    },
+    "0x628680B8": {
+      "dll": "KERNEL32.dll",
+      "name": "MoveFileA"
+    },
+    "0x628680BC": {
+      "dll": "KERNEL32.dll",
+      "name": "SetThreadPriority"
+    },
+    "0x628680C0": {
+      "dll": "KERNEL32.dll",
+      "name": "FreeLibrary"
+    },
+    "0x628680C4": {
+      "dll": "KERNEL32.dll",
+      "name": "CompareStringA"
+    },
+    "0x628680C8": {
+      "dll": "KERNEL32.dll",
+      "name": "GetModuleHandleA"
+    },
+    "0x628680CC": {
+      "dll": "KERNEL32.dll",
+      "name": "GetModuleFileNameA"
+    },
+    "0x628680D0": {
+      "dll": "KERNEL32.dll",
+      "name": "GetWindowsDirectoryA"
+    },
+    "0x628680D4": {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemDirectoryA"
+    },
+    "0x628680D8": {
+      "dll": "KERNEL32.dll",
+      "name": "LoadLibraryA"
+    },
+    "0x628680DC": {
+      "dll": "KERNEL32.dll",
+      "name": "SetLastError"
+    },
+    "0x628680E0": {
+      "dll": "KERNEL32.dll",
+      "name": "GetTimeFormatA"
+    },
+    "0x628680E4": {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemTime"
+    },
+    "0x628680E8": {
+      "dll": "KERNEL32.dll",
+      "name": "GetVersion"
+    },
+    "0x628680EC": {
+      "dll": "KERNEL32.dll",
+      "name": "CloseHandle"
+    },
+    "0x628680F0": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateThread"
+    },
+    "0x628680F4": {
+      "dll": "KERNEL32.dll",
+      "name": "QueryPerformanceFrequency"
+    },
+    "0x628680F8": {
+      "dll": "KERNEL32.dll",
+      "name": "QueryPerformanceCounter"
+    },
+    "0x628680FC": {
+      "dll": "KERNEL32.dll",
+      "name": "SetEvent"
+    },
+    "0x62868100": {
+      "dll": "KERNEL32.dll",
+      "name": "GetExitCodeThread"
+    },
+    "0x62868104": {
+      "dll": "KERNEL32.dll",
+      "name": "ReadFile"
+    },
+    "0x62868108": {
+      "dll": "KERNEL32.dll",
+      "name": "TlsFree"
+    },
+    "0x6286810C": {
+      "dll": "KERNEL32.dll",
+      "name": "TlsAlloc"
+    },
+    "0x62868110": {
+      "dll": "KERNEL32.dll",
+      "name": "TlsGetValue"
+    },
+    "0x62868114": {
+      "dll": "KERNEL32.dll",
+      "name": "TlsSetValue"
+    },
+    "0x62868118": {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentDirectoryA"
+    },
+    "0x6286811C": {
+      "dll": "KERNEL32.dll",
+      "name": "GetEnvironmentVariableA"
+    },
+    "0x62868120": {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentProcessId"
+    },
+    "0x62868124": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateToolhelp32Snapshot"
+    },
+    "0x62868128": {
+      "dll": "KERNEL32.dll",
+      "name": "VirtualAlloc"
+    },
+    "0x6286812C": {
+      "dll": "KERNEL32.dll",
+      "name": "VirtualFree"
+    },
+    "0x62868130": {
+      "dll": "KERNEL32.dll",
+      "name": "HeapFree"
+    },
+    "0x62868134": {
+      "dll": "KERNEL32.dll",
+      "name": "Module32First"
+    },
+    "0x62868138": {
+      "dll": "KERNEL32.dll",
+      "name": "HeapAlloc"
+    },
+    "0x6286813C": {
+      "dll": "KERNEL32.dll",
+      "name": "GetFullPathNameA"
+    },
+    "0x62868140": {
+      "dll": "KERNEL32.dll",
+      "name": "FindResourceW"
+    },
+    "0x62868144": {
+      "dll": "KERNEL32.dll",
+      "name": "FindResourceA"
+    },
+    "0x62868148": {
+      "dll": "KERNEL32.dll",
+      "name": "SizeofResource"
+    },
+    "0x6286814C": {
+      "dll": "KERNEL32.dll",
+      "name": "LoadResource"
+    },
+    "0x62868150": {
+      "dll": "KERNEL32.dll",
+      "name": "GetLocalTime"
+    },
+    "0x62868154": {
+      "dll": "KERNEL32.dll",
+      "name": "GetProcessHeap"
+    },
+    "0x62868158": {
+      "dll": "KERNEL32.dll",
+      "name": "IsBadStringPtrA"
+    },
+    "0x6286815C": {
+      "dll": "KERNEL32.dll",
+      "name": "LocalFree"
+    },
+    "0x62868160": {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentThread"
+    },
+    "0x62868164": {
+      "dll": "KERNEL32.dll",
+      "name": "Module32Next"
+    },
+    "0x62868168": {
+      "dll": "KERNEL32.dll",
+      "name": "LockResource"
+    },
+    "0x6286816C": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateFileW"
+    },
+    "0x62868170": {
+      "dll": "KERNEL32.dll",
+      "name": "IsProcessorFeaturePresent"
+    },
+    "0x62868174": {
+      "dll": "KERNEL32.dll",
+      "name": "OutputDebugStringW"
+    },
+    "0x62868178": {
+      "dll": "KERNEL32.dll",
+      "name": "DebugBreak"
+    },
+    "0x6286817C": {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemTimeAsFileTime"
+    },
+    "0x62868180": {
+      "dll": "KERNEL32.dll",
+      "name": "DisableThreadLibraryCalls"
+    },
+    "0x62868184": {
+      "dll": "KERNEL32.dll",
+      "name": "ExitProcess"
+    },
+    "0x62868188": {
+      "dll": "KERNEL32.dll",
+      "name": "Thread32First"
+    },
+    "0x6286818C": {
+      "dll": "KERNEL32.dll",
+      "name": "OpenThread"
+    },
+    "0x62868190": {
+      "dll": "KERNEL32.dll",
+      "name": "Thread32Next"
+    },
+    "0x62868194": {
+      "dll": "KERNEL32.dll",
+      "name": "GetVersionExA"
+    },
+    "0x62868198": {
+      "dll": "KERNEL32.dll",
+      "name": "GetStringTypeA"
+    },
+    "0x6286819C": {
+      "dll": "KERNEL32.dll",
+      "name": "LCMapStringA"
+    },
+    "0x628681A0": {
+      "dll": "KERNEL32.dll",
+      "name": "EnumSystemLocalesA"
+    },
+    "0x628681A4": {
+      "dll": "KERNEL32.dll",
+      "name": "lstrcmpiA"
+    },
+    "0x628681A8": {
+      "dll": "KERNEL32.dll",
+      "name": "GetLocaleInfoA"
+    },
+    "0x628681AC": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateFileMappingA"
+    },
+    "0x628681B0": {
+      "dll": "KERNEL32.dll",
+      "name": "MapViewOfFile"
+    },
+    "0x628681B4": {
+      "dll": "KERNEL32.dll",
+      "name": "UnmapViewOfFile"
+    },
+    "0x628681B8": {
+      "dll": "KERNEL32.dll",
+      "name": "SetEndOfFile"
+    },
+    "0x628681BC": {
+      "dll": "KERNEL32.dll",
+      "name": "GetFileType"
+    },
+    "0x628681C0": {
+      "dll": "KERNEL32.dll",
+      "name": "RaiseException"
+    },
+    "0x628681C4": {
+      "dll": "KERNEL32.dll",
+      "name": "ExitThread"
+    },
+    "0x628681C8": {
+      "dll": "KERNEL32.dll",
+      "name": "ResumeThread"
+    },
+    "0x628681CC": {
+      "dll": "KERNEL32.dll",
+      "name": "GetCurrentThreadId"
+    },
+    "0x628681D0": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateProcessA"
+    },
+    "0x628681D4": {
+      "dll": "KERNEL32.dll",
+      "name": "SetPriorityClass"
+    },
+    "0x628681D8": {
+      "dll": "KERNEL32.dll",
+      "name": "GetProcessTimes"
+    },
+    "0x628681DC": {
+      "dll": "KERNEL32.dll",
+      "name": "OpenProcess"
+    },
+    "0x628681E0": {
+      "dll": "KERNEL32.dll",
+      "name": "OpenFile"
+    },
+    "0x628681E4": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateDirectoryA"
+    },
+    "0x628681E8": {
+      "dll": "KERNEL32.dll",
+      "name": "SetErrorMode"
+    },
+    "0x628681EC": {
+      "dll": "KERNEL32.dll",
+      "name": "GetDriveTypeA"
+    },
+    "0x628681F0": {
+      "dll": "KERNEL32.dll",
+      "name": "GetSystemInfo"
+    },
+    "0x628681F4": {
+      "dll": "KERNEL32.dll",
+      "name": "GetDiskFreeSpaceExA"
+    },
+    "0x628681F8": {
+      "dll": "KERNEL32.dll",
+      "name": "SuspendThread"
+    },
+    "0x628681FC": {
+      "dll": "KERNEL32.dll",
+      "name": "CopyFileA"
+    },
+    "0x62868200": {
+      "dll": "KERNEL32.dll",
+      "name": "SetUnhandledExceptionFilter"
+    },
+    "0x62868204": {
+      "dll": "KERNEL32.dll",
+      "name": "InterlockedCompareExchange"
+    },
+    "0x62868208": {
+      "dll": "KERNEL32.dll",
+      "name": "FindFirstFileA"
+    },
+    "0x6286820C": {
+      "dll": "KERNEL32.dll",
+      "name": "FindNextFileA"
+    },
+    "0x62868210": {
+      "dll": "KERNEL32.dll",
+      "name": "CreateFileA"
+    },
+    "0x62868214": {
+      "dll": "KERNEL32.dll",
+      "name": "GetFileSize"
+    },
+    "0x62868218": {
+      "dll": "KERNEL32.dll",
+      "name": "SetFilePointer"
+    },
+    "0x6286821C": {
+      "dll": "KERNEL32.dll",
+      "name": "WriteFile"
+    },
+    "0x62868574": {
+      "dll": "USER32.dll",
+      "name": "MoveWindow"
+    },
+    "0x62868578": {
+      "dll": "USER32.dll",
+      "name": "SetFocus"
+    },
+    "0x6286857C": {
+      "dll": "USER32.dll",
+      "name": "PostQuitMessage"
+    },
+    "0x62868580": {
+      "dll": "USER32.dll",
+      "name": "GetKeyState"
+    },
+    "0x62868584": {
+      "dll": "USER32.dll",
+      "name": "EnumDisplaySettingsA"
+    },
+    "0x62868588": {
+      "dll": "USER32.dll",
+      "name": "ShowCursor"
+    },
+    "0x6286858C": {
+      "dll": "USER32.dll",
+      "name": "SetCursor"
+    },
+    "0x62868590": {
+      "dll": "USER32.dll",
+      "name": "GetWindowRect"
+    },
+    "0x62868594": {
+      "dll": "USER32.dll",
+      "name": "GetDesktopWindow"
+    },
+    "0x62868598": {
+      "dll": "USER32.dll",
+      "name": "AdjustWindowRect"
+    },
+    "0x6286859C": {
+      "dll": "USER32.dll",
+      "name": "SetWindowPos"
+    },
+    "0x628685A0": {
+      "dll": "USER32.dll",
+      "name": "ReleaseDC"
+    },
+    "0x628685A4": {
+      "dll": "USER32.dll",
+      "name": "GetDC"
+    },
+    "0x628685A8": {
+      "dll": "USER32.dll",
+      "name": "SystemParametersInfoA"
+    },
+    "0x628685AC": {
+      "dll": "USER32.dll",
+      "name": "DestroyCursor"
+    },
+    "0x628685B0": {
+      "dll": "USER32.dll",
+      "name": "GetCursorPos"
+    },
+    "0x628685B4": {
+      "dll": "USER32.dll",
+      "name": "SetCursorPos"
+    },
+    "0x628685B8": {
+      "dll": "USER32.dll",
+      "name": "ClientToScreen"
+    },
+    "0x628685BC": {
+      "dll": "USER32.dll",
+      "name": "ClipCursor"
+    },
+    "0x628685C0": {
+      "dll": "USER32.dll",
+      "name": "GetClientRect"
+    },
+    "0x628685C4": {
+      "dll": "USER32.dll",
+      "name": "EmptyClipboard"
+    },
+    "0x628685C8": {
+      "dll": "USER32.dll",
+      "name": "SetClipboardData"
+    },
+    "0x628685CC": {
+      "dll": "USER32.dll",
+      "name": "CloseClipboard"
+    },
+    "0x628685D0": {
+      "dll": "USER32.dll",
+      "name": "TranslateMessage"
+    },
+    "0x628685D4": {
+      "dll": "USER32.dll",
+      "name": "ValidateRect"
+    },
+    "0x628685D8": {
+      "dll": "USER32.dll",
+      "name": "IsIconic"
+    },
+    "0x628685DC": {
+      "dll": "USER32.dll",
+      "name": "GetSystemMetrics"
+    },
+    "0x628685E0": {
+      "dll": "USER32.dll",
+      "name": "ShowWindow"
+    },
+    "0x628685E4": {
+      "dll": "USER32.dll",
+      "name": "UpdateWindow"
+    },
+    "0x628685E8": {
+      "dll": "USER32.dll",
+      "name": "SetForegroundWindow"
+    },
+    "0x628685EC": {
+      "dll": "USER32.dll",
+      "name": "BringWindowToTop"
+    },
+    "0x628685F0": {
+      "dll": "USER32.dll",
+      "name": "GetAsyncKeyState"
+    },
+    "0x628685F4": {
+      "dll": "USER32.dll",
+      "name": "DrawTextA"
+    },
+    "0x628685F8": {
+      "dll": "USER32.dll",
+      "name": "OpenClipboard"
+    },
+    "0x628685FC": {
+      "dll": "USER32.dll",
+      "name": "GetForegroundWindow"
+    },
+    "0x62868600": {
+      "dll": "USER32.dll",
+      "name": "MessageBoxA"
+    },
+    "0x62868604": {
+      "dll": "USER32.dll",
+      "name": "ScreenToClient"
+    },
+    "0x62868024": {
+      "dll": "GDI32.dll",
+      "name": "CreateFontA"
+    },
+    "0x62868028": {
+      "dll": "GDI32.dll",
+      "name": "DeleteObject"
+    },
+    "0x6286802C": {
+      "dll": "GDI32.dll",
+      "name": "SetTextColor"
+    },
+    "0x62868030": {
+      "dll": "GDI32.dll",
+      "name": "SetBkMode"
+    },
+    "0x62868034": {
+      "dll": "GDI32.dll",
+      "name": "SetBkColor"
+    },
+    "0x62868038": {
+      "dll": "GDI32.dll",
+      "name": "SelectObject"
+    },
+    "0x6286803C": {
+      "dll": "GDI32.dll",
+      "name": "DeleteDC"
+    },
+    "0x62868040": {
+      "dll": "GDI32.dll",
+      "name": "GetDIBits"
+    },
+    "0x62868044": {
+      "dll": "GDI32.dll",
+      "name": "BitBlt"
+    },
+    "0x62868048": {
+      "dll": "GDI32.dll",
+      "name": "CreateCompatibleBitmap"
+    },
+    "0x6286804C": {
+      "dll": "GDI32.dll",
+      "name": "CreateCompatibleDC"
+    },
+    "0x62868050": {
+      "dll": "GDI32.dll",
+      "name": "GetStockObject"
+    },
+    "0x62868000": {
+      "dll": "ADVAPI32.dll",
+      "name": "CryptGenRandom"
+    },
+    "0x62868004": {
+      "dll": "ADVAPI32.dll",
+      "name": "RegOpenKeyA"
+    },
+    "0x62868008": {
+      "dll": "ADVAPI32.dll",
+      "name": "CryptAcquireContextA"
+    },
+    "0x6286800C": {
+      "dll": "ADVAPI32.dll",
+      "name": "RegCloseKey"
+    },
+    "0x62868010": {
+      "dll": "ADVAPI32.dll",
+      "name": "CryptReleaseContext"
+    },
+    "0x62868014": {
+      "dll": "ADVAPI32.dll",
+      "name": "RegQueryValueExA"
+    },
+    "0x62868734": {
+      "dll": "ole32.dll",
+      "name": "CoCreateGuid"
+    },
+    "0x62868738": {
+      "dll": "ole32.dll",
+      "name": "CoInitialize"
+    },
+    "0x6286873C": {
+      "dll": "ole32.dll",
+      "name": "CoUninitialize"
+    },
+    "0x62868740": {
+      "dll": "ole32.dll",
+      "name": "CoCreateInstance"
+    },
+    "0x62868554": {
+      "dll": "OLEAUT32.dll",
+      "name": "VariantClear"
+    },
+    "0x62868558": {
+      "dll": "OLEAUT32.dll",
+      "name": "SysFreeString"
+    },
+    "0x6286855C": {
+      "dll": "OLEAUT32.dll",
+      "name": "VariantInit"
+    },
+    "0x628686A0": {
+      "dll": "binkw32.dll",
+      "name": "_BinkWait@4"
+    },
+    "0x628686A4": {
+      "dll": "binkw32.dll",
+      "name": "_BinkNextFrame@4"
+    },
+    "0x628686A8": {
+      "dll": "binkw32.dll",
+      "name": "_BinkGoto@12"
+    },
+    "0x628686AC": {
+      "dll": "binkw32.dll",
+      "name": "_BinkGetTrackID@8"
+    },
+    "0x628686B0": {
+      "dll": "binkw32.dll",
+      "name": "_BinkSetVolume@12"
+    },
+    "0x628686B4": {
+      "dll": "binkw32.dll",
+      "name": "_BinkSetPan@12"
+    },
+    "0x628686B8": {
+      "dll": "binkw32.dll",
+      "name": "_BinkOpenDirectSound@4"
+    },
+    "0x628686BC": {
+      "dll": "binkw32.dll",
+      "name": "_BinkSetSoundSystem@8"
+    },
+    "0x628686C0": {
+      "dll": "binkw32.dll",
+      "name": "_BinkOpen@8"
+    },
+    "0x628686C4": {
+      "dll": "binkw32.dll",
+      "name": "_BinkClose@4"
+    },
+    "0x628686C8": {
+      "dll": "binkw32.dll",
+      "name": "_BinkDoFrame@4"
+    },
+    "0x628686CC": {
+      "dll": "binkw32.dll",
+      "name": "_BinkCopyToBuffer@28"
+    },
+    "0x62868720": {
+      "dll": "dllMediaPlayer.dll",
+      "name": "?GetMediaPlayerLastError@@YAPBDXZ"
+    },
+    "0x62868724": {
+      "dll": "dllMediaPlayer.dll",
+      "name": "?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z"
+    },
+    "0x6286872C": {
+      "dll": "dllWebBrowser.dll",
+      "name": "?CreateBrowser@@YAPAVIControl@Browser@@PAUHWND__@@KK@Z"
+    },
+    "0x62868748": {
+      "dll": "pythonMXO.dll",
+      "name": "Py_InitModule4"
+    },
+    "0x6286874C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyInt_FromLong"
+    },
+    "0x62868750": {
+      "dll": "pythonMXO.dll",
+      "name": "PyArg_ParseTuple"
+    },
+    "0x62868754": {
+      "dll": "pythonMXO.dll",
+      "name": "_Py_ZeroStruct"
+    },
+    "0x62868758": {
+      "dll": "pythonMXO.dll",
+      "name": "_Py_TrueStruct"
+    },
+    "0x6286875C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_Free"
+    },
+    "0x62868760": {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_SetString"
+    },
+    "0x62868764": {
+      "dll": "pythonMXO.dll",
+      "name": "PyExc_IndexError"
+    },
+    "0x62868768": {
+      "dll": "pythonMXO.dll",
+      "name": "_Py_NoneStruct"
+    },
+    "0x6286876C": {
+      "dll": "pythonMXO.dll",
+      "name": "_PyObject_New"
+    },
+    "0x62868770": {
+      "dll": "pythonMXO.dll",
+      "name": "PyType_Type"
+    },
+    "0x62868774": {
+      "dll": "pythonMXO.dll",
+      "name": "PyFloat_AsDouble"
+    },
+    "0x62868778": {
+      "dll": "pythonMXO.dll",
+      "name": "PyFloat_Type"
+    },
+    "0x6286877C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_AsUnsignedLong"
+    },
+    "0x62868780": {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_Type"
+    },
+    "0x62868784": {
+      "dll": "pythonMXO.dll",
+      "name": "PyInt_AsLong"
+    },
+    "0x62868788": {
+      "dll": "pythonMXO.dll",
+      "name": "PyType_IsSubtype"
+    },
+    "0x6286878C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyInt_Type"
+    },
+    "0x62868790": {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Occurred"
+    },
+    "0x62868794": {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_CallObject"
+    },
+    "0x62868798": {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_AddIntConstant"
+    },
+    "0x6286879C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_Size"
+    },
+    "0x628687A0": {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_AsString"
+    },
+    "0x628687A4": {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_SetItem"
+    },
+    "0x628687A8": {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_FromString"
+    },
+    "0x628687AC": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_AsTuple"
+    },
+    "0x628687B0": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_Append"
+    },
+    "0x628687B4": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_New"
+    },
+    "0x628687B8": {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Clear"
+    },
+    "0x628687BC": {
+      "dll": "pythonMXO.dll",
+      "name": "Py_FindMethod"
+    },
+    "0x628687C0": {
+      "dll": "pythonMXO.dll",
+      "name": "Py_BuildValue"
+    },
+    "0x628687C4": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_Type"
+    },
+    "0x628687C8": {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_GetAttrString"
+    },
+    "0x628687CC": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_GetItem"
+    },
+    "0x628687D0": {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_Size"
+    },
+    "0x628687D4": {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_Type"
+    },
+    "0x628687D8": {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_Type"
+    },
+    "0x628687DC": {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_FromFormat"
+    },
+    "0x628687E0": {
+      "dll": "pythonMXO.dll",
+      "name": "PyExc_AttributeError"
+    },
+    "0x628687E4": {
+      "dll": "pythonMXO.dll",
+      "name": "PyType_Ready"
+    },
+    "0x628687E8": {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_AsUnsignedLongMask"
+    },
+    "0x628687EC": {
+      "dll": "pythonMXO.dll",
+      "name": "PyList_SetItem"
+    },
+    "0x628687F0": {
+      "dll": "pythonMXO.dll",
+      "name": "PyUnicodeUCS2_FromWideChar"
+    },
+    "0x628687F4": {
+      "dll": "pythonMXO.dll",
+      "name": "PyString_FromStringAndSize"
+    },
+    "0x628687F8": {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_FromUnsignedLongLong"
+    },
+    "0x628687FC": {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_AddModule"
+    },
+    "0x62868800": {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_SetItemString"
+    },
+    "0x62868804": {
+      "dll": "pythonMXO.dll",
+      "name": "PyEval_GetBuiltins"
+    },
+    "0x62868808": {
+      "dll": "pythonMXO.dll",
+      "name": "Py_Finalize"
+    },
+    "0x6286880C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_New"
+    },
+    "0x62868810": {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_ImportModule"
+    },
+    "0x62868814": {
+      "dll": "pythonMXO.dll",
+      "name": "PySys_SetPath"
+    },
+    "0x62868818": {
+      "dll": "pythonMXO.dll",
+      "name": "PyRun_SimpleString"
+    },
+    "0x6286881C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyNumber_Check"
+    },
+    "0x62868820": {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_HasAttrString"
+    },
+    "0x62868824": {
+      "dll": "pythonMXO.dll",
+      "name": "PyUnicodeUCS2_AsWideChar"
+    },
+    "0x62868828": {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_SetAttrString"
+    },
+    "0x6286882C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyFloat_FromDouble"
+    },
+    "0x62868830": {
+      "dll": "pythonMXO.dll",
+      "name": "PyLong_FromUnsignedLong"
+    },
+    "0x62868834": {
+      "dll": "pythonMXO.dll",
+      "name": "PyBool_FromLong"
+    },
+    "0x62868838": {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_New"
+    },
+    "0x6286883C": {
+      "dll": "pythonMXO.dll",
+      "name": "Py_Initialize"
+    },
+    "0x62868840": {
+      "dll": "pythonMXO.dll",
+      "name": "Py_IsInitialized"
+    },
+    "0x62868844": {
+      "dll": "pythonMXO.dll",
+      "name": "PyCallable_Check"
+    },
+    "0x62868848": {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_GetItemString"
+    },
+    "0x6286884C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_GetName"
+    },
+    "0x62868850": {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_ReloadModule"
+    },
+    "0x62868854": {
+      "dll": "pythonMXO.dll",
+      "name": "PyDict_Next"
+    },
+    "0x62868858": {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_GetDict"
+    },
+    "0x6286885C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyModule_Type"
+    },
+    "0x62868860": {
+      "dll": "pythonMXO.dll",
+      "name": "PyImport_Import"
+    },
+    "0x62868864": {
+      "dll": "pythonMXO.dll",
+      "name": "PyObject_CallFunctionObjArgs"
+    },
+    "0x62868868": {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Fetch"
+    },
+    "0x6286886C": {
+      "dll": "pythonMXO.dll",
+      "name": "PyErr_Print"
+    },
+    "0x62868870": {
+      "dll": "pythonMXO.dll",
+      "name": "PyRun_String"
+    },
+    "0x62868874": {
+      "dll": "pythonMXO.dll",
+      "name": "PyTuple_GetItem"
+    },
+    "0x6286824C": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIsinh"
+    },
+    "0x62868250": {
+      "dll": "MSVCR71.dll",
+      "name": "_CItanh"
+    },
+    "0x62868254": {
+      "dll": "MSVCR71.dll",
+      "name": "_strdup"
+    },
+    "0x62868258": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIpow"
+    },
+    "0x6286825C": {
+      "dll": "MSVCR71.dll",
+      "name": "_controlfp"
+    },
+    "0x62868260": {
+      "dll": "MSVCR71.dll",
+      "name": "_ftol"
+    },
+    "0x62868264": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIacos"
+    },
+    "0x62868268": {
+      "dll": "MSVCR71.dll",
+      "name": "_stricmp"
+    },
+    "0x6286826C": {
+      "dll": "MSVCR71.dll",
+      "name": "_itoa"
+    },
+    "0x62868270": {
+      "dll": "MSVCR71.dll",
+      "name": "_strnicmp"
+    },
+    "0x62868274": {
+      "dll": "MSVCR71.dll",
+      "name": "_wcsicmp"
+    },
+    "0x62868278": {
+      "dll": "MSVCR71.dll",
+      "name": "malloc"
+    },
+    "0x6286827C": {
+      "dll": "MSVCR71.dll",
+      "name": "free"
+    },
+    "0x62868280": {
+      "dll": "MSVCR71.dll",
+      "name": "_msize"
+    },
+    "0x62868284": {
+      "dll": "MSVCR71.dll",
+      "name": "_snprintf"
+    },
+    "0x62868288": {
+      "dll": "MSVCR71.dll",
+      "name": "memmove"
+    },
+    "0x6286828C": {
+      "dll": "MSVCR71.dll",
+      "name": "perror"
+    },
+    "0x62868290": {
+      "dll": "MSVCR71.dll",
+      "name": "_errno"
+    },
+    "0x62868294": {
+      "dll": "MSVCR71.dll",
+      "name": "strchr"
+    },
+    "0x62868298": {
+      "dll": "MSVCR71.dll",
+      "name": "_assert"
+    },
+    "0x6286829C": {
+      "dll": "MSVCR71.dll",
+      "name": "_purecall"
+    },
+    "0x628682A0": {
+      "dll": "MSVCR71.dll",
+      "name": "_vsnprintf"
+    },
+    "0x628682A4": {
+      "dll": "MSVCR71.dll",
+      "name": "cos"
+    },
+    "0x628682A8": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIexp"
+    },
+    "0x628682AC": {
+      "dll": "MSVCR71.dll",
+      "name": "sqrt"
+    },
+    "0x628682B0": {
+      "dll": "MSVCR71.dll",
+      "name": "atan"
+    },
+    "0x628682B4": {
+      "dll": "MSVCR71.dll",
+      "name": "_ultoa"
+    },
+    "0x628682B8": {
+      "dll": "MSVCR71.dll",
+      "name": "sprintf"
+    },
+    "0x628682BC": {
+      "dll": "MSVCR71.dll",
+      "name": "atoi"
+    },
+    "0x628682C0": {
+      "dll": "MSVCR71.dll",
+      "name": "strtoul"
+    },
+    "0x628682C4": {
+      "dll": "MSVCR71.dll",
+      "name": "printf"
+    },
+    "0x628682C8": {
+      "dll": "MSVCR71.dll",
+      "name": "fread"
+    },
+    "0x628682CC": {
+      "dll": "MSVCR71.dll",
+      "name": "ftell"
+    },
+    "0x628682D0": {
+      "dll": "MSVCR71.dll",
+      "name": "fseek"
+    },
+    "0x628682D4": {
+      "dll": "MSVCR71.dll",
+      "name": "strstr"
+    },
+    "0x628682D8": {
+      "dll": "MSVCR71.dll",
+      "name": "strncpy"
+    },
+    "0x628682DC": {
+      "dll": "MSVCR71.dll",
+      "name": "difftime"
+    },
+    "0x628682E0": {
+      "dll": "MSVCR71.dll",
+      "name": "time"
+    },
+    "0x628682E4": {
+      "dll": "MSVCR71.dll",
+      "name": "acos"
+    },
+    "0x628682E8": {
+      "dll": "MSVCR71.dll",
+      "name": "pow"
+    },
+    "0x628682EC": {
+      "dll": "MSVCR71.dll",
+      "name": "rand"
+    },
+    "0x628682F0": {
+      "dll": "MSVCR71.dll",
+      "name": "isalnum"
+    },
+    "0x628682F4": {
+      "dll": "MSVCR71.dll",
+      "name": "isalpha"
+    },
+    "0x628682F8": {
+      "dll": "MSVCR71.dll",
+      "name": "wcscpy"
+    },
+    "0x628682FC": {
+      "dll": "MSVCR71.dll",
+      "name": "ceil"
+    },
+    "0x62868300": {
+      "dll": "MSVCR71.dll",
+      "name": "swprintf"
+    },
+    "0x62868304": {
+      "dll": "MSVCR71.dll",
+      "name": "localtime"
+    },
+    "0x62868308": {
+      "dll": "MSVCR71.dll",
+      "name": "_wasctime"
+    },
+    "0x6286830C": {
+      "dll": "MSVCR71.dll",
+      "name": "floor"
+    },
+    "0x62868310": {
+      "dll": "MSVCR71.dll",
+      "name": "_CxxThrowException"
+    },
+    "0x62868314": {
+      "dll": "MSVCR71.dll",
+      "name": "_wtoi"
+    },
+    "0x62868318": {
+      "dll": "MSVCR71.dll",
+      "name": "_itow"
+    },
+    "0x6286831C": {
+      "dll": "MSVCR71.dll",
+      "name": "isdigit"
+    },
+    "0x62868320": {
+      "dll": "MSVCR71.dll",
+      "name": "wcstombs"
+    },
+    "0x62868324": {
+      "dll": "MSVCR71.dll",
+      "name": "iswspace"
+    },
+    "0x62868328": {
+      "dll": "MSVCR71.dll",
+      "name": "atof"
+    },
+    "0x6286832C": {
+      "dll": "MSVCR71.dll",
+      "name": "_beginthread"
+    },
+    "0x62868330": {
+      "dll": "MSVCR71.dll",
+      "name": "fclose"
+    },
+    "0x62868334": {
+      "dll": "MSVCR71.dll",
+      "name": "strtok"
+    },
+    "0x62868338": {
+      "dll": "MSVCR71.dll",
+      "name": "fgets"
+    },
+    "0x6286833C": {
+      "dll": "MSVCR71.dll",
+      "name": "fopen"
+    },
+    "0x62868340": {
+      "dll": "MSVCR71.dll",
+      "name": "fprintf"
+    },
+    "0x62868344": {
+      "dll": "MSVCR71.dll",
+      "name": "_sleep"
+    },
+    "0x62868348": {
+      "dll": "MSVCR71.dll",
+      "name": "wcslen"
+    },
+    "0x6286834C": {
+      "dll": "MSVCR71.dll",
+      "name": "mbstowcs"
+    },
+    "0x62868350": {
+      "dll": "MSVCR71.dll",
+      "name": "_strdate"
+    },
+    "0x62868354": {
+      "dll": "MSVCR71.dll",
+      "name": "_strtime"
+    },
+    "0x62868358": {
+      "dll": "MSVCR71.dll",
+      "name": "tan"
+    },
+    "0x6286835C": {
+      "dll": "MSVCR71.dll",
+      "name": "fwrite"
+    },
+    "0x62868360": {
+      "dll": "MSVCR71.dll",
+      "name": "feof"
+    },
+    "0x62868364": {
+      "dll": "MSVCR71.dll",
+      "name": "_mkdir"
+    },
+    "0x62868368": {
+      "dll": "MSVCR71.dll",
+      "name": "strftime"
+    },
+    "0x6286836C": {
+      "dll": "MSVCR71.dll",
+      "name": "remove"
+    },
+    "0x62868370": {
+      "dll": "MSVCR71.dll",
+      "name": "_utime"
+    },
+    "0x62868374": {
+      "dll": "MSVCR71.dll",
+      "name": "_stat"
+    },
+    "0x62868378": {
+      "dll": "MSVCR71.dll",
+      "name": "strrchr"
+    },
+    "0x6286837C": {
+      "dll": "MSVCR71.dll",
+      "name": "asin"
+    },
+    "0x62868380": {
+      "dll": "MSVCR71.dll",
+      "name": "toupper"
+    },
+    "0x62868384": {
+      "dll": "MSVCR71.dll",
+      "name": "fputws"
+    },
+    "0x62868388": {
+      "dll": "MSVCR71.dll",
+      "name": "_wfopen"
+    },
+    "0x6286838C": {
+      "dll": "MSVCR71.dll",
+      "name": "fwprintf"
+    },
+    "0x62868390": {
+      "dll": "MSVCR71.dll",
+      "name": "fputc"
+    },
+    "0x62868394": {
+      "dll": "MSVCR71.dll",
+      "name": "wcsstr"
+    },
+    "0x62868398": {
+      "dll": "MSVCR71.dll",
+      "name": "_wsplitpath"
+    },
+    "0x6286839C": {
+      "dll": "MSVCR71.dll",
+      "name": "fflush"
+    },
+    "0x628683A0": {
+      "dll": "MSVCR71.dll",
+      "name": "sscanf"
+    },
+    "0x628683A4": {
+      "dll": "MSVCR71.dll",
+      "name": "realloc"
+    },
+    "0x628683A8": {
+      "dll": "MSVCR71.dll",
+      "name": "_gcvt"
+    },
+    "0x628683AC": {
+      "dll": "MSVCR71.dll",
+      "name": "strncat"
+    },
+    "0x628683B0": {
+      "dll": "MSVCR71.dll",
+      "name": "vsprintf"
+    },
+    "0x628683B4": {
+      "dll": "MSVCR71.dll",
+      "name": "isxdigit"
+    },
+    "0x628683B8": {
+      "dll": "MSVCR71.dll",
+      "name": "fgetc"
+    },
+    "0x628683BC": {
+      "dll": "MSVCR71.dll",
+      "name": "raise"
+    },
+    "0x628683C0": {
+      "dll": "MSVCR71.dll",
+      "name": "clock"
+    },
+    "0x628683C4": {
+      "dll": "MSVCR71.dll",
+      "name": "__CxxFrameHandler"
+    },
+    "0x628683C8": {
+      "dll": "MSVCR71.dll",
+      "name": "log10"
+    },
+    "0x628683CC": {
+      "dll": "MSVCR71.dll",
+      "name": "isspace"
+    },
+    "0x628683D0": {
+      "dll": "MSVCR71.dll",
+      "name": "isprint"
+    },
+    "0x628683D4": {
+      "dll": "MSVCR71.dll",
+      "name": "_except_handler3"
+    },
+    "0x628683D8": {
+      "dll": "MSVCR71.dll",
+      "name": "_fsopen"
+    },
+    "0x628683DC": {
+      "dll": "MSVCR71.dll",
+      "name": "fputs"
+    },
+    "0x628683E0": {
+      "dll": "MSVCR71.dll",
+      "name": "fsetpos"
+    },
+    "0x628683E4": {
+      "dll": "MSVCR71.dll",
+      "name": "fgetpos"
+    },
+    "0x628683E8": {
+      "dll": "MSVCR71.dll",
+      "name": "rename"
+    },
+    "0x628683EC": {
+      "dll": "MSVCR71.dll",
+      "name": "strncmp"
+    },
+    "0x628683F0": {
+      "dll": "MSVCR71.dll",
+      "name": "_chdir"
+    },
+    "0x628683F4": {
+      "dll": "MSVCR71.dll",
+      "name": "_getcwd"
+    },
+    "0x628683F8": {
+      "dll": "MSVCR71.dll",
+      "name": "_splitpath"
+    },
+    "0x628683FC": {
+      "dll": "MSVCR71.dll",
+      "name": "fmod"
+    },
+    "0x62868400": {
+      "dll": "MSVCR71.dll",
+      "name": "exit"
+    },
+    "0x62868404": {
+      "dll": "MSVCR71.dll",
+      "name": "_iob"
+    },
+    "0x62868408": {
+      "dll": "MSVCR71.dll",
+      "name": "getenv"
+    },
+    "0x6286840C": {
+      "dll": "MSVCR71.dll",
+      "name": "tmpfile"
+    },
+    "0x62868410": {
+      "dll": "MSVCR71.dll",
+      "name": "_heapchk"
+    },
+    "0x62868414": {
+      "dll": "MSVCR71.dll",
+      "name": "_findclose"
+    },
+    "0x62868418": {
+      "dll": "MSVCR71.dll",
+      "name": "_findnext"
+    },
+    "0x6286841C": {
+      "dll": "MSVCR71.dll",
+      "name": "_findfirst"
+    },
+    "0x62868420": {
+      "dll": "MSVCR71.dll",
+      "name": "_beginthreadex"
+    },
+    "0x62868424": {
+      "dll": "MSVCR71.dll",
+      "name": "strerror"
+    },
+    "0x62868428": {
+      "dll": "MSVCR71.dll",
+      "name": "ungetc"
+    },
+    "0x6286842C": {
+      "dll": "MSVCR71.dll",
+      "name": "getc"
+    },
+    "0x62868430": {
+      "dll": "MSVCR71.dll",
+      "name": "fscanf"
+    },
+    "0x62868434": {
+      "dll": "MSVCR71.dll",
+      "name": "system"
+    },
+    "0x62868438": {
+      "dll": "MSVCR71.dll",
+      "name": "tmpnam"
+    },
+    "0x6286843C": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIcosh"
+    },
+    "0x62868440": {
+      "dll": "MSVCR71.dll",
+      "name": "mktime"
+    },
+    "0x62868444": {
+      "dll": "MSVCR71.dll",
+      "name": "setlocale"
+    },
+    "0x62868448": {
+      "dll": "MSVCR71.dll",
+      "name": "atan2"
+    },
+    "0x6286844C": {
+      "dll": "MSVCR71.dll",
+      "name": "log"
+    },
+    "0x62868450": {
+      "dll": "MSVCR71.dll",
+      "name": "exp"
+    },
+    "0x62868454": {
+      "dll": "MSVCR71.dll",
+      "name": "frexp"
+    },
+    "0x62868458": {
+      "dll": "MSVCR71.dll",
+      "name": "ldexp"
+    },
+    "0x6286845C": {
+      "dll": "MSVCR71.dll",
+      "name": "srand"
+    },
+    "0x62868460": {
+      "dll": "MSVCR71.dll",
+      "name": "tolower"
+    },
+    "0x62868464": {
+      "dll": "MSVCR71.dll",
+      "name": "isupper"
+    },
+    "0x62868468": {
+      "dll": "MSVCR71.dll",
+      "name": "ispunct"
+    },
+    "0x6286846C": {
+      "dll": "MSVCR71.dll",
+      "name": "iscntrl"
+    },
+    "0x62868470": {
+      "dll": "MSVCR71.dll",
+      "name": "islower"
+    },
+    "0x62868474": {
+      "dll": "MSVCR71.dll",
+      "name": "memchr"
+    },
+    "0x62868478": {
+      "dll": "MSVCR71.dll",
+      "name": "strpbrk"
+    },
+    "0x6286847C": {
+      "dll": "MSVCR71.dll",
+      "name": "longjmp"
+    },
+    "0x62868480": {
+      "dll": "MSVCR71.dll",
+      "name": "_setjmp3"
+    },
+    "0x62868484": {
+      "dll": "MSVCR71.dll",
+      "name": "strcoll"
+    },
+    "0x62868488": {
+      "dll": "MSVCR71.dll",
+      "name": "strtod"
+    },
+    "0x6286848C": {
+      "dll": "MSVCR71.dll",
+      "name": "strcspn"
+    },
+    "0x62868490": {
+      "dll": "MSVCR71.dll",
+      "name": "abort"
+    },
+    "0x62868494": {
+      "dll": "MSVCR71.dll",
+      "name": "puts"
+    },
+    "0x62868498": {
+      "dll": "MSVCR71.dll",
+      "name": "??1exception@@UAE@XZ"
+    },
+    "0x6286849C": {
+      "dll": "MSVCR71.dll",
+      "name": "??0exception@@QAE@XZ"
+    },
+    "0x628684A0": {
+      "dll": "MSVCR71.dll",
+      "name": "__pioinfo"
+    },
+    "0x628684A4": {
+      "dll": "MSVCR71.dll",
+      "name": "_get_osfhandle"
+    },
+    "0x628684A8": {
+      "dll": "MSVCR71.dll",
+      "name": "_finite"
+    },
+    "0x628684AC": {
+      "dll": "MSVCR71.dll",
+      "name": "_fpclass"
+    },
+    "0x628684B0": {
+      "dll": "MSVCR71.dll",
+      "name": "_copysign"
+    },
+    "0x628684B4": {
+      "dll": "MSVCR71.dll",
+      "name": "_isnan"
+    },
+    "0x628684B8": {
+      "dll": "MSVCR71.dll",
+      "name": "_ecvt"
+    },
+    "0x628684BC": {
+      "dll": "MSVCR71.dll",
+      "name": "_fcvt"
+    },
+    "0x628684C0": {
+      "dll": "MSVCR71.dll",
+      "name": "setvbuf"
+    },
+    "0x628684C4": {
+      "dll": "MSVCR71.dll",
+      "name": "putc"
+    },
+    "0x628684C8": {
+      "dll": "MSVCR71.dll",
+      "name": "wcscmp"
+    },
+    "0x628684CC": {
+      "dll": "MSVCR71.dll",
+      "name": "iswctype"
+    },
+    "0x628684D0": {
+      "dll": "MSVCR71.dll",
+      "name": "_snwprintf"
+    },
+    "0x628684D4": {
+      "dll": "MSVCR71.dll",
+      "name": "wcsncpy"
+    },
+    "0x628684D8": {
+      "dll": "MSVCR71.dll",
+      "name": "wcstoul"
+    },
+    "0x628684DC": {
+      "dll": "MSVCR71.dll",
+      "name": "qsort"
+    },
+    "0x628684E0": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIasin"
+    },
+    "0x628684E4": {
+      "dll": "MSVCR71.dll",
+      "name": "_CIfmod"
+    },
+    "0x628684E8": {
+      "dll": "MSVCR71.dll",
+      "name": "ferror"
+    },
+    "0x628684EC": {
+      "dll": "MSVCR71.dll",
+      "name": "_access"
+    },
+    "0x628684F0": {
+      "dll": "MSVCR71.dll",
+      "name": "??8type_info@@QBEHABV0@@Z"
+    },
+    "0x628684F4": {
+      "dll": "MSVCR71.dll",
+      "name": "??9type_info@@QBEHABV0@@Z"
+    },
+    "0x628684F8": {
+      "dll": "MSVCR71.dll",
+      "name": "_aligned_free"
+    },
+    "0x628684FC": {
+      "dll": "MSVCR71.dll",
+      "name": "_aligned_malloc"
+    },
+    "0x62868500": {
+      "dll": "MSVCR71.dll",
+      "name": "?name@type_info@@QBEPBDXZ"
+    },
+    "0x62868504": {
+      "dll": "MSVCR71.dll",
+      "name": "calloc"
+    },
+    "0x62868508": {
+      "dll": "MSVCR71.dll",
+      "name": "rewind"
+    },
+    "0x6286850C": {
+      "dll": "MSVCR71.dll",
+      "name": "__dllonexit"
+    },
+    "0x62868510": {
+      "dll": "MSVCR71.dll",
+      "name": "_onexit"
+    },
+    "0x62868514": {
+      "dll": "MSVCR71.dll",
+      "name": "??1type_info@@UAE@XZ"
+    },
+    "0x62868518": {
+      "dll": "MSVCR71.dll",
+      "name": "_initterm"
+    },
+    "0x6286851C": {
+      "dll": "MSVCR71.dll",
+      "name": "_adjust_fdiv"
+    },
+    "0x62868520": {
+      "dll": "MSVCR71.dll",
+      "name": "__CppXcptFilter"
+    },
+    "0x62868524": {
+      "dll": "MSVCR71.dll",
+      "name": "__security_error_handler"
+    },
+    "0x62868528": {
+      "dll": "MSVCR71.dll",
+      "name": "?terminate@@YAXXZ"
+    },
+    "0x6286852C": {
+      "dll": "MSVCR71.dll",
+      "name": "_ftime"
+    },
+    "0x62868530": {
+      "dll": "MSVCR71.dll",
+      "name": "_strupr"
+    },
+    "0x62868534": {
+      "dll": "MSVCR71.dll",
+      "name": "_fstat"
+    },
+    "0x62868538": {
+      "dll": "MSVCR71.dll",
+      "name": "_wcslwr"
+    },
+    "0x6286853C": {
+      "dll": "MSVCR71.dll",
+      "name": "_wcsupr"
+    },
+    "0x62868540": {
+      "dll": "MSVCR71.dll",
+      "name": "fabs"
+    },
+    "0x62868544": {
+      "dll": "MSVCR71.dll",
+      "name": "_vsnwprintf"
+    },
+    "0x62868548": {
+      "dll": "MSVCR71.dll",
+      "name": "sin"
+    },
+    "0x6286854C": {
+      "dll": "MSVCR71.dll",
+      "name": "gmtime"
+    },
+    "0x628686DC": {
+      "dll": "mxowrap.dll",
+      "name": "SymGetModuleInfo64"
+    },
+    "0x628686E0": {
+      "dll": "mxowrap.dll",
+      "name": "StackWalk64"
+    },
+    "0x628686E4": {
+      "dll": "mxowrap.dll",
+      "name": "SymFromAddr"
+    },
+    "0x628686E8": {
+      "dll": "mxowrap.dll",
+      "name": "SymFunctionTableAccess64"
+    },
+    "0x628686EC": {
+      "dll": "mxowrap.dll",
+      "name": "UnDecorateSymbolName"
+    },
+    "0x628686F0": {
+      "dll": "mxowrap.dll",
+      "name": "SymSetContext"
+    },
+    "0x628686F4": {
+      "dll": "mxowrap.dll",
+      "name": "SymEnumSymbols"
+    },
+    "0x628686F8": {
+      "dll": "mxowrap.dll",
+      "name": "SymGetTypeInfo"
+    },
+    "0x628686FC": {
+      "dll": "mxowrap.dll",
+      "name": "SymCleanup"
+    },
+    "0x62868700": {
+      "dll": "mxowrap.dll",
+      "name": "MiniDumpWriteDump"
+    },
+    "0x62868704": {
+      "dll": "mxowrap.dll",
+      "name": "SymInitialize"
+    },
+    "0x62868708": {
+      "dll": "mxowrap.dll",
+      "name": "SymGetOptions"
+    },
+    "0x6286870C": {
+      "dll": "mxowrap.dll",
+      "name": "SymSetOptions"
+    },
+    "0x62868710": {
+      "dll": "mxowrap.dll",
+      "name": "SymLoadModule64"
+    },
+    "0x62868714": {
+      "dll": "mxowrap.dll",
+      "name": "SymGetModuleBase64"
+    },
+    "0x62868718": {
+      "dll": "mxowrap.dll",
+      "name": "SymGetLineFromAddr64"
+    },
+    "0x6286860C": {
+      "dll": "VERSION.dll",
+      "name": "GetFileVersionInfoSizeA"
+    },
+    "0x62868610": {
+      "dll": "VERSION.dll",
+      "name": "GetFileVersionInfoA"
+    },
+    "0x62868614": {
+      "dll": "VERSION.dll",
+      "name": "VerQueryValueA"
+    },
+    "0x62868670": {
+      "dll": "WSOCK32.dll",
+      "name": "recvfrom"
+    },
+    "0x62868674": {
+      "dll": "WSOCK32.dll",
+      "name": "ntohs"
+    },
+    "0x62868678": {
+      "dll": "WSOCK32.dll",
+      "name": "sendto"
+    },
+    "0x6286867C": {
+      "dll": "WSOCK32.dll",
+      "name": "getsockname"
+    },
+    "0x62868680": {
+      "dll": "WSOCK32.dll",
+      "name": "select"
+    },
+    "0x62868684": {
+      "dll": "WSOCK32.dll",
+      "name": "ntohl"
+    },
+    "0x62868688": {
+      "dll": "WSOCK32.dll",
+      "name": "inet_ntoa"
+    },
+    "0x6286868C": {
+      "dll": "WSOCK32.dll",
+      "name": "getsockopt"
+    },
+    "0x62868690": {
+      "dll": "WSOCK32.dll",
+      "name": "setsockopt"
+    },
+    "0x62868694": {
+      "dll": "WSOCK32.dll",
+      "name": "bind"
+    },
+    "0x62868698": {
+      "dll": "WSOCK32.dll",
+      "name": "htonl"
+    },
+    "0x628686D4": {
+      "dll": "r3d9.dll",
+      "name": "RajkoD3DCreate9"
+    },
+    "0x6286801C": {
+      "dll": "DINPUT8.dll",
+      "name": "DirectInput8Create"
+    },
+    "0x62868224": {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverEnum"
+    },
+    "0x62868228": {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverOpen"
+    },
+    "0x6286822C": {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamConvert"
+    },
+    "0x62868230": {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverDetailsA"
+    },
+    "0x62868234": {
+      "dll": "MSACM32.dll",
+      "name": "acmDriverClose"
+    },
+    "0x62868238": {
+      "dll": "MSACM32.dll",
+      "name": "acmFormatSuggest"
+    },
+    "0x6286823C": {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamOpen"
+    },
+    "0x62868240": {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamPrepareHeader"
+    },
+    "0x62868244": {
+      "dll": "MSACM32.dll",
+      "name": "acmStreamClose"
+    },
+    "0x6286856C": {
+      "dll": "SHELL32.dll",
+      "name": "ShellExecuteA"
+    }
+  }
+}
