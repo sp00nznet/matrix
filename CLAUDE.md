@@ -35,6 +35,30 @@ Assets: final client at `~/Downloads/MxO_7.6005.7z` (1.3 GB), patch
 `MxO_7.6004p.zip`; key binaries extracted to `work/final/`. Version parity with
 what the emulators target ⇒ the roadmap's biggest risk is retired.
 
+### P6 bind hunt — where it stands
+16 functions touch the database singleton `0x108A54B8`. Mapped so far:
+- `sub_101F1830` = lazy singleton ctor. `sub_101F18E0` = **increment** counter
+  `0x108A54BC`; `sub_101F2050`/`sub_101F2090` = **decrement + tear down at zero**.
+  That is the **nifty-counter idiom**, NOT a bind pass. (A "writes to a field"
+  heuristic false-positives on their vtable writes — don't reuse it.)
+- `sub_101F1A00` (register) reads the same singleton ⇒ `0x108A54B8` really is
+  the **interface database**.
+
+**Binding does NOT happen at registration time.** Decisive test: `InitClientDLL`
+itself registers an `ILTLoginMediator.Default` implementation (flags=1), so a
+register-time bind would populate that holder by the time it returns. It does
+not — holder `0x109961D8` keeps vtable set / `+4 = 00000000` across all phases,
+same for `INetMgr` (`0x10857788`) and the input managers (`0x10856D98`).
+
+Following the DB pointer shows **two cross-linked `{vtable, ptr, ptr, 0}`
+container heads** and nothing like 55 stored entries — suggesting registrations
+never reach it. **Thin evidence; treat as the next thread, not a conclusion.**
+
+**`MXO_WATCH` now takes `@0x...` to dereference before dumping** (heap objects
+move between runs — literal addresses are only good for statics; the first
+attempt watched stale addresses and showed unrelated memory).
+`MXO_WATCH_WORDS` sets dump width.
+
 ## PLAN OF RECORD — `docs/ROADMAP.md`
 The two tracks are **not** parallel: P6 (engine interfaces) and the server's
 real task are the **same boundary from two sides**. The 70 subsystems in
