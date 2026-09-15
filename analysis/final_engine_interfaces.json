@@ -1,0 +1,179 @@
+{
+ "count": 29,
+ "interfaces": [
+  {
+   "interface": "CLTRemoteCommCtxMgr.Default",
+   "holder_va": "0x62A28908",
+   "registered_by": "sub_6280A000",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ICompress.Default",
+   "holder_va": "0x629A17C8",
+   "registered_by": "sub_628111E0",
+   "file": "recomp_0160.c"
+  },
+  {
+   "interface": "ILTClassMgr.Default",
+   "holder_va": "0x6299AFC8",
+   "registered_by": "sub_6280C430",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTCommHandleMgr.Default",
+   "holder_va": "0x62991018",
+   "registered_by": "sub_627E3EA0",
+   "file": "recomp_0147.c"
+  },
+  {
+   "interface": "ILTDiagnosticMgr.DObSys",
+   "holder_va": "0x629905F8",
+   "registered_by": "sub_627E33B0",
+   "file": "recomp_0147.c"
+  },
+  {
+   "interface": "ILTDistrObjExecutive.Default",
+   "holder_va": "0x629E002C",
+   "registered_by": "sub_627C3B40",
+   "file": "recomp_0141.c"
+  },
+  {
+   "interface": "ILTDrawPrim.Default",
+   "holder_va": "0x629931F0",
+   "registered_by": "sub_628033C0",
+   "file": "recomp_0157.c"
+  },
+  {
+   "interface": "ILTDrawPrim.Internal",
+   "holder_va": "0x62995F48",
+   "registered_by": "sub_62803430",
+   "file": "recomp_0157.c"
+  },
+  {
+   "interface": "ILTEventScheduler.Default",
+   "holder_va": "0x6299B3A0",
+   "registered_by": "sub_6280C560",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTFontManager.Default",
+   "holder_va": "0x6299DA50",
+   "registered_by": "sub_6280E920",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTGOComponentFactory.Default",
+   "holder_va": "0x629C8C70",
+   "registered_by": "sub_628242E0",
+   "file": "recomp_0164.c"
+  },
+  {
+   "interface": "ILTGOGameObjMgr.Default",
+   "holder_va": "0x629E9DBC",
+   "registered_by": "sub_627D2B50",
+   "file": "recomp_0143.c"
+  },
+  {
+   "interface": "ILTInputMgr.Default",
+   "holder_va": "0x62A072E8",
+   "registered_by": "sub_62803D60",
+   "file": "recomp_0157.c"
+  },
+  {
+   "interface": "ILTLoginMediator.Default",
+   "holder_va": "0x62B074E8",
+   "registered_by": "sub_6281A960",
+   "file": "recomp_0162.c"
+  },
+  {
+   "interface": "ILTMultiProtocolMgr.Default",
+   "holder_va": "0x62999C98",
+   "registered_by": "sub_62809EC0",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTObjectMgr.Default",
+   "holder_va": "0x62991630",
+   "registered_by": "sub_627E4E30",
+   "file": "recomp_0147.c"
+  },
+  {
+   "interface": "ILTPredictViewMgr.Default",
+   "holder_va": "0x62990D10",
+   "registered_by": "sub_627E3D20",
+   "file": "recomp_0147.c"
+  },
+  {
+   "interface": "ILTReactorHandleMgr.Default",
+   "holder_va": "0x6299B1D0",
+   "registered_by": "sub_6280C4D0",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTRenderDevice.Default",
+   "holder_va": "0x629F84F8",
+   "registered_by": "sub_62802960",
+   "file": "recomp_0157.c"
+  },
+  {
+   "interface": "ILTRenderStyles.Default",
+   "holder_va": "0x62992F50",
+   "registered_by": "sub_628029F0",
+   "file": "recomp_0157.c"
+  },
+  {
+   "interface": "ILTRsetManager.Default",
+   "holder_va": "0x629F2ED0",
+   "registered_by": "sub_627E3940",
+   "file": "recomp_0147.c"
+  },
+  {
+   "interface": "ILTStringTable.Default",
+   "holder_va": "0x6299C920",
+   "registered_by": "sub_6280DD20",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTTexture.Default",
+   "holder_va": "0x6299CA50",
+   "registered_by": "sub_6280E470",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTWidgetManager.Default",
+   "holder_va": "0x6299D8A0",
+   "registered_by": "sub_6280E780",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "ILTWorldRep_Metro.Default",
+   "holder_va": "0x629A1AB0",
+   "registered_by": "sub_62812100",
+   "file": "recomp_0160.c"
+  },
+  {
+   "interface": "ILTWorldRep_Metro.Internal",
+   "holder_va": "0x629A1ABC",
+   "registered_by": "sub_62812130",
+   "file": "recomp_0160.c"
+  },
+  {
+   "interface": "INetMgr.Default",
+   "holder_va": "0x62999968",
+   "registered_by": "sub_62809D30",
+   "file": "recomp_0159.c"
+  },
+  {
+   "interface": "INetShell.Default",
+   "holder_va": "0x6298A288",
+   "registered_by": "sub_627C3F00",
+   "file": "recomp_0141.c"
+  },
+  {
+   "interface": "LTWinInputMgr.Default",
+   "holder_va": "0x62A072E8",
+   "registered_by": "sub_62803D20",
+   "file": "recomp_0157.c"
+  }
+ ]
+}
