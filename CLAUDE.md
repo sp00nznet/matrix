@@ -246,6 +246,40 @@ at runtime, `gen_imports.py` takes `--dll/--deps/-o`, `analysis/` uses the
 prefix convention (unprefixed = retail, `final_` = community client) documented
 in `analysis/README.md`.
 
+## ✅ THREAD A DONE — the final client is lifted
+`game_final/` (2,666 files). Catalog `analysis/final_functions_ida.json`:
+**89,340 functions** (64,735 IDA + 24,603 gap fill + 2 seeds), 105,133 edges.
+Lift → `src/recomp/gen_final/`, **179 files, 0 errors, 52 s**. Imports: 521
+across 22 DLLs (236 stdcall / 269 cdecl / 16 data).
+Seeds converge in 2 passes, same as retail: EH funclets `0x626A9B92`/`0x626A9BF4`
+just past the entry point (retail equivalents `0x105C3C80`/`0x105C3CE2`).
+
+**Interfaces: 29 on final vs 28 on retail — same set plus
+`ILTStringTable.Default`.** Four years of patches, architecture otherwise
+identical. Strong validation for re-targeting.
+
+Commands (both targets differ only in paths + `--register`):
+```
+python tools/ida_to_catalog.py --funcs analysis/final_ida_funcs.json   --xrefs analysis/final_ida_xrefs.json --pe analysis/final_client_pe.json   --augment analysis/final_functions.json -o analysis/final_functions_ida.json
+python run_lift.py --dll game_final/client.dll   --catalog analysis/final_functions_ida.json --out src/recomp/gen_final   --seeds analysis/final_missing_targets.json --all --split 500
+python gen_imports.py --dll game_final/client.dll -o src/runtime/imports_gen_final.c
+python tools/find_interfaces.py --dll game_final/client.dll --gen src/recomp/gen_final   --register sub_6229D2A0 -o analysis/final_engine_interfaces.json   --emit-c src/runtime/interfaces_gen_final.c
+```
+
+## 🔎 THREAD B LEAD — the lookup function
+`find_interfaces.py` prints which functions are called right after an
+interface-name push. The counts are lopsided the same way on both targets:
+
+| target | lookup? | register |
+|---|---|---|
+| retail | **246 → `sub_101F1D80`** | 27 → `sub_101F1A00` |
+| final | **261 → `sub_6229D730`** | 28 → `sub_6229D2A0` |
+
+246 calls with an interface name vs 27 for registration ⇒ that is
+**lookup-by-name**, which is what the bind hunt wants. Start there.
+(Auto-detect picking it over register() was a bug; it is a better finding than a
+bug, so the tool prints candidates and takes `--register` explicitly.)
+
 ## Standing Directive
 Keep the README's status table and numbers current with every phase. Commit and
 push to `main` on GitHub regularly. Repo is **private**.
