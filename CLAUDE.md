@@ -1,31 +1,39 @@
 # The Matrix Online Static Recompilation — Project Memory
 
-## ⚠ P6 IS BLOCKED BY A MISSING BINARY — `matrix.exe`
-**The engine executable is not on the retail discs.** `RunClientDLL` needs 28
-engine interfaces; nothing fills them because the thing that would is absent.
-`launcher.exe` carries one adjacent string block:
-`matrix.exe`, `launcher.exe`, `client.dll`, `ErrorClientDLL`, `TermClientDLL`,
-`RunClientDLL`, `InitClientDLL`, `cres.dll`,
-`http://update.beta.thematrixonline.com/`.
-`matrix.exe` is the LithTech engine host; the launcher downloads it. Not among
-the 2,716 unpacked files. (`update.beta.` also dates these discs to the
-pre-launch beta window.)
+## ✅ P6 IS NOT BLOCKED — the bind step is what's missing
+**Earlier note here claimed `matrix.exe` was a missing engine binary. That was
+WRONG.** A full post-patch client (`MxO_7.6005`, in `~/Downloads`, 2,666 files)
+has no `matrix.exe` either, and no binary in it besides `client.dll` carries the
+engine interface names (checked: `launcher.exe`, `r3d9.dll`, `mxowrap.dll`,
+`cres.dll`). Retail vs final `client.dll` counts are near-identical
+(`INetMgr` 10/10, `ILTRenderDevice` 4/4) — architecture unchanged.
 
-**`launcher.exe` is NOT the engine** — tested: 0 hits for `INetMgr`,
-`ILTRenderDevice`, `ILTClassMgr`, `ILTWorldRep_Metro`, `ILTDrawPrim`; **11 for
-`ILTLoginMediator`**, the one interface it shares with the client. So login
-genuinely spans the launcher — that answers the open auth question.
+**`sub_101F1A00` registers BOTH sides, told apart by the flag:**
+```
+push 0 ; push "Name" ; push holder   -> declare a holder awaiting fill
+push 1 ; push "Name" ; push object   -> register an IMPLEMENTATION
+```
+**55 call sites**, not 28 — `find_interfaces.py` only caught immediate-pushed
+operands. Properly counted: **21 holders, 8 implementations**, implementations
+supplied by `client.dll` itself:
+`ILTLoginMediator.Default` (by `sub_10001270` = **`InitClientDLL`**, and
+`sub_1070F500`), `ILTInputMgr.Default`, `ILTMultiProtocolMgr.Default`,
+`ILTPredictViewMgr.Default`, `ILTRsetManager.Default`,
+`ILTWorldRep_Metro.Default`/`.Internal`.
 
-**Options, best first:**
-1. **Obtain the final client distribution** (includes `matrix.exe`). Unblocks
-   P6 *and* retires the roadmap's largest risk by making our target the same
-   version the emulators target. Turns P6 into a lifting problem.
-2. Write the 28 interfaces by hand — strictly worse on cost and risk; two
-   `INetMgr` slots took a session.
-3. Push the server track; it needs P6 only at step 3.
+**So even self-implemented interfaces were NULL because the BIND never ran.**
+Holders and impls both land in an internal database; something must match them
+by name. **Next: find and call the bind/resolve entry point.**
+`SetMasterDatabase` (export, RVA `0x1F1DB0`) is the obvious candidate — handing
+the client a database is exactly that shape. Neighbours worth reading:
+`sub_101F18E0`, `sub_101F1830`, `sub_101F1220`.
 
-The discs were still the right start — lift, Python rules, interface list and
-protocol surface all came from them. They are simply not a complete game.
+**`INetMgr.Default` has NO implementation among the 8** — so it either comes
+from one of the 27 register-sourced call sites, or genuinely from outside.
+
+Assets: final client at `~/Downloads/MxO_7.6005.7z` (1.3 GB), patch
+`MxO_7.6004p.zip`; key binaries extracted to `work/final/`. Version parity with
+what the emulators target ⇒ the roadmap's biggest risk is retired.
 
 ## PLAN OF RECORD — `docs/ROADMAP.md`
 The two tracks are **not** parallel: P6 (engine interfaces) and the server's
