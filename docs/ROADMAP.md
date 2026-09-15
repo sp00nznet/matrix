@@ -212,7 +212,7 @@ pass to be on this list.
 
 ---
 
-## Finding that reframes P6: the engine is not on the disc
+## ~~Finding that reframes P6: the engine is not on the disc~~ (WRONG — see correction below)
 
 `RunClientDLL` needs 28 engine interfaces. Nothing in the retail install fills
 them, and that is not an oversight in our host — **the engine executable is
@@ -265,3 +265,64 @@ They remain the right thing to have started from — they gave the lift, the
 Python rules, the engine interface list and the protocol surface, none of which
 needed `matrix.exe`. But they are **not a complete game**, and any plan that
 assumed they were needs this correction.
+
+
+---
+
+## Correction: the engine is NOT a missing binary
+
+The section above concluded that P6 was blocked because `matrix.exe` is absent
+from the retail discs. **That conclusion was wrong**, and it is left in place
+above rather than deleted because the reasoning that produced it is worth
+seeing next to what disproved it.
+
+What disproved it: a full post-patch client (`MxO_7.6005`, 2,666 files) contains
+**no `matrix.exe` either**. Nor does any other binary in it carry the engine
+interface names — checked directly across `launcher.exe`, `r3d9.dll`,
+`mxowrap.dll` and `cres.dll`. Only `client.dll` has them, in both the retail and
+the final build, at near-identical counts (`INetMgr` 10/10,
+`ILTRenderDevice` 4/4).
+
+So the engine interfaces live inside `client.dll`. The evidence:
+
+**There are 55 calls to the registration function, not 28.** The finder had only
+recovered the ones whose operands are pushed as immediates.
+
+**The same function registers both sides, distinguished by a flag.**
+
+```
+push 0 ; push "Name" ; push holder   -> declare a holder, awaiting fill
+push 1 ; push "Name" ; push object   -> register an IMPLEMENTATION
+```
+
+Counting them: **21 holders and 8 implementations**, with the implementations
+supplied by `client.dll` itself —
+
+| Interface | registered by |
+|---|---|
+| `ILTLoginMediator.Default` | `sub_10001270` — **`InitClientDLL` itself** |
+| `ILTLoginMediator.Default` | `sub_1070F500` |
+| `ILTInputMgr.Default` | `sub_106FA710` |
+| `ILTMultiProtocolMgr.Default` | `sub_107005A0` |
+| `ILTPredictViewMgr.Default` | `sub_106DBD30` |
+| `ILTRsetManager.Default` | `sub_106DB950` |
+| `ILTWorldRep_Metro.Default` / `.Internal` | `sub_107070E0` / `sub_10707110` |
+
+### What this actually means
+
+Even the interfaces `client.dll` implements *itself* were NULL in our runs. The
+holders and the implementations are both registered into an internal database
+and something has to **bind them by name** — and that binding step never ran.
+
+So P6 is not "obtain a missing binary". It is "find the bind/resolve entry point
+in the interface database and call it". `SetMasterDatabase` is the obvious
+candidate: it is an *export*, and handing the client a database is exactly the
+shape of that operation.
+
+That is unblocked work on the retail discs we already have.
+
+### The client search was still worth doing
+
+`MxO_7.6005` is the final post-patch client, which is version parity with what
+the emulators target — the roadmap's largest risk. Having it retires that
+question even though it did not contain the binary it was sought for.

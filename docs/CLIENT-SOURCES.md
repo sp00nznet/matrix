@@ -1,10 +1,15 @@
-# Finding `matrix.exe`
+# Finding `matrix.exe` — resolved: there is no such binary
 
 P6 is blocked on a binary the retail discs never carried. `launcher.exe` names
 it — `matrix.exe`, the LithTech engine host — and downloads it from
 `update.beta.thematrixonline.com`, a host that has been dead since 2009.
 
-This is the search for a copy. Status: **not yet found; one live lead.**
+> **Outcome: `matrix.exe` does not exist as a shipped file.** A full post-patch
+> client (`MxO_7.6005`, 2,666 files) does not contain it either, and no binary
+> in it besides `client.dll` carries the engine interface names. The engine
+> interfaces are registered *inside* `client.dll`; see the correction at the end
+> of `ROADMAP.md`. The rest of this page is the search as it was conducted, kept
+> because ruling the retail media out was necessary to get there.
 
 ## What archive.org has (checked)
 

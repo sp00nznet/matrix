@@ -289,7 +289,7 @@ later.
 | **P3b** | Import bridges for 479 imports; build | ✅ **compiles, 156 objects** |
 | **P4** | Bring-up: `InitClientDLL` | ✅ **completes** |
 | **P5** | Win32 layer + a real window | ✅ **71 shims, window up** |
-| **P6** | The LithTech engine interfaces `RunClientDLL` needs | **blocked: `matrix.exe` is not on the disc** |
+| **P6** | The LithTech engine interfaces `RunClientDLL` needs | 21 holders / 8 impls; **need the bind step** |
 | **P7** | **The socket layer — 20 functions, UDP** | scheduled early |
 | **P8** | Renderer: D3D9 through COM vtables | deliberately late |
 
