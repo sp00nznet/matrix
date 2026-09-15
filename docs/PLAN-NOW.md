@@ -122,3 +122,30 @@ open risk. **It is not.** A server only has to speak the world protocol.
 `MXO_IMAGE_BASE` becomes `0x62000000`. No conflicts: the simulated stack
 (`0x0E000000`), TIB (`0x0E800000`) and synthetic interface VAs (`0x7E000000`)
 all sit clear of `0x62000000`–`0x62B28000`.
+
+
+---
+
+## C1 result: the forked server builds
+
+```
+$ dotnet build hds.sln
+    49 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:21.98
+```
+
+.NET 8 SDK, rolling forward from the project's `netcoreapp3.1` target via the
+`rollForward: latestMajor` already in `global.json`. No changes needed to build
+it, which is a better starting position than expected for a project last
+targeting a framework that went out of support in 2022.
+
+**A cross-confirmation worth noting:** the fork contains
+`hds/world/Client/MPM/Protocol03Manager.cs`. **MPM = MultiProtocolManager**,
+which is `ILTMultiProtocolMgr.Default` in the client's interface list — one of
+the eight the client implements itself. The two halves of this project, recovered
+independently from opposite directions, are describing the same object. That is
+the convergence thesis showing up as a filename.
+
+Still outstanding on C: the AngularJS `LICENSE`, and preferring the managed
+`WorldEncryption.cs` over the `enigmaLib.dll` native dependency.

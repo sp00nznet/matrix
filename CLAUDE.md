@@ -59,6 +59,29 @@ move between runs — literal addresses are only good for statics; the first
 attempt watched stale addresses and showed unrelated memory).
 `MXO_WATCH_WORDS` sets dump width.
 
+## CURRENT PLAN — `docs/PLAN-NOW.md` (3 threads)
+**A: re-target to the final client** (do first — every P6 address moves on
+rebase, so B-before-A means doing the archaeology twice).
+**B: P6 bind hunt.** **C: server fork** (independent).
+
+**Final client (`work/final/`, full extract `game_final/`, 2,666 files):**
+base **`0x62000000`** (not `0x10000000`), **5 exports** (ILTCool gone),
+521 imports, timestamp **2013-01-06**, `.text` 8,810,496. STLport + linker 7.10
++ section layout unchanged ⇒ pipeline applies as-is bar the base. It IS a
+community-modified build — right protocol target, not evidence of what Monolith
+shipped.
+**RISK CLOSED: the `Cool*` stack is gone** — no `ILTCool` exports, no
+`Cool*.dll`/`libltcool.dll`/`Xprt`/`Xpcs`/`Xptl` (vs 11 on retail). A server does
+NOT have to speak a second protocol.
+Host: `MXO_IMAGE_BASE` → `0x62000000`; stack `0x0E000000`, TIB `0x0E800000`,
+synthetic iface VAs `0x7E000000` all stay clear.
+
+**C1 done: the fork builds** — `dotnet build hds.sln`, 0 errors, 22 s, .NET 8
+rolling forward from `netcoreapp3.1` (no edits needed).
+Cross-confirmation: fork has `world/Client/MPM/Protocol03Manager.cs` —
+**MPM = MultiProtocolManager = `ILTMultiProtocolMgr.Default`**, one of the eight
+interfaces the client implements itself.
+
 ## PLAN OF RECORD — `docs/ROADMAP.md`
 The two tracks are **not** parallel: P6 (engine interfaces) and the server's
 real task are the **same boundary from two sides**. The 70 subsystems in
