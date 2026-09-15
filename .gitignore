@@ -5,7 +5,10 @@
 original/
 disc/
 game/
+game_final/
 client/
+# Any unpacked client, however the folder is spelled.
+game*/
 
 # Generated lifted C: a derivative work of client.dll, and millions of lines.
 src/recomp/gen/
