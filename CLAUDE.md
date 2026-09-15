@@ -280,6 +280,31 @@ interface-name push. The counts are lopsided the same way on both targets:
 (Auto-detect picking it over register() was a bug; it is a better finding than a
 bug, so the tool prints candidates and takes `--register` explicitly.)
 
+## B on the final client — the wall reproduces exactly
+Retail findings transfer to the final client structurally, address-for-address:
+
+| | retail | final |
+|---|---|---|
+| `RunClientDLL` | `0x10001120` | `0x62001180` |
+| hop 1 | `0x10006640` | `0x62006C30` |
+| hop 2 | `0x10306720` | `0x623B36A0` |
+| fault | `0x103065E0` | `0x623B3560` |
+| `INetMgr` holder | `0x10857788` | `0x62999968` |
+
+Same three-hop path from `RunClientDLL`, holder in `ebx`, same cause: our
+fabricated interface object has a vtable but zeroed members, so the client reads
+a member, gets 0, and dereferences `0+8`. **This is the known limit of generic
+scaffolding, not a new bug** — see the COM refcount notes above.
+
+**The lookup lead did not pan out as stated.** `sub_6229D730` (final) /
+`sub_101F1D80` (retail), the 246-call function, is a small constructor storing
+two args into a 3-word object — *not* the `{vtable, iface_ptr}` holder layout.
+It is a per-holder helper, not the bind. Do not re-chase it on that basis.
+
+Both targets are runnable for experiments: `build/mxo_host.exe` (retail),
+`build/mxo_final.exe game_final/client.dll` (final). `MXO_IFACES`, `MXO_WATCH`,
+`MXO_WATCH_WORDS` all work on both.
+
 ## Standing Directive
 Keep the README's status table and numbers current with every phase. Commit and
 push to `main` on GitHub regularly. Repo is **private**.
