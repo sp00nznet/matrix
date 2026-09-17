@@ -15,14 +15,25 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **`InitClientDLL` completes.** 12,189 constructors, 64,377 calls.
+## Project status: **Both clients start up.** P6 is the wall; the server track is open.
 
 Two results, and the second one is the interesting one.
 
-**The whole binary lifts, compiles, links and starts up.** 76,530 functions to
-4.85 million lines of C with zero lift errors. The recompiled client now runs
-its 12,189 C++ static constructors and returns cleanly from `InitClientDLL`,
-64,377 indirect calls in. See [P4](#p4-it-runs-and-where-it-stops).
+**Two clients lift, compile, link and complete startup** — the 2005 retail
+discs and the final community client the emulators target. Both run their C++
+static constructors and return cleanly from `InitClientDLL`.
+See [P4](#p4-it-runs-and-where-it-stops).
+
+**`RunClientDLL` is the wall, and it is understood.** The client declares 28–29
+*holders* for LithTech engine interfaces and waits for something to fill them.
+Nothing does, so the frame loop dereferences a null and dies — at
+*corresponding addresses on both targets*, which is how we know the analysis
+transfers. Filling them is per-interface semantic work with no shortcut: the
+public LithTech SDK covers only 4 of 27, and not the one that blocks.
+See [`docs/PLAN-NOW.md`](docs/PLAN-NOW.md).
+
+**The server track needs none of that** until the two halves meet, and its
+fork already builds.
 
 **The gameplay rules were never compiled in the first place.** Combat,
 abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
