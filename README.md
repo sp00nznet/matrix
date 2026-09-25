@@ -15,7 +15,7 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **`InitClientDLL` succeeds on the final client**, with the game's own Python rules running in the real interpreter. Next: the frame loop.
+## Project status: **`InitClientDLL` succeeds and `RunClientDLL`'s frame loop runs** on the final client (≈120M indirect calls), with the game's own Python rules running natively.
 
 **Correction first.** Earlier versions of this README said `InitClientDLL`
 "completes" on both targets. It returned, but it returned **0, which is
@@ -51,8 +51,12 @@ registration, and they were empty because their `Init` never ran.
    that fails without the fix.
 10. The game's **Python rules run in the real `pythonMXO.dll`**. Its callbacks
     into the client arrive through DEP faults on the non-executable guest image.
-11. **`InitClientDLL` returns 1** after 62.3M indirect calls. Next is
-    `RunClientDLL`, the frame loop.
+11. **`InitClientDLL` returns 1** after 62.3M indirect calls.
+12. **The frame loop runs.** It stepped through the splash and RSI layouts,
+    tried the ad server over **TCP** (the client isn't UDP-only), and survived
+    two more lifter bugs in MSVC's float-compare idioms (unordered x87
+    compares, and a parity flag that was a constant). It currently faults after
+    about 120M indirect calls on an object with a zero vtable.
 
 See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 

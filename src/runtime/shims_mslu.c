@@ -45,6 +45,7 @@
 #define MSLU_MAX      64
 
 extern uint32_t g_image_base;
+void host_set_hwnd(HWND h);                    /* host.c */
 HMODULE mxo_resource_module(uint32_t hinst);   /* host.c: guest hInstance -> datafile handle */
 
 /* ---- window procedure bridge --------------------------------------- */
@@ -116,6 +117,7 @@ static void s_CreateWindowExW(void)
                              (int)ARG(6), (int)ARG(7), ARGHW(8), (HMENU)ARGP(9),
                              GetModuleHandleW(NULL), ARGP(11));
     printf("  [MSLU] CreateWindowExW -> %p\n", (void *)h);
+    host_set_hwnd(h);
     RETP(h);
     STDRET(12);
 }

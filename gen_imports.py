@@ -71,7 +71,8 @@ SEARCH = ('', 'p_dlls')
 # new/delete all looked like obvious entries and none of them are imported.
 # MSVC 7.1 emits them as intrinsics, so they are already inside the lifted code.
 ONE_TARGET_ONLY = {'RajkoD3DCreate9', 'Direct3DCreate9', 'GetSystemTime', 'GetTimeFormatA',
-                   'GetVersion', '_itoa', 'UuidCreateSequential'}
+                   'GetVersion', '_itoa', 'UuidCreateSequential', '_snwprintf', 'connect', 'send', 'recv',
+                   '?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z', '?GetMediaPlayerLastError@@YAPBDXZ'}
 
 HAND_WRITTEN = {
     # guest_threads.c: guest threads as fibers
@@ -81,6 +82,9 @@ HAND_WRITTEN = {
     'CoInitialize', 'CoCreateInstance',   # native_call.c
     'OpenFile', 'GetSystemTime', 'GetVersion', 'GetTimeFormatA', 'CryptAcquireContextA',
     'CryptGenRandom', 'CryptReleaseContext', 'UuidCreateSequential', '_itoa',
+    'CreateFileA', 'ReadFile', 'WriteFile', 'SetFilePointer', 'GetFileSize',
+    'sscanf', '_snwprintf', '_setjmp3', 'longjmp', 'connect', 'send', 'recv',
+    '?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z', '?GetMediaPlayerLastError@@YAPBDXZ',
     'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',
     'RegQueryValueExA', 'GetFileVersionInfoSizeA', 'GetFileVersionInfoA', 'VerQueryValueA',
     '_vsnprintf',

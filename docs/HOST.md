@@ -261,6 +261,47 @@ returned, eax=0x00000001  (esp=0x0E3FFF00, 62263380 indirect calls)
 
 **`InitClientDLL` returns 1.**
 
+## Two more lifter bugs, both in MSVC's float-compare idioms
+
+Both hung the frame loop inside the same texture-scroll function
+(`0x624AA400`), which wraps UV offsets into [0, 1) with
+`while (x >= 1) x -= 1` and `while (x < 0) x += 1`. The watchdog showed it:
+`cur_func` stayed at `0x624AA400` and the indirect-call count stopped moving.
+
+- **Unordered x87 compares.** A NaN operand sets C3, C2 **and** C0
+  (`0x4500`). The lifter modelled only the three ordered outcomes, so NaN read
+  as "equal" (`0x4000`). `FPU_CMP()` now returns 2 for unordered: `fnstsw`
+  maps it to `0x4500`, and `fcomi`/`sahf` conditions see ZF=PF=CF=1. This
+  affects 3,911 compare sites.
+- **Parity was a constant.** `#define CMP_P(a, b) 0 /* TODO: parity */`.
+  MSVC tests `x < 0.0` as `fnstsw ax; test ah, 5; jp`, so `jp` was never taken
+  and `jnp` always was, and `while (x < 0) x += 1` never exited. PF is now the
+  parity of the result's low byte, rebuilt per setter from the captured operands.
+  `_flag_capture` records the width because it left-aligns narrow operands.
+  This affects 2,685 sites.
+
+Each has a differential test that fails without the fix and passes with it.
+Toolbox suite: **118/129 match hardware, 11 known divergences, 0 failures**.
+The one new known divergence is documented: the *materialized* EFLAGS still
+rebuild PF without the width, which only a `pushfd` would see.
+
+## TCP exists
+
+`WS2_32` imports `connect`/`send`/`recv`; earlier notes looked only at
+`WSOCK32` and concluded UDP-only. The frame loop's first network act is an
+HTTP fetch from `ad.thematrixonline.net:80` over a non-blocking socket. The
+shims redirect it to the loopback stand-in, log it, and wait cooperatively in
+`recv`. With nothing listening, the client keeps retrying `connect` and carries
+on.
+
+## Watchdog and deadline
+
+- `MXO_WATCHDOG=N` starts a real OS thread that prints `cur_func`, `esp`, the
+  indirect-call count and the last native target every N seconds. A frozen
+  count with a fixed `cur_func` is a loop in lifted code.
+- `MXO_RUN_SECONDS=N` ends a run after N seconds with the normal report.
+  `RunClientDLL` never returns on its own.
+
 ## Running
 
 Run from the game directory — resources are found relative to it, and with the

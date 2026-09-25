@@ -6,6 +6,7 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 ## [Unreleased]
 
 ### Added
+- **`RunClientDLL`'s frame loop runs.** `MXO_WATCHDOG`, `MXO_RUN_SECONDS`; the client's own window replaces the host's.
 - **`InitClientDLL` returns 1 on the final client.**
 - Guest entry from native code via DEP faults (`src/runtime/guest_call.c`); `pythonMXO.dll` and
   `msacm32.dll` bound natively, so the game's Python rules run in the real interpreter.
@@ -41,6 +42,10 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 - `ROADMAP.md` moved from `docs/` to the repo root.
 
 ### Fixed
+- Lifter: unordered x87 compares (NaN) now set C3|C2|C0; `jp`/`jnp` compute real parity.
+  Both hung the frame loop in MSVC's float-wrap loops.
+- TCP `connect`/`send`/`recv` implemented (were stubs that reported success).
+- The media player reports itself unavailable instead of crashing natively.
 - Lifter: `repe cmps`/`scas` now set CF (toolbox `lift32.py`); broke every inlined string compare.
 - `InitClientDLL` returning 0 was misread as success; it is failure. README corrected.
 - Guest re-entry during a native call no longer overwrites host or guest frames.

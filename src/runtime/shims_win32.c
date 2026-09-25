@@ -357,3 +357,49 @@ void imp_CryptAcquireContextA(void)
 void imp_CryptGenRandom(void)     { RET((uint32_t)CryptGenRandom((HCRYPTPROV)ARG(0), ARG(1), (BYTE *)ARGP(2))); STDRET(3); }
 void imp_CryptReleaseContext(void){ RET((uint32_t)CryptReleaseContext((HCRYPTPROV)ARG(0), ARG(1)));           STDRET(2); }
 void imp_UuidCreateSequential(void) { RET((uint32_t)UuidCreateSequential((UUID *)ARGP(0)));                     STDRET(1); }
+
+/* ---- Win32 file API: plain forwards (handles are real, buffers identity-mapped) */
+void imp_CreateFileA(void)
+{
+    HANDLE h = CreateFileA(ARGCS(0), ARG(1), ARG(2), (LPSECURITY_ATTRIBUTES)ARGP(3), ARG(4), ARG(5), ARGH(6));
+    if (getenv("MXO_FILE_TRACE")) printf("  [file] CreateFileA(\"%s\") -> %p\n", ARGCS(0), (void *)h);
+    RETP(h); STDRET(7);
+}
+void imp_ReadFile(void)
+{
+    RET((uint32_t)ReadFile(ARGH(0), ARGP(1), ARG(2), (LPDWORD)ARGP(3), (LPOVERLAPPED)ARGP(4)));
+    STDRET(5);
+}
+void imp_WriteFile(void)
+{
+    RET((uint32_t)WriteFile(ARGH(0), ARGP(1), ARG(2), (LPDWORD)ARGP(3), (LPOVERLAPPED)ARGP(4)));
+    STDRET(5);
+}
+void imp_SetFilePointer(void) { RET(SetFilePointer(ARGH(0), (LONG)ARG(1), (PLONG)ARGP(2), ARG(3))); STDRET(4); }
+void imp_GetFileSize(void)    { RET(GetFileSize(ARGH(0), (LPDWORD)ARGP(1)));                         STDRET(2); }
+
+/* sscanf / _snwprintf: an x86 va_list is the address of the first variadic
+ * word, and the client's are guest memory, which is host memory -- so the v-
+ * forms take them directly. (scanf's arguments are all pointers, so there is
+ * no float-promotion question.) */
+void imp_sscanf(void)
+{
+    RET((uint32_t)vsscanf(ARGCS(0), ARGCS(1), (va_list)(uintptr_t)(g_esp + 12)));
+    STDRET(0);
+}
+void imp__snwprintf(void)
+{
+    RET((uint32_t)_vsnwprintf((wchar_t *)ARGP(0), ARG(1), (const wchar_t *)ARGP(2),
+                              (va_list)(uintptr_t)(g_esp + 16)));
+    STDRET(0);
+}
+
+/* setjmp returning 0 is exactly right for the call itself. A longjmp back
+ * into lifted code would need the simulated registers restored from the
+ * jmp_buf; not needed yet, so it reports instead of pretending. */
+void imp__setjmp3(void) { RET(0); STDRET(0); }
+void imp_longjmp(void)
+{
+    printf("\n  [longjmp] reached (jmp_buf %08X, value %u) -- not implemented\n", ARG(0), ARG(1));
+    exit(1);
+}

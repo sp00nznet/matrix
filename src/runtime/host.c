@@ -109,46 +109,16 @@ static void build_tib(void)
 }
 
 
-/* ---- the window the engine would have owned ------------------------ *
+/* ---- the window ------------------------------------------------------ *
  *
- * client.dll imports no CreateWindowEx, no RegisterClass, no GetMessage and no
- * DefWindowProc -- only window manipulation. That is the LithTech split: the
- * engine host owns the window and the message pump and hands the client an
- * HWND. So the host creates one, and the user32 shims that take an HWND get a
- * real one to work on.
+ * The client creates its own window, through its statically linked MSLU
+ * (shims_mslu.c), which publishes it here for the user32 shims that need one.
+ * Earlier notes said the host must own the window; that was wrong.
  */
 static HWND g_hwnd;
 
 HWND host_hwnd(void) { return g_hwnd; }
-
-static LRESULT CALLBACK wndproc(HWND h, UINT m, WPARAM w, LPARAM l)
-{
-    if (m == WM_CLOSE) { PostQuitMessage(0); return 0; }
-    return DefWindowProcA(h, m, w, l);
-}
-
-static void make_window(int width, int height)
-{
-    WNDCLASSA wc;
-    memset(&wc, 0, sizeof wc);
-    wc.lpfnWndProc   = wndproc;
-    wc.hInstance     = GetModuleHandleA(NULL);
-    wc.hCursor       = LoadCursorA(NULL, IDC_ARROW);
-    wc.lpszClassName = "MxORecompHost";
-    RegisterClassA(&wc);
-
-    RECT r = { 0, 0, width, height };
-    AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
-    g_hwnd = CreateWindowExA(0, "MxORecompHost", "The Matrix Online (recompiled)",
-                             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-                             r.right - r.left, r.bottom - r.top,
-                             NULL, NULL, wc.hInstance, NULL);
-    if (g_hwnd) {
-        ShowWindow(g_hwnd, SW_SHOW);
-        UpdateWindow(g_hwnd);
-    }
-    printf("window: %p (%dx%d)\n", (void *)g_hwnd, width, height);
-}
+void host_set_hwnd(HWND h) { if (!g_hwnd) g_hwnd = h; }
 
 /* Drain the queue so the window stays responsive while lifted code runs. */
 static void pump(void)
@@ -348,6 +318,24 @@ static void report(void)
 #endif
 }
 
+/* MXO_RUN_SECONDS=N: end the run after N seconds with the usual report.
+ * RunClientDLL never returns, and a killed process prints no summary. Checked
+ * from the clock-poll yield point (guest_threads.c), so it fires in the loop. */
+void host_check_deadline(void)
+{
+    static DWORD deadline = 1;
+    if (deadline == 1) {
+        const char *s = getenv("MXO_RUN_SECONDS");
+        deadline = s ? GetTickCount() + 1000u * (DWORD)atoi(s) : 0;
+    }
+    if (deadline && (int)(GetTickCount() - deadline) >= 0) {
+        printf("\n[host] MXO_RUN_SECONDS reached\n");
+        report();
+        _flushall();
+        ExitProcess(0);
+    }
+}
+
 /* ---- image + IAT ---------------------------------------------------- */
 
 static uint32_t rd32(uint32_t va) { uint32_t v; memcpy(&v, (void *)(uintptr_t)va, 4); return v; }
@@ -517,6 +505,22 @@ static void invalid_param(const wchar_t *e, const wchar_t *f, const wchar_t *fil
     exit(3);
 }
 
+/* MXO_WATCHDOG=N: a real OS thread that reports every N seconds where the
+ * guest is. When the loop stops polling the clock there is no other way to
+ * see it: the host's own stack is useless (lifted code) and the ring only
+ * shows function entries. */
+uint32_t native_current(void);   /* native_call.c */
+
+static DWORD WINAPI watchdog(LPVOID p)
+{
+    DWORD ms = (DWORD)(uintptr_t)p;
+    for (;;) {
+        Sleep(ms);
+        fprintf(stderr, "  [watchdog] cur_func=%08X esp=%08X icalls=%u native=%08X\n",
+                g_cur_func, g_esp, g_icall_count, native_current());
+    }
+}
+
 int main(int argc, char **argv)
 {
     const char *path = "game/client.dll";
@@ -527,6 +531,8 @@ int main(int argc, char **argv)
     /* Unbuffered: a fail-fast (0xC0000409) otherwise takes the whole log with it. */
     setvbuf(stdout, NULL, _IONBF, 0);
     _set_invalid_parameter_handler(invalid_param);
+    if (getenv("MXO_WATCHDOG"))
+        CreateThread(NULL, 0, watchdog, (LPVOID)(uintptr_t)(1000u * (DWORD)atoi(getenv("MXO_WATCHDOG"))), 0, NULL);
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--no-dllmain")) no_dllmain = 1;
@@ -568,7 +574,7 @@ int main(int argc, char **argv)
     gt_init(MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE);   /* main = guest thread 0 */
     mslu_install();   /* before DllMain: static constructors may convert strings */
     guest_call_install(g_image_size);   /* native -> guest callbacks via DEP faults */
-    make_window(1024, 768);
+    /* No host window: the client creates its own through MSLU (see HOST.md). */
     printf("TIB:   0x%08X (fs base)\n", g_fs_base);
 
     printf("dispatch entries:      %u\n", recomp_dispatch_count);

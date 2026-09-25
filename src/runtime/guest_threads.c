@@ -351,9 +351,12 @@ void imp_RaiseException(void)
  */
 static DWORD g_last_yield;
 
+void host_check_deadline(void);   /* host.c: MXO_RUN_SECONDS */
+
 void gt_maybe_yield(void)
 {
     DWORD now = GetTickCount();
+    host_check_deadline();
     if (now - g_last_yield < 2 || !gt_others_runnable()) return;
     g_last_yield = now;
     gt_yield();

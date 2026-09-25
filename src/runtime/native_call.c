@@ -135,3 +135,14 @@ void imp_CoCreateInstance(void)
            c->Data4[3], c->Data4[4], c->Data4[5], c->Data4[6], c->Data4[7]);
     forward_native("ole32.dll", "CoCreateInstance", 5);
 }
+
+/* dllMediaPlayer.dll (the in-game video player) crashes when run natively in
+ * this host, and the client already copes with "no player": it was a NULL
+ * stub when InitClientDLL first succeeded. So say so, honestly. Both are
+ * cdecl (no arguments popped by the callee). */
+static const char k_no_player[] = "media player not available in the recomp host";
+void imp__CreateMediaPlayer__YAPAVIMediaPlayer__PAUHWND_____Z(void) { g_eax = 0; g_esp += 4; }
+void imp__GetMediaPlayerLastError__YAPBDXZ(void) { g_eax = (uint32_t)(uintptr_t)k_no_player; g_esp += 4; }
+
+/* The native call in progress, for the watchdog (0 when none). */
+uint32_t native_current(void) { return g_target; }

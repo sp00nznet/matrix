@@ -190,10 +190,80 @@ void imp_select(void)
     STDRET(5);
 }
 
+/* Which sockets the client made non-blocking: recv on those must return
+ * WSAEWOULDBLOCK, not wait. ponytail: 64 sockets, linear scan. */
+static SOCKET g_nonblock[64];
+static int    g_nnonblock;
+
+static int is_nonblocking(SOCKET s)
+{
+    for (int i = 0; i < g_nnonblock; i++) if (g_nonblock[i] == s) return 1;
+    return 0;
+}
+
 void imp_ioctlsocket(void)
 {
-    RET((uint32_t)ioctlsocket((SOCKET)ARG(0), (long)ARG(1), (u_long *)ARGP(2)));
+    SOCKET s = (SOCKET)ARG(0);
+    int rc = ioctlsocket(s, (long)ARG(1), (u_long *)ARGP(2));
+    if (rc == 0 && (long)ARG(1) == FIONBIO && ARG(2) && MEM32(ARG(2)) && !is_nonblocking(s) && g_nnonblock < 64)
+        g_nonblock[g_nnonblock++] = s;
+    RET((uint32_t)rc);
     STDRET(3);
+}
+
+/* ---- TCP (WS2_32): the client does speak it ------------------------ *
+ * Earlier notes said the protocol is UDP-only because WSOCK32 has no connect.
+ * WS2_32 does: connect/send/recv, first used for the ad server
+ * (ad.thematrixonline.net) right after the frame loop starts. The destination
+ * is rewritten to the sidecar exactly as sendto's is, and traffic is logged
+ * to the same packet log ("CN" connect, "TX"/"RX" data). */
+void imp_connect(void)
+{
+    struct sockaddr_in to;
+    int len = (int)ARG(2) < (int)sizeof to ? (int)ARG(2) : (int)sizeof to;
+    memcpy(&to, ARGP(1), len);
+    uint16_t port = ntohs(to.sin_port);
+    if (to.sin_family == AF_INET) to.sin_addr.s_addr = redirect_addr();
+    int rc = connect((SOCKET)ARG(0), (const struct sockaddr *)&to, len);
+    int err = rc ? WSAGetLastError() : 0;
+    printf("  [net] connect(%u) -> port %u: %s (%d)\n", ARG(0), port, rc ? "failed" : "ok", err);
+    plog("CN", (const struct sockaddr *)&to, NULL, 0);
+    WSASetLastError(err);
+    RET((uint32_t)rc); STDRET(3);
+}
+
+void imp_send(void)
+{
+    int rc = send((SOCKET)ARG(0), (const char *)ARGP(1), (int)ARG(2), (int)ARG(3));
+    struct sockaddr_in peer; int pl = sizeof peer;
+    if (getpeername((SOCKET)ARG(0), (struct sockaddr *)&peer, &pl)) memset(&peer, 0, sizeof peer);
+    if (rc > 0) { g_tx++; g_tx_bytes += (uint64_t)rc; }
+    plog("TX", (const struct sockaddr *)&peer, ARGP(1), rc > 0 ? rc : 0);
+    RET((uint32_t)rc); STDRET(4);
+}
+
+int gt_select(int, fd_set *, fd_set *, fd_set *, const struct timeval *);
+
+void imp_recv(void)
+{
+    SOCKET s = (SOCKET)ARG(0);
+    /* A blocking recv would freeze every guest thread (they share this OS
+     * thread), so wait cooperatively first; non-blocking sockets go straight
+     * through and get WSAEWOULDBLOCK as the client expects. */
+    if (!is_nonblocking(s)) {
+        fd_set r; FD_ZERO(&r); FD_SET(s, &r);
+        gt_select(0, &r, NULL, NULL, NULL);
+    }
+    int rc = recv(s, (char *)ARGP(1), (int)ARG(2), (int)ARG(3));
+    int err = rc < 0 ? WSAGetLastError() : 0;
+    if (rc > 0) {
+        struct sockaddr_in peer; int pl = sizeof peer;
+        if (getpeername(s, (struct sockaddr *)&peer, &pl)) memset(&peer, 0, sizeof peer);
+        g_rx++; g_rx_bytes += (uint64_t)rc;
+        plog("RX", (const struct sockaddr *)&peer, ARGP(1), rc);
+    }
+    WSASetLastError(err);
+    RET((uint32_t)rc); STDRET(4);
 }
 
 void imp_getsockname(void)
