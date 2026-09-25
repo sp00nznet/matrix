@@ -15,7 +15,7 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **The final client initialises through graphics, input, threads, Winsock, login and audio.** It now fails deep in init, past the login check.
+## Project status: **`InitClientDLL` succeeds on the final client**, with the game's own Python rules running in the real interpreter. Next: the frame loop.
 
 **Correction first.** Earlier versions of this README said `InitClientDLL`
 "completes" on both targets. It returned, but it returned **0, which is
@@ -45,9 +45,14 @@ registration, and they were empty because their `Init` never ran.
    whose slots are transcribed from the launcher's own class. Login lives in
    the launcher.
 8. COM audio (DirectMusic) and **Bink** (bound natively from the game's
-   `binkw32.dll`) come up, and init runs for about **40 million** indirect calls.
-   It then faults on an object whose `+0x9C` member was never created
-   (`0x62099900`, vtable `0x62874670`). That's the next thread.
+   `binkw32.dll`) come up.
+9. A **lifter bug** was corrupting every inlined string compare (540 sites):
+   `repe cmpsb` never set CF. Fixed in the toolbox, with a differential test
+   that fails without the fix.
+10. The game's **Python rules run in the real `pythonMXO.dll`**. Its callbacks
+    into the client arrive through DEP faults on the non-executable guest image.
+11. **`InitClientDLL` returns 1** after 62.3M indirect calls. Next is
+    `RunClientDLL`, the frame loop.
 
 See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 
@@ -69,14 +74,15 @@ format that took about forty lines to unpack. See
 | **catalog (merged)** | **76,530** | **89,340** |
 | **lifted, errors** | **76,530, 0** | **89,340, 0** |
 | static ctors run | 12,189 | **14,536** |
-| indirect calls in `InitClientDLL` | 65,029 | **~41.8M** |
+| indirect calls in `InitClientDLL` | 65,029 | **62,263,380** |
 | MSLU functions bound | — | **36** (33 shimmed) |
 | window / D3D9 device / DirectInput | not reached | ✅ / ✅ / ✅ |
 | `WSAStartup` | not reached | ✅ |
 | guest threads (fibers) | — | ✅ |
 | login mediator | — | ✅ stand-in (launcher's layout) |
-| `InitClientDLL` | returns 0 (failure, misread) | **faults at `0x62099900` after ~40M calls** |
-| unimplemented imports hit | 15 | **0** |
+| game Python (`pythonMXO.dll`) | — | ✅ running natively |
+| `InitClientDLL` | returns 0 (failure, misread) | **✅ returns 1** |
+| unimplemented imports hit | 15 | 8 (file I/O, `sscanf`, media player…) |
 
 Retail has not been re-run with the new host; the fixes are target-agnostic,
 but the numbers above for it are from before them.

@@ -166,7 +166,8 @@ static void s_SetWindowLongA(void)
 
 static void s_DefWindowProcW(void)  { RET(DefWindowProcW(ARGHW(0), ARG(1), ARG(2), ARG(3))); STDRET(4); }
 static void s_DispatchMessageW(void){ RET(DispatchMessageW((MSG *)ARGP(0)));                  STDRET(1); }
-static void s_PeekMessageW(void)    { RET(PeekMessageW((MSG *)ARGP(0), ARGHW(1), ARG(2), ARG(3), ARG(4))); STDRET(5); }
+void gt_maybe_yield(void);   /* guest_threads.c */
+static void s_PeekMessageW(void)    { gt_maybe_yield(); RET(PeekMessageW((MSG *)ARGP(0), ARGHW(1), ARG(2), ARG(3), ARG(4))); STDRET(5); }
 static void s_IsWindowUnicode(void) { RET(IsWindowUnicode(ARGHW(0)));                         STDRET(1); }
 static void s_EnableWindow(void)    { RET(EnableWindow(ARGHW(0), ARG(1)));                    STDRET(2); }
 

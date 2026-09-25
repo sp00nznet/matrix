@@ -15,13 +15,13 @@
  * same contract a game loop written for one core already honours.
  *
  * TLS moves to FLS (fiber-local storage, native) so each guest thread keeps
- * its own slots. Critical sections stay real: all fibers share one OS thread,
- * so they never contend -- mutual exclusion holds as long as nobody yields
- * while holding one (see the ponytail note on EnterCriticalSection).
+ * its own slots. Critical sections are owned per fiber (see below), and the
+ * clock and message-queue calls a game loop polls are yield points too.
  */
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <windows.h>
+#include <mmsystem.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -335,4 +335,75 @@ void imp_RaiseException(void)
         exit(1);
     }
     RET(0); STDRET(4);
+}
+
+/* ---- preemption points ------------------------------------------------ *
+ *
+ * A game loop paces itself by polling the clock and the message queue, not by
+ * sleeping, so a main fiber that only yields at blocking calls starved every
+ * other guest thread: the audio streamers and the resource thread never ran
+ * once in a 40M-call init. On real hardware those threads run concurrently.
+ * So the calls a loop polls are yield points too, rate-limited so a tight
+ * timing loop still sees a fast clock.
+ *
+ * ponytail: 2 ms slices, round-robin. Priorities are ignored
+ * (SetThreadPriority is a no-op); add them if a thread is shown to need them.
+ */
+static DWORD g_last_yield;
+
+void gt_maybe_yield(void)
+{
+    DWORD now = GetTickCount();
+    if (now - g_last_yield < 2 || !gt_others_runnable()) return;
+    g_last_yield = now;
+    gt_yield();
+}
+
+void imp_timeGetTime(void)             { gt_maybe_yield(); RET(timeGetTime()); STDRET(0); }
+void imp_GetTickCount(void)            { gt_maybe_yield(); RET(GetTickCount()); STDRET(0); }
+void imp_QueryPerformanceCounter(void)
+{
+    gt_maybe_yield();
+    RET((uint32_t)QueryPerformanceCounter((LARGE_INTEGER *)ARGP(0)));
+    STDRET(1);
+}
+
+/* ---- critical sections, owned per guest thread ------------------------- *
+ *
+ * Once fibers can be switched at arbitrary calls, a real CRITICAL_SECTION
+ * protects nothing: every fiber is the same OS thread, and a CS is reentrant
+ * for its owner. So ownership is kept per fiber, in the client's own struct
+ * (OwningThread = fiber index + 1, RecursionCount), and a contended Enter
+ * yields until the owner leaves. The real CS API is never called.
+ */
+void imp_InitializeCriticalSection(void)
+{
+    memset(ARGP(0), 0, sizeof(CRITICAL_SECTION));
+    RET(0); STDRET(1);
+}
+void imp_DeleteCriticalSection(void) { RET(0); STDRET(1); }
+
+void imp_EnterCriticalSection(void)
+{
+    CRITICAL_SECTION *cs = (CRITICAL_SECTION *)ARGP(0);
+    HANDLE me = (HANDLE)(uintptr_t)(g_cur + 1);
+    while (cs->OwningThread && cs->OwningThread != me) {
+        if (!gt_others_runnable()) {
+            printf("  [threads] deadlock: CS %p held by fiber %u\n", (void *)cs,
+                   (unsigned)(uintptr_t)cs->OwningThread - 1);
+            exit(1);
+        }
+        gt_yield();
+        cs = (CRITICAL_SECTION *)ARGP(0);   /* our frame again after the switch */
+    }
+    cs->OwningThread = me;
+    cs->RecursionCount++;
+    RET(0); STDRET(1);
+}
+
+void imp_LeaveCriticalSection(void)
+{
+    CRITICAL_SECTION *cs = (CRITICAL_SECTION *)ARGP(0);
+    if (cs->RecursionCount > 0 && --cs->RecursionCount == 0) cs->OwningThread = 0;
+    RET(0); STDRET(1);
 }

@@ -168,7 +168,14 @@ void imp_remove(void)  { RET((uint32_t)remove(ARGCS(0)));                       
 void imp_rename(void)  { RET((uint32_t)rename(ARGCS(0), ARGCS(1)));              STDRET(0); }
 void imp_tmpfile(void) { RETP(tmpfile());                                        STDRET(0); }
 void imp_tmpnam(void)  { RETP(tmpnam(ARGS(0)));                                  STDRET(0); }
-void imp__fsopen(void) { RETP(_fsopen(ARGCS(0), ARGCS(1), (int)ARG(2)));         STDRET(0); }
+void imp__itoa(void) { RETP(_itoa((int)ARG(0), ARGS(1), (int)ARG(2))); STDRET(0); }
+
+void imp__fsopen(void)
+{
+    FILE *f = _fsopen(ARGCS(0), ARGCS(1), (int)ARG(2));
+    if (getenv("MXO_FILE_TRACE")) printf("  [file] _fsopen(\"%s\", \"%s\") -> %p\n", ARGCS(0), ARGCS(1), (void *)f);
+    RETP(f); STDRET(0);
+}
 void imp__wfopen(void) { RETP(_wfopen(ARGW(0), ARGW(1)));                        STDRET(0); }
 
 /* ---- filesystem ---------------------------------------------------- */

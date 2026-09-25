@@ -16,6 +16,8 @@
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <wincrypt.h>
+#include <rpc.h>
 #include <mmsystem.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -41,10 +43,7 @@ HWND host_hwnd(void);           /* the window the host created, or NULL */
  * InitializeCriticalSection followed by a real Enter would deadlock or fault on
  * an uninitialised structure.
  */
-void imp_InitializeCriticalSection(void) { InitializeCriticalSection((LPCRITICAL_SECTION)ARGP(0)); RET(0); STDRET(1); }
-void imp_DeleteCriticalSection(void)     { DeleteCriticalSection((LPCRITICAL_SECTION)ARGP(0));     RET(0); STDRET(1); }
-void imp_EnterCriticalSection(void)      { EnterCriticalSection((LPCRITICAL_SECTION)ARGP(0));      RET(0); STDRET(1); }
-void imp_LeaveCriticalSection(void)      { LeaveCriticalSection((LPCRITICAL_SECTION)ARGP(0));      RET(0); STDRET(1); }
+/* Critical sections: guest_threads.c, owned per guest thread. */
 
 /* TLS, Sleep and WaitForSingleObject live in guest_threads.c: per guest thread. */
 
@@ -58,12 +57,11 @@ void imp_SetEvent(void)   { RET((uint32_t)SetEvent(ARGH(0)));   STDRET(1); }
 
 /* ---- kernel32: time and identity ----------------------------------- */
 
-void imp_QueryPerformanceCounter(void)   { RET((uint32_t)QueryPerformanceCounter((LARGE_INTEGER *)ARGP(0)));   STDRET(1); }
 void imp_QueryPerformanceFrequency(void) { RET((uint32_t)QueryPerformanceFrequency((LARGE_INTEGER *)ARGP(0))); STDRET(1); }
 void imp_GetSystemTimeAsFileTime(void)   { GetSystemTimeAsFileTime((FILETIME *)ARGP(0)); RET(0);               STDRET(1); }
 void imp_GetLocalTime(void)              { GetLocalTime((SYSTEMTIME *)ARGP(0)); RET(0);                        STDRET(1); }
 void imp_GetFileType(void)               { RET(GetFileType(ARGH(0)));                                          STDRET(1); }
-void imp_timeGetTime(void)               { RET(timeGetTime());                                                 STDRET(0); }
+/* QueryPerformanceCounter, timeGetTime: guest_threads.c (yield points). */
 
 /* We want a fault to surface through the host's VEH with the lifted VA, not be
  * swallowed by the client's own handler. Returning 0 (no previous filter) is
@@ -340,3 +338,22 @@ void imp__vsnprintf(void)
     RET(msvc_count(fmt_from_args(ARGS(0), ARG(1), ARGCS(2), ARG(3)), ARG(1)));
     STDRET(0);
 }
+
+/* ---- small forwards found by the first Splash-layout run ------------- */
+void imp_OpenFile(void)        { RET((uint32_t)OpenFile(ARGCS(0), (LPOFSTRUCT)ARGP(1), ARG(2)));  STDRET(3); }
+void imp_GetSystemTime(void)   { GetSystemTime((SYSTEMTIME *)ARGP(0)); RET(0);                    STDRET(1); }
+void imp_GetVersion(void)      { RET(GetVersion());                                               STDRET(0); }
+void imp_GetTimeFormatA(void)
+{
+    RET((uint32_t)GetTimeFormatA(ARG(0), ARG(1), (const SYSTEMTIME *)ARGP(2), ARGCS(3), ARGS(4), (int)ARG(5)));
+    STDRET(6);
+}
+/* The client seeds its crypto from CryptGenRandom; real randomness, forwarded. */
+void imp_CryptAcquireContextA(void)
+{
+    RET((uint32_t)CryptAcquireContextA((HCRYPTPROV *)ARGP(0), ARGCS(1), ARGCS(2), ARG(3), ARG(4)));
+    STDRET(5);
+}
+void imp_CryptGenRandom(void)     { RET((uint32_t)CryptGenRandom((HCRYPTPROV)ARG(0), ARG(1), (BYTE *)ARGP(2))); STDRET(3); }
+void imp_CryptReleaseContext(void){ RET((uint32_t)CryptReleaseContext((HCRYPTPROV)ARG(0), ARG(1)));           STDRET(2); }
+void imp_UuidCreateSequential(void) { RET((uint32_t)UuidCreateSequential((UUID *)ARGP(0)));                     STDRET(1); }

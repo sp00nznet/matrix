@@ -6,6 +6,12 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 ## [Unreleased]
 
 ### Added
+- **`InitClientDLL` returns 1 on the final client.**
+- Guest entry from native code via DEP faults (`src/runtime/guest_call.c`); `pythonMXO.dll` and
+  `msacm32.dll` bound natively, so the game's Python rules run in the real interpreter.
+- Guest-thread preemption at clock/message polls; critical sections owned per fiber.
+- `tools/build.bat`: committed build script (full, partial, traced).
+- Diagnostics: `MXO_FILE_TRACE`, `MXO_RING`; mediator listener slots; more forwarded imports.
 - `ILTLoginMediator` stand-in (`src/runtime/login_mediator.c`), transcribed from the launcher's class.
 - Whole-DLL native binding (`MXO_NATIVE_DLLS`, default `binkw32.dll`); native `CoInitialize`/`CoCreateInstance`.
 - Fault report flushes all streams and names the object behind each pointer register.
@@ -35,6 +41,7 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 - `ROADMAP.md` moved from `docs/` to the repo root.
 
 ### Fixed
+- Lifter: `repe cmps`/`scas` now set CF (toolbox `lift32.py`); broke every inlined string compare.
 - `InitClientDLL` returning 0 was misread as success; it is failure. README corrected.
 - Guest re-entry during a native call no longer overwrites host or guest frames.
 

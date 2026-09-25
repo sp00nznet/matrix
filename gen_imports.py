@@ -70,7 +70,8 @@ SEARCH = ('', 'p_dlls')
 # its keep immediately -- memset, memcpy, memcmp, strlen and operator
 # new/delete all looked like obvious entries and none of them are imported.
 # MSVC 7.1 emits them as intrinsics, so they are already inside the lifted code.
-ONE_TARGET_ONLY = {'RajkoD3DCreate9', 'Direct3DCreate9'}
+ONE_TARGET_ONLY = {'RajkoD3DCreate9', 'Direct3DCreate9', 'GetSystemTime', 'GetTimeFormatA',
+                   'GetVersion', '_itoa', 'UuidCreateSequential'}
 
 HAND_WRITTEN = {
     # guest_threads.c: guest threads as fibers
@@ -78,6 +79,8 @@ HAND_WRITTEN = {
     'ExitThread', 'TerminateThread', 'GetExitCodeThread', 'SetThreadPriority',
     'GetCurrentThread', 'RaiseException',
     'CoInitialize', 'CoCreateInstance',   # native_call.c
+    'OpenFile', 'GetSystemTime', 'GetVersion', 'GetTimeFormatA', 'CryptAcquireContextA',
+    'CryptGenRandom', 'CryptReleaseContext', 'UuidCreateSequential', '_itoa',
     'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',
     'RegQueryValueExA', 'GetFileVersionInfoSizeA', 'GetFileVersionInfoA', 'VerQueryValueA',
     '_vsnprintf',

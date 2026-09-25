@@ -197,7 +197,7 @@ void imp_SetLastError(void)       { SetLastError(ARG(0)); RET(0);       STDRET(1
 void imp_GetCurrentProcess(void)  { RET(0xFFFFFFFFu);                   STDRET(0); }
 void imp_GetCurrentProcessId(void){ RET(GetCurrentProcessId());         STDRET(0); }
 /* GetCurrentThreadId: guest_threads.c */
-void imp_GetTickCount(void)       { RET(GetTickCount());                STDRET(0); }
+/* GetTickCount: guest_threads.c (yield point) */
 
 /* ---- CRT string and file (cdecl: pop 0) ---------------------------- */
 
@@ -209,7 +209,11 @@ void imp_strncpy(void)
 
 void imp_fopen(void)
 {
-    RETP(fopen((const char *)ARGP(0), (const char *)ARGP(1)));
+    FILE *f = fopen((const char *)ARGP(0), (const char *)ARGP(1));
+    /* MXO_FILE_TRACE=1: every file the client opens, and whether it found it. */
+    if (getenv("MXO_FILE_TRACE"))
+        printf("  [file] fopen(\"%s\", \"%s\") -> %p\n", (const char *)ARGP(0), (const char *)ARGP(1), (void *)f);
+    RETP(f);
     STDRET(0);
 }
 

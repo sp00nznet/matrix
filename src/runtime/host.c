@@ -53,6 +53,7 @@ ptrdiff_t g_mem_base = 0;          /* 1:1 mapping, so no bias */
 
 uint32_t  g_cur_func;
 uint32_t  g_icall_trace[ICALL_TRACE_SIZE];
+uint32_t  g_icall_from[ICALL_TRACE_SIZE];   /* caller of each traced ICALL (toolbox header) */
 uint32_t  g_icall_trace_idx;
 uint32_t  g_icall_count;
 
@@ -226,6 +227,7 @@ recomp_func_t recomp_lookup(uint32_t va)
  * want its arguments on the host stack. */
 recomp_func_t mslu_resolve(uint32_t va);   /* shims_mslu.c */
 void mslu_install(void);
+void guest_call_install(uint32_t image_size);   /* guest_call.c */
 void gt_init(uint32_t stack_lo, uint32_t stack_hi);   /* guest_threads.c */
 
 recomp_func_t native_resolve(uint32_t va); /* native_call.c */
@@ -380,11 +382,14 @@ static uint32_t patch_iat(void)
  * a function pointer read from the IAT, which Bink then calls natively -- a
  * self-patched slot would have it execute our IAT as code.
  *
- * MXO_NATIVE_DLLS overrides the list (comma-separated, case-insensitive). */
+ * pythonMXO.dll runs the game's own rules natively this way; its calls back
+ * into the client (extension functions, type slots) arrive through
+ * guest_call.c. MXO_NATIVE_DLLS overrides the list (comma-separated,
+ * case-insensitive). */
 static uint32_t bind_native_dlls(void)
 {
     const char *list = getenv("MXO_NATIVE_DLLS");
-    if (!list) list = "binkw32.dll";
+    if (!list) list = "binkw32.dll,pythonMXO.dll,msacm32.dll";
     char dir[MAX_PATH], *slash;
     strcpy(dir, g_client_path);
     slash = strrchr(dir, '\\');
@@ -407,6 +412,7 @@ static uint32_t bind_native_dlls(void)
         char path[MAX_PATH];
         snprintf(path, sizeof path, "%s%s", dir, name);
         HMODULE m = LoadLibraryA(path);
+        if (!m) m = LoadLibraryA(name);   /* not shipped with the game: the system copy */
         if (!m) { printf("native DLL %s: load failed (%lu)\n", path, GetLastError()); continue; }
 
         uint32_t *names = (uint32_t *)(img + (d->OriginalFirstThunk ? d->OriginalFirstThunk : d->FirstThunk));
@@ -464,6 +470,17 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
                 (uint32_t)ep->ExceptionRecord->ExceptionInformation[1]);
     }
     report();
+#ifdef RECOMP_TRACE
+    /* MXO_RING=N: the last N functions entered (the toolbox dump shows 40). */
+    if (getenv("MXO_RING")) {
+        uint32_t n = (uint32_t)atoi(getenv("MXO_RING"));
+        if (n > RECOMP_ENTER_SIZE) n = RECOMP_ENTER_SIZE;
+        fprintf(stderr, "  last %u functions entered (newest last):\n", n);
+        for (uint32_t i = n; i >= 1; i--)
+            fprintf(stderr, "%08X%c", g_enter_trace[(g_enter_idx - i) & (RECOMP_ENTER_SIZE - 1)],
+                    (i - 1) % 8 ? ' ' : '\n');
+    }
+#endif
     _flushall();   /* includes the client's own ClientErrors.txt, opened via our fopen */
     return EXCEPTION_CONTINUE_SEARCH;
 }
@@ -550,6 +567,7 @@ int main(int argc, char **argv)
     build_tib();
     gt_init(MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE);   /* main = guest thread 0 */
     mslu_install();   /* before DllMain: static constructors may convert strings */
+    guest_call_install(g_image_size);   /* native -> guest callbacks via DEP faults */
     make_window(1024, 768);
     printf("TIB:   0x%08X (fs base)\n", g_fs_base);
 

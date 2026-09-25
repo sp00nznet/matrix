@@ -46,6 +46,8 @@ typedef enum {
     K_SUB_IF,     /* p = [[this+0x680]+a]; eax = p ? (b==0xA8 ? [p+b] : p+b) : dflt */
     K_ZERO_IF_NULL,/* dword [this+a] == 0 -> return 0; otherwise report      */
     K_CLASSNAME,  /* eax = "CLTLoginMediator" (every class's slot 0)         */
+    K_LISTEN_ADD, /* set<listener> at +0x674 insert; eax = !inserted          */
+    K_LISTEN_DEL, /* ... erase; eax = !erased                                */
 } kind_t;
 
 typedef struct { uint16_t slot; uint8_t kind, argc, wide; uint32_t a, b; } med_slot_t;
@@ -104,10 +106,23 @@ static const med_slot_t k_slots[] = {
     { 89, K_ZERO_IF_NULL, 0, 0, 0x018 },       /* 41B3F0 */
     { 90, K_DWORD,     0, 0, 0x018 },          /* 41F220 */
     { 91, K_ZERO_IF_NULL, 0, 0, 0x01C },       /* 41B420 */
+    { 92, K_LISTEN_ADD, 1, 0, 0x674 },         /* 41DDB0  register login-event listener */
+    { 93, K_LISTEN_DEL, 1, 0, 0x674 },         /* 41DDE0 */
     { 94, K_DWORD,     0, 0, 0x080 },          /* 41F240 */
 };
 
 static uint8_t *g_obj;
+
+/* The launcher keeps its listeners in a std::set at +0x674; the stand-in keeps
+ * them here. They are who a login state change will have to be announced to. */
+static uint32_t g_listeners[16];
+static uint32_t g_nlisteners;
+
+static int listener_index(uint32_t p)
+{
+    for (uint32_t i = 0; i < g_nlisteners; i++) if (g_listeners[i] == p) return (int)i;
+    return -1;
+}
 static uint32_t g_pending;
 static const char k_empty[1] = "";
 static const char k_class[] = "CLTLoginMediator";
@@ -166,6 +181,19 @@ static void med_handler(void)
         break;
     }
     case K_CLASSNAME: r = (uint32_t)(uintptr_t)k_class; break;
+    case K_LISTEN_ADD:
+        r = listener_index(ARG(0)) >= 0;
+        if (!r && g_nlisteners < 16) {
+            g_listeners[g_nlisteners++] = ARG(0);
+            printf("  [mediator] listener %08X registered\n", ARG(0));
+        }
+        break;
+    case K_LISTEN_DEL: {
+        int i = listener_index(ARG(0));
+        r = i < 0;
+        if (i >= 0) g_listeners[i] = g_listeners[--g_nlisteners];
+        break;
+    }
     case K_ZERO_IF_NULL:
         if (F32(t + s->a)) report(slot, "reached with its object present -- logic not transcribed");
         r = 0;
