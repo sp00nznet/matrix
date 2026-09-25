@@ -60,7 +60,6 @@ void native_invoke(uint32_t target)
 
     if (trace < 0) trace = getenv("MXO_NATIVE_TRACE") != NULL;
     if (trace) printf("  [native] -> %08X this=%08X esp=%08X\n", target, MEM32(g_esp + 4), g_esp);
-
     g_target  = target;
     g_sim_esp = g_esp;
     {
@@ -123,4 +122,16 @@ void imp_DirectInput8Create(void)
 {
     MEM32(g_esp + 4) = (uint32_t)(uintptr_t)GetModuleHandleA(NULL);
     forward_native("dinput8.dll", "DirectInput8Create", 5);
+}
+
+/* COM activation: the object comes back real, and its methods run natively like
+ * D3D9's. The CLSID is logged so each class the client instantiates is on record. */
+void imp_CoInitialize(void)   { forward_native("ole32.dll", "CoInitialize", 1); }
+void imp_CoCreateInstance(void)
+{
+    const GUID *c = (const GUID *)(uintptr_t)MEM32(g_esp + 4);
+    printf("  [CoCreateInstance] {%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\n",
+           c->Data1, c->Data2, c->Data3, c->Data4[0], c->Data4[1], c->Data4[2],
+           c->Data4[3], c->Data4[4], c->Data4[5], c->Data4[6], c->Data4[7]);
+    forward_native("ole32.dll", "CoCreateInstance", 5);
 }

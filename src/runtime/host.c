@@ -229,12 +229,15 @@ void mslu_install(void);
 void gt_init(uint32_t stack_lo, uint32_t stack_hi);   /* guest_threads.c */
 
 recomp_func_t native_resolve(uint32_t va); /* native_call.c */
+recomp_func_t mediator_resolve(uint32_t va);   /* login_mediator.c */
+uint32_t mediator_object(void);
 static uint32_t g_image_size;
 
 recomp_func_t recomp_lookup_manual(uint32_t va)
 {
     if (va - g_image_base < g_image_size) return NULL;   /* lifted: fast path */
     recomp_func_t f = mslu_resolve(va);
+    if (!f) f = mediator_resolve(va);
     if (!f) f = (recomp_func_t)mxo_iface_resolve(va);
     if (!f) f = native_resolve(va);
     return f;
@@ -368,6 +371,57 @@ static uint32_t patch_iat(void)
     return n;
 }
 
+/* Bind whole DLLs natively: the IAT gets the real export addresses, exactly as
+ * the Windows loader would, and every call then goes through native_call.c.
+ *
+ * For third-party DLLs that ship with the game (binkw32.dll) this beats a shim
+ * per function, and it is the only thing that works when the client passes an
+ * import *as a value*: BinkSetSoundSystem(BinkOpenDirectSound, ...) hands Bink
+ * a function pointer read from the IAT, which Bink then calls natively -- a
+ * self-patched slot would have it execute our IAT as code.
+ *
+ * MXO_NATIVE_DLLS overrides the list (comma-separated, case-insensitive). */
+static uint32_t bind_native_dlls(void)
+{
+    const char *list = getenv("MXO_NATIVE_DLLS");
+    if (!list) list = "binkw32.dll";
+    char dir[MAX_PATH], *slash;
+    strcpy(dir, g_client_path);
+    slash = strrchr(dir, '\\');
+    if (slash) slash[1] = 0;
+
+    uint8_t *img = (uint8_t *)(uintptr_t)g_image_base;
+    IMAGE_NT_HEADERS32 *nt = (IMAGE_NT_HEADERS32 *)(img + ((IMAGE_DOS_HEADER *)img)->e_lfanew);
+    IMAGE_DATA_DIRECTORY dd = nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+    uint32_t bound = 0;
+
+    for (IMAGE_IMPORT_DESCRIPTOR *d = (IMAGE_IMPORT_DESCRIPTOR *)(img + dd.VirtualAddress); d->Name; d++) {
+        const char *name = (const char *)(img + d->Name);
+        char want[512];
+        int hit = 0;
+        snprintf(want, sizeof want, "%s", list);
+        for (char *tok = strtok(want, ","); tok; tok = strtok(NULL, ","))
+            if (!_stricmp(tok, name)) hit = 1;
+        if (!hit) continue;
+
+        char path[MAX_PATH];
+        snprintf(path, sizeof path, "%s%s", dir, name);
+        HMODULE m = LoadLibraryA(path);
+        if (!m) { printf("native DLL %s: load failed (%lu)\n", path, GetLastError()); continue; }
+
+        uint32_t *names = (uint32_t *)(img + (d->OriginalFirstThunk ? d->OriginalFirstThunk : d->FirstThunk));
+        uint32_t *iat   = (uint32_t *)(img + d->FirstThunk);
+        for (uint32_t i = 0; names[i]; i++) {
+            FARPROC f = IMAGE_SNAP_BY_ORDINAL32(names[i])
+                ? GetProcAddress(m, (LPCSTR)(uintptr_t)IMAGE_ORDINAL32(names[i]))
+                : GetProcAddress(m, ((IMAGE_IMPORT_BY_NAME *)(img + names[i]))->Name);
+            if (f) { iat[i] = (uint32_t)(uintptr_t)f; bound++; }
+        }
+        printf("native DLL %s: bound at %p\n", name, (void *)m);
+    }
+    return bound;
+}
+
 static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
 {
     fprintf(stderr, "\n[!] exception 0x%08lX at %p, in lifted 0x%08X\n",
@@ -382,6 +436,15 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
     fprintf(stderr, "    eax=%08X ecx=%08X edx=%08X ebx=%08X\n"
                     "    esp=%08X ebp=%08X esi=%08X edi=%08X\n",
             g_eax, g_ecx, g_edx, g_ebx, g_esp, g_ebp, g_esi, g_edi);
+    {
+        /* First word behind each register that points somewhere readable --
+         * usually a vtable, which names the object the fault happened in. */
+        const char *nm[] = { "eax", "ecx", "edx", "ebx", "esi", "edi" };
+        uint32_t rv[] = { g_eax, g_ecx, g_edx, g_ebx, g_esi, g_edi };
+        for (int i = 0; i < 6; i++)
+            if (rv[i] >= 0x10000u && !IsBadReadPtr((void *)(uintptr_t)rv[i], 4))
+                fprintf(stderr, "    [%s] = %08X\n", nm[i], rd32(rv[i]));
+    }
     if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION &&
         ep->ExceptionRecord->NumberParameters >= 2) {
         uint32_t bad = (uint32_t)ep->ExceptionRecord->ExceptionInformation[1];
@@ -401,7 +464,7 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
                 (uint32_t)ep->ExceptionRecord->ExceptionInformation[1]);
     }
     report();
-    fflush(stdout); fflush(stderr);
+    _flushall();   /* includes the client's own ClientErrors.txt, opened via our fopen */
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
@@ -414,14 +477,14 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
  * Earlier runs pushed none of them. Returns 1 on success, 0 on failure with the
  * reason in the buffer at 0x629DDE88 -- eax=0 is NOT LithTech's LT_OK here.
  *
- * ponytail: the last four are 0 until something asks for them. The mediator is
- * the one that matters -- it is the launcher's half of login.
+ * The mediator is the stand-in in login_mediator.c: the launcher's half of
+ * login. ponytail: args 4, 6 and 7 stay 0 until something asks for them.
  */
 static void push_init_args(void)
 {
     static uint32_t argv0[1];                 /* empty, NULL-terminated argv */
     uint32_t a[8] = { 0, (uint32_t)(uintptr_t)argv0, g_image_base,
-                      (uint32_t)(uintptr_t)g_cres, 0, 0, 0, 0 };
+                      (uint32_t)(uintptr_t)g_cres, 0, mediator_object(), 0, 0 };
     for (int i = 7; i >= 0; i--) PUSH32(g_esp, a[i]);
 }
 
@@ -494,6 +557,7 @@ int main(int argc, char **argv)
     printf("import bridges:        %u\n", mxo_import_bridge_count);
     printf("data imports:          %u\n", mxo_import_data_count);
     printf("IAT slots patched:     %u\n", patch_iat());
+    printf("IAT slots bound native: %u\n", bind_native_dlls());
 
     /* DllMain first, always, unless explicitly skipped.
      *

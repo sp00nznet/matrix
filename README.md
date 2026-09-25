@@ -15,7 +15,7 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **The final client initialises through graphics, input, threads and Winsock.** The wall is the launcher's login object.
+## Project status: **The final client initialises through graphics, input, threads, Winsock, login and audio.** It now fails deep in init, past the login check.
 
 **Correction first.** Earlier versions of this README said `InitClientDLL`
 "completes" on both targets. It returned, but it returned **0, which is
@@ -40,9 +40,14 @@ registration, and they were empty because their `Init` never ran.
 5. **`WSAStartup` is called** — the network layer is reached for the first time.
 6. **Guest threads run** as fibers: a thread is created, resumed, runs and
    exits cleanly.
-7. `CNetMgr::Init` succeeds. The step then fails (**-7**) because it needs
-   `ILTLoginMediator`, the object `launcher.exe` builds after login and passes
-   in. The host passes NULL. Login lives in the launcher.
+7. `CNetMgr::Init` succeeds. The next step needs `ILTLoginMediator`, the
+   object `launcher.exe` builds after login. The host now passes a **stand-in**
+   whose slots are transcribed from the launcher's own class. Login lives in
+   the launcher.
+8. COM audio (DirectMusic) and **Bink** (bound natively from the game's
+   `binkw32.dll`) come up, and init runs for about **40 million** indirect calls.
+   It then faults on an object whose `+0x9C` member was never created
+   (`0x62099900`, vtable `0x62874670`). That's the next thread.
 
 See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 
@@ -64,12 +69,13 @@ format that took about forty lines to unpack. See
 | **catalog (merged)** | **76,530** | **89,340** |
 | **lifted, errors** | **76,530, 0** | **89,340, 0** |
 | static ctors run | 12,189 | **14,536** |
-| indirect calls in `InitClientDLL` | 65,029 | **787,650** |
+| indirect calls in `InitClientDLL` | 65,029 | **~41.8M** |
 | MSLU functions bound | — | **36** (33 shimmed) |
 | window / D3D9 device / DirectInput | not reached | ✅ / ✅ / ✅ |
 | `WSAStartup` | not reached | ✅ |
 | guest threads (fibers) | — | ✅ |
-| `InitClientDLL` | returns 0 (failure, misread) | **returns -7: needs `ILTLoginMediator`** |
+| login mediator | — | ✅ stand-in (launcher's layout) |
+| `InitClientDLL` | returns 0 (failure, misread) | **faults at `0x62099900` after ~40M calls** |
 | unimplemented imports hit | 15 | **0** |
 
 Retail has not been re-run with the new host; the fixes are target-agnostic,

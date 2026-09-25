@@ -77,6 +77,7 @@ HAND_WRITTEN = {
     '_beginthreadex', '_beginthread', 'CreateThread', 'ResumeThread', 'SuspendThread',
     'ExitThread', 'TerminateThread', 'GetExitCodeThread', 'SetThreadPriority',
     'GetCurrentThread', 'RaiseException',
+    'CoInitialize', 'CoCreateInstance',   # native_call.c
     'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',
     'RegQueryValueExA', 'GetFileVersionInfoSizeA', 'GetFileVersionInfoA', 'VerQueryValueA',
     '_vsnprintf',

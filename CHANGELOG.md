@@ -6,6 +6,9 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 ## [Unreleased]
 
 ### Added
+- `ILTLoginMediator` stand-in (`src/runtime/login_mediator.c`), transcribed from the launcher's class.
+- Whole-DLL native binding (`MXO_NATIVE_DLLS`, default `binkw32.dll`); native `CoInitialize`/`CoCreateInstance`.
+- Fault report flushes all streams and names the object behind each pointer register.
 - Guest threads as fibers (`src/runtime/guest_threads.c`): `_beginthreadex`, `CreateThread`,
   cooperative `Sleep`/`WaitForSingleObject`/`select`, TLS on FLS, `RaiseException` (SetThreadName).
 - Host passes `InitClientDLL` its real eight arguments (recovered from `launcher.exe`).

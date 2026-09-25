@@ -150,6 +150,37 @@ launcher, and the client receives the result as this object.
 `InitClientDLL` also calls its `vt[4]`, `vt[22]`, `vt[23]` and `vt[24]` for the
 startup banner.
 
+## The login mediator stand-in
+
+`login_mediator.c`. The launcher's `CLTLoginMediator` (static object
+`0x004D4E38`, vtable `0x004B01C8`, 101 slots) is almost entirely accessors on
+one large state object. The stand-in is that object with the launcher's
+layout, zeroed, plus a table that transcribes each accessor the client calls
+(byte, dword, address, a read through the selected-world record at `+0x680`,
+or out-parameter-and-return). Each table entry names the launcher method it
+mirrors. Slots with logic, most of which go through a login state machine at
+`+0x10`, report their number and stop when first reached.
+
+The initial state is "launched by the launcher" (`+4 = 1`), with an empty
+world record and no state machine. Slot 0 returns the class name, as every
+class's slot 0 does (`CNetMgr`'s returns `"CNetMgr"`). With it in place, the
+-7 is gone.
+
+## Whole DLLs bound natively
+
+`bind_native_dlls()` in `host.c` writes real export addresses into the IAT for
+the DLLs listed in `MXO_NATIVE_DLLS` (default `binkw32.dll`), loaded from the
+game directory. Calls then go through the native passthrough. Nothing else
+works for Bink: the client passes `BinkOpenDirectSound`, read from the IAT, to
+`BinkSetSoundSystem` as a callback. `CoCreateInstance` is forwarded the same
+way. The client creates DirectMusic's loader and performance and one more
+audio class; each CLSID is logged.
+
+## Windowed
+
+The game's own switch: `Windowed = 1` in `autoexec.cfg` (shipped commented
+out). Verified at `CreateDevice`: `D3DPRESENT_PARAMETERS.Windowed = 1`.
+
 ## Running
 
 Run from the game directory — resources are found relative to it, and with the
@@ -159,3 +190,7 @@ resource manager has failed!":
 ```
 cd game_final && ../build/mxo_final.exe client.dll --init
 ```
+
+When it faults, the host flushes every open stream first (so `ClientErrors.txt`
+survives) and prints the first word behind each pointer register. That word is
+usually a vtable, which identifies the object.
