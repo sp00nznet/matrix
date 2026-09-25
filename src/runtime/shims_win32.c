@@ -219,7 +219,9 @@ void imp_CreateFontA(void)
  * Doubles occupy two stack slots and are promoted from float by the caller, so
  * %f/%e/%g read eight bytes; everything else reads four.
  */
-static int fmt_from_stack(char *out, size_t cap, const char *fmt, unsigned slot)
+/* `ap` is the address of the first variadic argument: a stack slot for the
+ * printf family, or the va_list itself for the v-forms. */
+static int fmt_from_args(char *out, size_t cap, const char *fmt, uint32_t ap)
 {
     size_t n = 0;
     char spec[64];
@@ -248,18 +250,18 @@ static int fmt_from_stack(char *out, size_t cap, const char *fmt, unsigned slot)
         if (conv == 'f' || conv == 'F' || conv == 'e' || conv == 'E' ||
             conv == 'g' || conv == 'G' || conv == 'a') {
             double d;
-            memcpy(&d, (void *)(uintptr_t)(g_esp + 4u + 4u * slot), sizeof d);
-            slot += 2;
+            memcpy(&d, (void *)(uintptr_t)ap, sizeof d);
+            ap += 8;
             w = snprintf(piece, sizeof piece, spec, d);
         } else if (conv == 's') {
-            const char *s = (const char *)(uintptr_t)MEM32(g_esp + 4u + 4u * slot);
-            slot += 1;
+            const char *s = (const char *)(uintptr_t)MEM32(ap);
+            ap += 4;
             w = snprintf(piece, sizeof piece, spec, s ? s : "(null)");
         } else if (conv == 'c') {
-            uint32_t v = MEM32(g_esp + 4u + 4u * slot); slot += 1;
+            uint32_t v = MEM32(ap); ap += 4;
             w = snprintf(piece, sizeof piece, spec, (int)v);
         } else {
-            uint32_t v = MEM32(g_esp + 4u + 4u * slot); slot += 1;
+            uint32_t v = MEM32(ap); ap += 4;
             w = snprintf(piece, sizeof piece, spec, v);
         }
         for (int i = 0; i < w && piece[i]; i++) PUT(piece[i]);
@@ -269,6 +271,17 @@ static int fmt_from_stack(char *out, size_t cap, const char *fmt, unsigned slot)
     if (cap) out[n < cap ? n : cap - 1] = 0;
     return (int)n;
 }
+
+static int fmt_from_stack(char *out, size_t cap, const char *fmt, unsigned slot)
+{
+    return fmt_from_args(out, cap, fmt, g_esp + 4u + 4u * slot);
+}
+
+/* MSVCR71's counted forms return -1 when the output did not fit, and callers
+ * test for exactly that (the client's own wrapper at 0x62005B40 terminates the
+ * buffer on a negative result). Returning the untruncated length instead walks
+ * the next write past the buffer. */
+static uint32_t msvc_count(int n, uint32_t cap) { return (uint32_t)n > cap ? 0xFFFFFFFFu : (uint32_t)n; }
 
 /* sprintf(buf, fmt, ...) -- args start at slot 2. */
 void imp_sprintf(void)
@@ -281,7 +294,7 @@ void imp_sprintf(void)
 void imp__snprintf(void)
 {
     int n = fmt_from_stack(ARGS(0), ARG(1), ARGCS(2), 3);
-    RET((uint32_t)n); STDRET(0);
+    RET(msvc_count(n, ARG(1))); STDRET(0);
 }
 
 void imp_printf(void)
@@ -298,4 +311,37 @@ void imp_fprintf(void)
     fmt_from_stack(buf, sizeof buf, ARGCS(1), 2);
     fputs(buf, (FILE *)ARGP(0));
     RET((uint32_t)strlen(buf)); STDRET(0);
+}
+
+/* ---- system queries, registry, version resources -------------------- *
+ * Plain forwards. Stubbed, GetSystemInfo left the client's SYSTEM_INFO zeroed
+ * -- zero processors -- and the fault surfaced later as a write through NULL.
+ * The registry is read for real: absent MxO keys return an error the client
+ * already handles, which is the truthful answer on this machine.
+ */
+void imp_GetSystemInfo(void)             { GetSystemInfo((SYSTEM_INFO *)ARGP(0)); RET(0);                 STDRET(1); }
+void imp_IsProcessorFeaturePresent(void) { RET((uint32_t)IsProcessorFeaturePresent(ARG(0)));             STDRET(1); }
+void imp_RegOpenKeyA(void)     { RET((uint32_t)RegOpenKeyA((HKEY)ARGP(0), ARGCS(1), (PHKEY)ARGP(2)));      STDRET(3); }
+void imp_RegCloseKey(void)     { RET((uint32_t)RegCloseKey((HKEY)ARGP(0)));                               STDRET(1); }
+void imp_RegQueryValueExA(void)
+{
+    RET((uint32_t)RegQueryValueExA((HKEY)ARGP(0), ARGCS(1), (LPDWORD)ARGP(2), (LPDWORD)ARGP(3),
+                                   (LPBYTE)ARGP(4), (LPDWORD)ARGP(5)));
+    STDRET(6);
+}
+void imp_GetFileVersionInfoSizeA(void) { RET(GetFileVersionInfoSizeA(ARGCS(0), (LPDWORD)ARGP(1)));        STDRET(2); }
+void imp_GetFileVersionInfoA(void)     { RET((uint32_t)GetFileVersionInfoA(ARGCS(0), ARG(1), ARG(2), ARGP(3))); STDRET(4); }
+void imp_VerQueryValueA(void)
+{
+    RET((uint32_t)VerQueryValueA(ARGP(0), ARGCS(1), (LPVOID *)ARGP(2), (PUINT)ARGP(3)));
+    STDRET(4);
+}
+
+/* On x86 a va_list is just the address of the first argument word, so the
+ * walker above takes it directly. Not forwarded to the host's _vsnprintf: UCRT
+ * fail-fasts (0xC0000409) on directives MSVCR71 accepted. */
+void imp__vsnprintf(void)
+{
+    RET(msvc_count(fmt_from_args(ARGS(0), ARG(1), ARGCS(2), ARG(3)), ARG(1)));
+    STDRET(0);
 }

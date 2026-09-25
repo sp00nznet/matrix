@@ -15,22 +15,33 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **Both clients start up.** P6 is the wall; the server track is open.
+## Project status: **The final client initialises through graphics, input and Winsock.** The wall is threads.
 
-Two results, and the second one is the interesting one.
+**Correction first.** Earlier versions of this README said `InitClientDLL`
+"completes" on both targets. It returned, but it returned **0, which is
+failure** — success is 1. The misreading (eax=0 as LithTech's `LT_OK`) hid the
+real blocker for several rounds. The "engine interface holders nobody fills"
+theory built on top of it was also wrong: those objects are the client's *own*
+implementations (`0x62999968` is a static `CNetMgr`), bound by name at
+registration, and they were empty because their `Init` never ran.
 
-**Two clients lift, compile, link and complete startup** — the 2005 retail
-discs and the final community client the emulators target. Both run their C++
-static constructors and return cleanly from `InitClientDLL`.
-See [P4](#p4-it-runs-and-where-it-stops).
+**What now happens on the final client** (`MxO_7.6005`), in order:
 
-**`RunClientDLL` is the wall, and it is understood.** The client declares 28–29
-*holders* for LithTech engine interfaces and waits for something to fill them.
-Nothing does, so the frame loop dereferences a null and dies — at
-*corresponding addresses on both targets*, which is how we know the analysis
-transfers. Filling them is per-interface semantic work with no shortcut: the
-public LithTech SDK covers only 4 of 27, and not the one that blocks.
-See [`docs/PLAN-NOW.md`](docs/PLAN-NOW.md).
+1. `launcher.exe` is the host. `InitClientDLL` takes **eight** cdecl arguments
+   (argc/argv, `client.dll` and `cres.dll` handles, a launcher object, the
+   launcher's `ILTLoginMediator`, two flags) — the host was passing none.
+2. The client **creates its own window** through the statically linked
+   Microsoft Layer for Unicode, which resolves `CreateWindowExW` and 35 other
+   W-functions at runtime. Those now bind to host shims.
+3. **Direct3D 9 and DirectInput 8 come up for real.** A *native passthrough*
+   runs real host COM methods on the simulated stack; the callee's own `ret N`
+   measures the arity, so the whole D3D9 API works without a shim per method.
+4. Resources load (the working directory must be the game directory).
+5. **`WSAStartup` is called** — the network layer is reached for the first time.
+6. `CNetMgr::Init` fails (**-7**): its UDP transport starts a receive thread,
+   and lifted code cannot yet run on a second thread.
+
+See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 
 **The server track needs none of that** until the two halves meet, and its
 fork already builds.
@@ -39,10 +50,6 @@ fork already builds.
 abilities, interlock and missions ship as Python 2.3 bytecode, in an archive
 format that took about forty lines to unpack. See
 [The rules are in the box](#the-rules-are-in-the-box).
-
-All numbers below are the **retail 1.0** client (the three discs). A second
-target — the final community client, `MxO_7.6005` — is being brought up
-alongside it; see [`docs/PLAN-NOW.md`](docs/PLAN-NOW.md).
 
 | | retail 1.0 | final client |
 |---|---:|---:|
@@ -53,16 +60,16 @@ alongside it; see [`docs/PLAN-NOW.md`](docs/PLAN-NOW.md).
 | IDA functions | 56,287 (75.2%) | 64,735 (75.4%) |
 | **catalog (merged)** | **76,530** | **89,340** |
 | **lifted, errors** | **76,530, 0** | **89,340, 0** |
-| engine interfaces | 28 | 29 |
 | static ctors run | 12,189 | **14,536** |
-| indirect calls | 65,029 | **75,550** |
-| unimplemented imports hit | 15 | **1** |
-| `InitClientDLL` | ✅ completes | ✅ **completes** |
+| indirect calls in `InitClientDLL` | 65,029 | **787,650** |
+| MSLU functions bound | — | **36** (33 shimmed) |
+| window / D3D9 device / DirectInput | not reached | ✅ / ✅ / ✅ |
+| `WSAStartup` | not reached | ✅ |
+| `InitClientDLL` | returns 0 (failure, misread) | **returns -7: network manager `Init`** |
+| unimplemented imports hit | 15 | **1** (`_beginthreadex`) |
 
-**Both targets now lift, compile, link and complete startup.** The final client
-— the version the emulators target — reaches `InitClientDLL` with a *cleaner*
-run than retail: one unimplemented import (`GetFileVersionInfoSizeA`) against
-fifteen, and zero unlifted addresses.
+Retail has not been re-run with the new host; the fixes are target-agnostic,
+but the numbers above for it are from before them.
 
 | | retail 1.0 |
 |---|---:|
@@ -75,16 +82,15 @@ fifteen, and zero unlifted addresses.
 | generated C | 4,854,290 lines in 154 files |
 | **compiles** | **156 objects, 0 errors** (MSVC 2022, x86) |
 | **links** | **mxo_host.exe, 121 MB** |
-| **runs** | **`DllMain` + `InitClientDLL` complete, exit 0** |
+| **runs** | `DllMain` completes; `InitClientDLL` returns 0 (failure — see status) |
 | static constructors run | **12,189** |
 | import shims with real bodies | **~215 of 479** |
-| window | **1024x768, created by the host** |
+| window | created by the client itself via MSLU (see status) |
 | indirect calls | **64,377** |
 | game Python modules recovered | **57** (+22 string, +325 stdlib) |
 | decompiled cleanly | **56 / 56 attempted**, 10,026 lines |
 | engine subsystems identified | **70** |
-| engine interfaces the client waits for | **28** (installable, one at a time) |
-| first interface method reached | **`INetMgr.Default` slot 3** |
+| engine interface registrations | 28 (the client's own implementations, bound by name) |
 
 ---
 

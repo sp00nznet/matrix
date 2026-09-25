@@ -184,14 +184,19 @@ void imp__splitpath(void)
 }
 void imp__get_osfhandle(void) { RET((uint32_t)_get_osfhandle((int)ARG(0))); STDRET(0); }
 
-/* ---- time ---------------------------------------------------------- */
+/* ---- time ---------------------------------------------------------- *
+ * MSVCR71's time_t is 32 bits; the host CRT's is 64. Every call that passes a
+ * time_t (or a struct holding one) by pointer must use the explicit 32-bit
+ * form, or it writes past the client's variable -- _ftime's 16-byte __timeb64
+ * into a 12-byte _timeb put dstflag on a saved EBP and faulted three frames up.
+ */
 
-void imp_time(void)     { RET((uint32_t)time((time_t *)ARGP(0)));         STDRET(0); }
+void imp_time(void)     { RET((uint32_t)_time32((__time32_t *)ARGP(0)));         STDRET(0); }
 void imp_clock(void)    { RET((uint32_t)clock());                         STDRET(0); }
-void imp_localtime(void){ RETP(localtime((const time_t *)ARGP(0)));       STDRET(0); }
-void imp_gmtime(void)   { RETP(gmtime((const time_t *)ARGP(0)));          STDRET(0); }
-void imp_mktime(void)   { RET((uint32_t)mktime((struct tm *)ARGP(0)));    STDRET(0); }
-void imp_difftime(void) { RETD(difftime((time_t)ARG(0), (time_t)ARG(1))); STDRET(0); }
+void imp_localtime(void){ RETP(_localtime32((const __time32_t *)ARGP(0)));       STDRET(0); }
+void imp_gmtime(void)   { RETP(_gmtime32((const __time32_t *)ARGP(0)));          STDRET(0); }
+void imp_mktime(void)   { RET((uint32_t)_mktime32((struct tm *)ARGP(0)));    STDRET(0); }
+void imp_difftime(void) { RETD(_difftime32((__time32_t)ARG(0), (__time32_t)ARG(1))); STDRET(0); }
 void imp_strftime(void)
 {
     RET((uint32_t)strftime(ARGS(0), ARG(1), ARGCS(2), (const struct tm *)ARGP(3)));
@@ -199,7 +204,7 @@ void imp_strftime(void)
 }
 void imp__strdate(void) { RETP(_strdate(ARGS(0)));                        STDRET(0); }
 void imp__strtime(void) { RETP(_strtime(ARGS(0)));                        STDRET(0); }
-void imp__ftime(void)   { _ftime((struct _timeb *)ARGP(0)); RET(0);       STDRET(0); }
+void imp__ftime(void)   { _ftime32((struct __timeb32 *)ARGP(0)); RET(0);       STDRET(0); }
 
 /* ---- misc ---------------------------------------------------------- */
 

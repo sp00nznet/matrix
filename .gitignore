@@ -96,3 +96,6 @@ analysis/*.json
 !analysis/recovery_score.json
 !analysis/phase3_codegen.json
 !analysis/python_decompile*.json
+
+# The client writes its own log into the working directory.
+ClientErrors*.txt

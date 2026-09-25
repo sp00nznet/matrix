@@ -60,7 +60,7 @@ uint32_t  g_icall_count;
  * links at 0x10000000 and the final client at 0x62000000, and a stale constant
  * here would map the image somewhere the lifted code never looks -- which
  * presents as every global reading zero, not as a load failure. */
-static uint32_t g_image_base = 0x10000000u;
+uint32_t g_image_base = 0x10000000u;   /* shims_mslu.c scans the mapped image */
 
 static uint32_t pe_image_base(const char *path)
 {
@@ -224,9 +224,43 @@ recomp_func_t recomp_lookup(uint32_t va)
  * pointer in a vtable is unreachable from lifted code -- the dispatch
  * table knows only lifted VAs and IAT slots, and a host function would
  * want its arguments on the host stack. */
+recomp_func_t mslu_resolve(uint32_t va);   /* shims_mslu.c */
+void mslu_install(void);
+
+recomp_func_t native_resolve(uint32_t va); /* native_call.c */
+static uint32_t g_image_size;
+
 recomp_func_t recomp_lookup_manual(uint32_t va)
 {
-    return (recomp_func_t)mxo_iface_resolve(va);
+    if (va - g_image_base < g_image_size) return NULL;   /* lifted: fast path */
+    recomp_func_t f = mslu_resolve(va);
+    if (!f) f = (recomp_func_t)mxo_iface_resolve(va);
+    if (!f) f = native_resolve(va);
+    return f;
+}
+
+/* ---- resource modules ------------------------------------------------ *
+ *
+ * The launcher hands InitClientDLL two module handles: client.dll's own (the
+ * window's hInstance) and cres.dll's (strings, icons). Neither is a module
+ * Windows loaded -- client.dll is mapped by hand, cres.dll not at all -- so the
+ * host loads both as datafiles and the resource shims translate guest handles
+ * through here. cres.dll's datafile handle is passed to the client as-is: it
+ * only ever hands it back to a shim.
+ */
+static char    g_client_path[MAX_PATH];
+static HMODULE g_client_res, g_cres;
+
+static HMODULE load_datafile(const char *path)
+{
+    return LoadLibraryExA(path, NULL, LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+}
+
+HMODULE mxo_resource_module(uint32_t hinst)
+{
+    if (hinst != g_image_base) return (HMODULE)(uintptr_t)hinst;
+    if (!g_client_res) g_client_res = load_datafile(g_client_path);
+    return g_client_res;
 }
 
 recomp_func_t recomp_lookup_import(uint32_t va)
@@ -370,12 +404,48 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
+/* InitClientDLL is cdecl with eight arguments, read from launcher.exe's call
+ * (0x0040A57A): the launcher's filtered argc/argv, client.dll's module handle
+ * (the window's hInstance), cres.dll's handle (strings), a launcher object kept
+ * at 0x62B073E4, the launcher's ILTLoginMediator implementation (registered
+ * under that name if non-NULL), a packed word and a flag byte.
+ *
+ * Earlier runs pushed none of them. Returns 1 on success, 0 on failure with the
+ * reason in the buffer at 0x629DDE88 -- eax=0 is NOT LithTech's LT_OK here.
+ *
+ * ponytail: the last four are 0 until something asks for them. The mediator is
+ * the one that matters -- it is the launcher's half of login.
+ */
+static void push_init_args(void)
+{
+    static uint32_t argv0[1];                 /* empty, NULL-terminated argv */
+    uint32_t a[8] = { 0, (uint32_t)(uintptr_t)argv0, g_image_base,
+                      (uint32_t)(uintptr_t)g_cres, 0, 0, 0, 0 };
+    for (int i = 7; i >= 0; i--) PUSH32(g_esp, a[i]);
+}
+
+/* The host CRT fail-fasts (0xC0000409, no VEH, no output) on an invalid
+ * parameter -- which is what a forwarded CRT call does with the MSVCR71-era
+ * arguments UCRT rejects. Report where lifted code was instead. */
+static void invalid_param(const wchar_t *e, const wchar_t *f, const wchar_t *file,
+                          unsigned line, uintptr_t r)
+{
+    (void)e; (void)f; (void)file; (void)line; (void)r;
+    printf("\n[!] host CRT invalid parameter\n");
+    report();
+    exit(3);
+}
+
 int main(int argc, char **argv)
 {
     const char *path = "game/client.dll";
     const char *what = "--init";
     uint32_t manual_va = 0;
     int no_dllmain = 0;
+
+    /* Unbuffered: a fail-fast (0xC0000409) otherwise takes the whole log with it. */
+    setvbuf(stdout, NULL, _IONBF, 0);
+    _set_invalid_parameter_handler(invalid_param);
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--no-dllmain")) no_dllmain = 1;
@@ -390,9 +460,19 @@ int main(int argc, char **argv)
     uint32_t base = pe_image_base(path);
     if (!base) { fprintf(stderr, "cannot read image base from %s\n", path); return 1; }
     g_image_base = base;
+    GetFullPathNameA(path, MAX_PATH, g_client_path, NULL);
+    {
+        char cres[MAX_PATH], *slash;
+        strcpy(cres, g_client_path);
+        slash = strrchr(cres, '\\');
+        strcpy(slash ? slash + 1 : cres, "cres.dll");
+        g_cres = load_datafile(cres);
+        printf("cres.dll: %p\n", (void *)g_cres);
+    }
 
     uint32_t span = recomp_load_image(path, MXO_IMAGE_BASE);
     if (!span) { fprintf(stderr, "could not map %s at 0x%08X\n", path, MXO_IMAGE_BASE); return 1; }
+    g_image_size = span;
     printf("mapped %s: 0x%08X + %u bytes\n", path, MXO_IMAGE_BASE, span);
 
     void *stk = VirtualAlloc((void *)(uintptr_t)MXO_STACK_BASE, MXO_STACK_SIZE,
@@ -404,6 +484,7 @@ int main(int argc, char **argv)
            MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE, g_esp);
 
     build_tib();
+    mslu_install();   /* before DllMain: static constructors may convert strings */
     make_window(1024, 768);
     printf("TIB:   0x%08X (fs base)\n", g_fs_base);
 
@@ -456,10 +537,12 @@ int main(int argc, char **argv)
         recomp_func_t fn = recomp_lookup(seq[s]);
         if (!fn) { fprintf(stderr, "no lifted body at 0x%08X\n", seq[s]); return 1; }
         printf("\ncalling 0x%08X ...\n", seq[s]);
+        if (seq[s] == mxo_va_InitClientDLL) push_init_args();
         PUSH32(g_esp, RECOMP_RETADDR);
         pump();
         watch_dump("before");
         fn();
+        if (seq[s] == mxo_va_InitClientDLL) g_esp += 8u * 4u;   /* cdecl: caller pops */
         pump();
         watch_dump("after");
         printf("returned, eax=0x%08X  (esp=0x%08X, %u indirect calls)\n",

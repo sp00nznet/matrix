@@ -70,7 +70,13 @@ SEARCH = ('', 'p_dlls')
 # its keep immediately -- memset, memcpy, memcmp, strlen and operator
 # new/delete all looked like obvious entries and none of them are imported.
 # MSVC 7.1 emits them as intrinsics, so they are already inside the lifted code.
+ONE_TARGET_ONLY = {'RajkoD3DCreate9', 'Direct3DCreate9'}
+
 HAND_WRITTEN = {
+    'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',
+    'RegQueryValueExA', 'GetFileVersionInfoSizeA', 'GetFileVersionInfoA', 'VerQueryValueA',
+    '_vsnprintf',
+    'RajkoD3DCreate9', 'Direct3DCreate9', 'DirectInput8Create',   # native_call.c
     'malloc', 'free', 'calloc', 'realloc', 'memmove',
     '_aligned_malloc', '_aligned_free',
     'InterlockedExchange', 'InterlockedExchangeAdd',
@@ -240,7 +246,8 @@ def main():
     # shim simply not being called.
     imported = {r for _, _, r, _ in stdcall + cdecl}
     as_data = {r for _, _, r, _ in data}
-    bogus = sorted((HAND_WRITTEN - imported) | (HAND_WRITTEN & as_data))
+    # Names only one of the two targets imports may be absent from the other.
+    bogus = sorted((HAND_WRITTEN - imported - ONE_TARGET_ONLY) | (HAND_WRITTEN & as_data))
     if bogus:
         print('[!] HAND_WRITTEN names this binary does not import as code:',
               file=sys.stderr)
