@@ -88,3 +88,11 @@ src/runtime/image_loader.h
 src/runtime/recomp_trace.c
 src/runtime/recomp_trace.h
 src/runtime/_*_active.c
+
+# Symbol maps and catalogs reconstructed from client.dll: never committed
+# (REPO_RULES s3 -- nothing derived from a proprietary binary, in any form).
+# Pipeline regenerates them from your own copy. Run statistics stay tracked.
+analysis/*.json
+!analysis/recovery_score.json
+!analysis/phase3_codegen.json
+!analysis/python_decompile*.json

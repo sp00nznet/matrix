@@ -284,7 +284,7 @@ those either.
 Two tracks that feed each other. The recomp is not the goal; it is the
 instrument that makes the server track possible.
 
-**[`docs/ROADMAP.md`](docs/ROADMAP.md) is the plan of record** for how the two
+**[`ROADMAP.md`](ROADMAP.md) is the plan of record** for how the two
 are stood up together. The short version, because it changes the ordering:
 
 The client's next wall and the server's first real task are **the same boundary
@@ -621,7 +621,7 @@ how this goes wrong. On a target this size that discipline is not optional.
 | **S5** | **Missions.** The part nobody has finished. | |
 
 S1 depends on nothing and can start immediately. The two tracks meet at
-**step 3** of [`docs/ROADMAP.md`](docs/ROADMAP.md): the recompiled client
+**step 3** of [`ROADMAP.md`](ROADMAP.md): the recompiled client
 pointed at the forked server, which is the moment this stops being two efforts.
 
 ### Fork, don't rebuild
@@ -700,8 +700,8 @@ Carried here until answered, then moved into the docs with the answer.
 ## Layout
 
 ```
-analysis/     derived metadata — PE facts, catalogs, symbol tables. Committed.
-docs/         SERVERS.md (prior art) and the recon documents to come
+analysis/     catalogs + symbol maps, regenerated locally   (git-ignored; run stats tracked)
+docs/         one file per topic — RECON, COMBAT, SERVERS, PLAN-NOW
 original/     your disc images                          (git-ignored)
 disc/         ISO contents                              (git-ignored)
 game/         the installed client                      (git-ignored)
@@ -722,7 +722,9 @@ something to build.
 cannot cover here: the game itself, the lifted output, and the AGPL emulator we
 read but never copy.
 
-**No game files are in this repository and none ever will be.** Bring your own
+**No game files are in this repository and none ever will be.** Nor is any generated
+source or symbol map: the tools ship, the output never does. You run the pipeline
+against your own `client.dll` and the output lands in git-ignored directories. Bring your own
 discs, drop them in `original/`, and the pipeline unpacks them itself. The
 Matrix Online is still in copyright; an MMO whose servers were switched off is
 abandoned, not public domain.

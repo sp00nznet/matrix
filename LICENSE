@@ -51,10 +51,10 @@ does — which is to say, not this one. It is excluded from the repository and i
 is not ours to relicense. This is the rule that gets missed, because generated C
 looks like source we wrote and it sits in `src/`.
 
-Derived *metadata* is a different thing and is fine: function addresses, vtable
-lists, section tables, import lists, the contents of `analysis/`. A list of
-addresses is a fact about the binary. The instructions at those addresses are a
-copy of it.
+Derived *metadata* — function catalogs, symbol maps, vtable lists, import
+tables — is kept out too. Whatever its legal status, the rule here is simpler:
+nothing reconstructed from `client.dll` is committed. The tools that produce it
+are; you run them against your own copy.
 
 ### 3. The prior-art emulators
 

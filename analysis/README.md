@@ -1,9 +1,10 @@
 # analysis/ — derived facts, and which target each belongs to
 
-Everything here is **metadata about a binary**: addresses, bounds, names, call
-edges, counts. Per the repository's `LICENSE`, that is the line — a list of
-addresses is a fact about the binary, the instructions at those addresses would
-be a copy. No instruction bytes are stored here.
+Everything here is **metadata about a binary**. Under the repo rules, a symbol
+map reconstructed from a proprietary binary is derived material, so **only run
+statistics are tracked** (`recovery_score.json`, `phase3_codegen.json`,
+`python_decompile*.json`). Every other file below is produced locally by the
+pipeline from your own `client.dll` and is git-ignored (`analysis/*.json`).
 
 Two targets are in play, so the naming matters:
 
