@@ -55,8 +55,11 @@ registration, and they were empty because their `Init` never ran.
 12. **The frame loop runs.** It stepped through the splash and RSI layouts,
     tried the ad server over **TCP** (the client isn't UDP-only), and survived
     two more lifter bugs in MSVC's float-compare idioms (unordered x87
-    compares, and a parity flag that was a constant). It currently faults after
-    about 120M indirect calls on an object with a zero vtable.
+    compares, and a parity flag that was a constant). The intro draws through
+    real D3D9 (945 frames during init); the loop then **presents empty frames
+    while waiting to leave the splash**, most likely on login state the
+    mediator stand-in doesn't provide yet. Longer runs fault after about 120M
+    indirect calls on an object with a zero vtable.
 
 See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 

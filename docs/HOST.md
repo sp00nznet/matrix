@@ -302,6 +302,23 @@ on.
 - `MXO_RUN_SECONDS=N` ends a run after N seconds with the normal report.
   `RunClientDLL` never returns on its own.
 
+## What is on screen
+
+The window is black, and `MXO_NATIVE_TRACE` shows why. Counted by
+`IDirect3DDevice9` slot over a 90 s `--boot`:
+
+| phase | Present (17) | Begin/EndScene (41/42) | DrawPrimitiveUP (83) |
+|---|---:|---:|---:|
+| `InitClientDLL` (splash, intro) | 945 | 949 | 1,117 |
+| `RunClientDLL` frame loop | 281 (a second object) | 0 | 0 |
+
+So D3D9 works end to end and the intro draws through it. The frame loop then
+presents empty frames at about 4–5 per second. The client log stops at
+"Splash View Stepped 16 times.", so the front end is waiting to leave the
+splash. The likely trigger is login state: the mediator stand-in has no login
+state machine at `+0x10`, and the launcher's version drives the client
+forward. Next thread.
+
 ## Running
 
 Run from the game directory — resources are found relative to it, and with the

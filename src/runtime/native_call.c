@@ -49,6 +49,14 @@ static void __declspec(naked) call_on_sim_stack(void)
     }
 }
 
+static int readable(uint32_t va, uint32_t n)
+{
+    MEMORY_BASIC_INFORMATION mi;
+    if (va < 0x10000u || !VirtualQuery((void *)(uintptr_t)va, &mi, sizeof mi)) return 0;
+    if (mi.State != MEM_COMMIT || (mi.Protect & (PAGE_NOACCESS | PAGE_GUARD))) return 0;
+    return va + n <= (uint32_t)(uintptr_t)mi.BaseAddress + (uint32_t)mi.RegionSize;
+}
+
 /* Call `target` as if the lifted code had called it: args already pushed,
  * RECOMP_RETADDR on top. Leaves eax/edx and g_esp as a real return would. */
 void native_invoke(uint32_t target)
@@ -59,7 +67,16 @@ void native_invoke(uint32_t target)
     uint32_t outer_host_esp = g_host_esp;   /* re-entrant: a guest callback may nest */
 
     if (trace < 0) trace = getenv("MXO_NATIVE_TRACE") != NULL;
-    if (trace) printf("  [native] -> %08X this=%08X esp=%08X\n", target, MEM32(g_esp + 4), g_esp);
+    if (trace) {
+        /* For a COM call, the slot index names the method (D3D9: 17 Present). */
+        uint32_t self = MEM32(g_esp + 4), slot = 0xFFFF;
+        /* VirtualQuery, not IsBadReadPtr: that one probes by faulting, and our
+         * first-chance handler sees the fault before its own __except does. */
+        if (readable(self, 4) && readable(MEM32(self), 4 * 128))
+            for (uint32_t i = 0; i < 128; i++)
+                if (MEM32(MEM32(self) + 4 * i) == target) { slot = i; break; }
+        printf("  [native] -> %08X this=%08X slot=%u esp=%08X\n", target, self, slot, g_esp);
+    }
     g_target  = target;
     g_sim_esp = g_esp;
     {
