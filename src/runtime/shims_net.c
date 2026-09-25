@@ -180,9 +180,12 @@ void imp_recvfrom(void)
     RET((uint32_t)rc); STDRET(6);
 }
 
+int gt_select(int, fd_set *, fd_set *, fd_set *, const struct timeval *);  /* guest_threads.c */
+
+/* Yields to other guest threads while waiting -- the receive thread lives here. */
 void imp_select(void)
 {
-    RET((uint32_t)select((int)ARG(0), (fd_set *)ARGP(1), (fd_set *)ARGP(2),
+    RET((uint32_t)gt_select((int)ARG(0), (fd_set *)ARGP(1), (fd_set *)ARGP(2),
                          (fd_set *)ARGP(3), (const struct timeval *)ARGP(4)));
     STDRET(5);
 }

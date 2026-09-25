@@ -226,6 +226,7 @@ recomp_func_t recomp_lookup(uint32_t va)
  * want its arguments on the host stack. */
 recomp_func_t mslu_resolve(uint32_t va);   /* shims_mslu.c */
 void mslu_install(void);
+void gt_init(uint32_t stack_lo, uint32_t stack_hi);   /* guest_threads.c */
 
 recomp_func_t native_resolve(uint32_t va); /* native_call.c */
 static uint32_t g_image_size;
@@ -484,6 +485,7 @@ int main(int argc, char **argv)
            MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE, g_esp);
 
     build_tib();
+    gt_init(MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE);   /* main = guest thread 0 */
     mslu_install();   /* before DllMain: static constructors may convert strings */
     make_window(1024, 768);
     printf("TIB:   0x%08X (fs base)\n", g_fs_base);

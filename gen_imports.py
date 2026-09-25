@@ -73,6 +73,10 @@ SEARCH = ('', 'p_dlls')
 ONE_TARGET_ONLY = {'RajkoD3DCreate9', 'Direct3DCreate9'}
 
 HAND_WRITTEN = {
+    # guest_threads.c: guest threads as fibers
+    '_beginthreadex', '_beginthread', 'CreateThread', 'ResumeThread', 'SuspendThread',
+    'ExitThread', 'TerminateThread', 'GetExitCodeThread', 'SetThreadPriority',
+    'GetCurrentThread', 'RaiseException',
     'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',
     'RegQueryValueExA', 'GetFileVersionInfoSizeA', 'GetFileVersionInfoA', 'VerQueryValueA',
     '_vsnprintf',

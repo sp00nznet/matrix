@@ -196,7 +196,7 @@ void imp_GetLastError(void)       { RET(GetLastError());                STDRET(0
 void imp_SetLastError(void)       { SetLastError(ARG(0)); RET(0);       STDRET(1); }
 void imp_GetCurrentProcess(void)  { RET(0xFFFFFFFFu);                   STDRET(0); }
 void imp_GetCurrentProcessId(void){ RET(GetCurrentProcessId());         STDRET(0); }
-void imp_GetCurrentThreadId(void) { RET(GetCurrentThreadId());          STDRET(0); }
+/* GetCurrentThreadId: guest_threads.c */
 void imp_GetTickCount(void)       { RET(GetTickCount());                STDRET(0); }
 
 /* ---- CRT string and file (cdecl: pop 0) ---------------------------- */

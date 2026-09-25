@@ -6,6 +6,8 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 ## [Unreleased]
 
 ### Added
+- Guest threads as fibers (`src/runtime/guest_threads.c`): `_beginthreadex`, `CreateThread`,
+  cooperative `Sleep`/`WaitForSingleObject`/`select`, TLS on FLS, `RaiseException` (SetThreadName).
 - Host passes `InitClientDLL` its real eight arguments (recovered from `launcher.exe`).
 - MSLU binding (`src/runtime/shims_mslu.c`): the client's own window, via 36 runtime-resolved
   W-functions, and a host thunk for its window procedure.

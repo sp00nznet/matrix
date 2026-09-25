@@ -108,6 +108,48 @@ callback. That report is what found this.
   formatter walks directly. Counted forms return **-1 on truncation**; the
   client's wrapper at `0x62005B40` depends on it.
 
+## Guest threads are fibers
+
+`guest_threads.c`. Lifted code keeps the CPU in process globals, so a second
+OS thread running it would corrupt the first. Each guest thread is instead a
+fiber on the one host thread, with its own simulated stack, TIB (so its own SEH
+chain) and saved copy of the registers, x87 stack, MMX and `fs` base.
+
+Switching is cooperative, at the calls that would block: `Sleep`,
+`WaitForSingleObject`, `select`. Each polls, yields round-robin, and throttles
+with a 1 ms real wait per round. With no other runnable fiber they block for
+real, so a single-threaded run behaves exactly as before.
+
+- `TlsAlloc`/`TlsGetValue`/… map to FLS, which Windows keeps per fiber.
+- The thread handle the client holds is a manual-reset event set on exit, so
+  `WaitForSingleObject(thread)` and `GetExitCodeThread` work unchanged.
+- The native passthrough's TEB swap uses the current fiber's stack bounds.
+- Critical sections stay real. All fibers share one OS thread, so they never
+  contend. Mutual exclusion holds unless a fiber yields while holding one.
+- `recvfrom` on a blocking socket would still block every fiber. The client
+  calls `select` first.
+- `RaiseException` accepts only `0x406D1388` (MSVC's SetThreadName idiom at
+  `0x623719E8`) and reports anything else.
+
+First run: thread 1 (`0x62371AC0`) is created suspended during render init,
+resumed, runs, and exits with code 0.
+
+## Where init stops now: the login mediator
+
+`InitClientDLL` returns **-7** from `0x62003380`. `CNetMgr::Init` succeeds
+(`WSAStartup` is its transport's first call), and then the step requires
+`[0x629DF7F0]`, bound to **`ILTLoginMediator.Default`**, to exist and its
+`vt[4]` to return true. That object is argument 5 of `InitClientDLL`, and the
+host passes NULL.
+
+`launcher.exe` uses the same interface database. A static initialiser at
+`0x00494AB0` binds its own `[0x4D2C58]` to `"ILTLoginMediator.Default"` (tag 1),
+and the launcher calls it (`vt[7]`, `vt[9]`, `vt[2]`) before it loads
+`client.dll`. So login, and the TCP auth the emulators speak, lives in the
+launcher, and the client receives the result as this object.
+`InitClientDLL` also calls its `vt[4]`, `vt[22]`, `vt[23]` and `vt[24]` for the
+startup banner.
+
 ## Running
 
 Run from the game directory — resources are found relative to it, and with the

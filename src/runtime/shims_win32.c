@@ -46,10 +46,7 @@ void imp_DeleteCriticalSection(void)     { DeleteCriticalSection((LPCRITICAL_SEC
 void imp_EnterCriticalSection(void)      { EnterCriticalSection((LPCRITICAL_SECTION)ARGP(0));      RET(0); STDRET(1); }
 void imp_LeaveCriticalSection(void)      { LeaveCriticalSection((LPCRITICAL_SECTION)ARGP(0));      RET(0); STDRET(1); }
 
-void imp_TlsAlloc(void)    { RET(TlsAlloc());                                  STDRET(0); }
-void imp_TlsFree(void)     { RET((uint32_t)TlsFree(ARG(0)));                   STDRET(1); }
-void imp_TlsGetValue(void) { RETP(TlsGetValue(ARG(0)));                        STDRET(1); }
-void imp_TlsSetValue(void) { RET((uint32_t)TlsSetValue(ARG(0), ARGP(1)));      STDRET(2); }
+/* TLS, Sleep and WaitForSingleObject live in guest_threads.c: per guest thread. */
 
 void imp_CreateEventA(void)
 {
@@ -58,8 +55,6 @@ void imp_CreateEventA(void)
     STDRET(4);
 }
 void imp_SetEvent(void)   { RET((uint32_t)SetEvent(ARGH(0)));   STDRET(1); }
-void imp_WaitForSingleObject(void) { RET(WaitForSingleObject(ARGH(0), ARG(1))); STDRET(2); }
-void imp_Sleep(void)      { Sleep(ARG(0)); RET(0);              STDRET(1); }
 
 /* ---- kernel32: time and identity ----------------------------------- */
 

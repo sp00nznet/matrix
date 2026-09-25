@@ -28,8 +28,7 @@
 
 #include "recomp_types.h"
 
-#define SIM_STACK_LO 0x0E000000u   /* host.c: MXO_STACK_BASE */
-#define SIM_STACK_HI 0x0E400000u   /* host.c: MXO_STACK_BASE + MXO_STACK_SIZE */
+void gt_stack_bounds(uint32_t *lo, uint32_t *hi);   /* guest_threads.c: per guest thread */
 
 static uint32_t g_target, g_host_esp, g_ret_eax, g_ret_edx, g_after_esp, g_sim_esp;
 
@@ -64,8 +63,12 @@ void native_invoke(uint32_t target)
 
     g_target  = target;
     g_sim_esp = g_esp;
-    tib->StackBase  = (void *)(uintptr_t)SIM_STACK_HI;
-    tib->StackLimit = (void *)(uintptr_t)SIM_STACK_LO;
+    {
+        uint32_t lo, hi;
+        gt_stack_bounds(&lo, &hi);
+        tib->StackBase  = (void *)(uintptr_t)hi;
+        tib->StackLimit = (void *)(uintptr_t)lo;
+    }
     call_on_sim_stack();
     tib->StackBase  = base;
     tib->StackLimit = limit;

@@ -15,7 +15,7 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **The final client initialises through graphics, input and Winsock.** The wall is threads.
+## Project status: **The final client initialises through graphics, input, threads and Winsock.** The wall is the launcher's login object.
 
 **Correction first.** Earlier versions of this README said `InitClientDLL`
 "completes" on both targets. It returned, but it returned **0, which is
@@ -38,8 +38,11 @@ registration, and they were empty because their `Init` never ran.
    measures the arity, so the whole D3D9 API works without a shim per method.
 4. Resources load (the working directory must be the game directory).
 5. **`WSAStartup` is called** — the network layer is reached for the first time.
-6. `CNetMgr::Init` fails (**-7**): its UDP transport starts a receive thread,
-   and lifted code cannot yet run on a second thread.
+6. **Guest threads run** as fibers: a thread is created, resumed, runs and
+   exits cleanly.
+7. `CNetMgr::Init` succeeds. The step then fails (**-7**) because it needs
+   `ILTLoginMediator`, the object `launcher.exe` builds after login and passes
+   in. The host passes NULL. Login lives in the launcher.
 
 See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 
@@ -65,8 +68,9 @@ format that took about forty lines to unpack. See
 | MSLU functions bound | — | **36** (33 shimmed) |
 | window / D3D9 device / DirectInput | not reached | ✅ / ✅ / ✅ |
 | `WSAStartup` | not reached | ✅ |
-| `InitClientDLL` | returns 0 (failure, misread) | **returns -7: network manager `Init`** |
-| unimplemented imports hit | 15 | **1** (`_beginthreadex`) |
+| guest threads (fibers) | — | ✅ |
+| `InitClientDLL` | returns 0 (failure, misread) | **returns -7: needs `ILTLoginMediator`** |
+| unimplemented imports hit | 15 | **0** |
 
 Retail has not been re-run with the new host; the fixes are target-agnostic,
 but the numbers above for it are from before them.
