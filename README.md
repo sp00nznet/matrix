@@ -15,7 +15,7 @@ Built on the [pcrecomp](https://github.com/sp00nznet/pcrecomp) toolchain.
 > here, it still contains everything it ever knew about how the game works, and
 > nobody has read it.
 
-## Project status: **`InitClientDLL` succeeds and `RunClientDLL`'s frame loop runs** on the final client (≈120M indirect calls), with the game's own Python rules running natively.
+## Project status: **`InitClientDLL` succeeds, the frame loop runs, and login reaches the server**: the client's own auth code, through the lifted launcher's TCP engine, exchanges keys with the server fork on 127.0.0.1.
 
 **Correction first.** Earlier versions of this README said `InitClientDLL`
 "completes" on both targets. It returned, but it returned **0, which is
@@ -60,6 +60,22 @@ registration, and they were empty because their `Init` never ran.
     while waiting to leave the splash**, most likely on login state the
     mediator stand-in doesn't provide yet. Longer runs fault after about 120M
     indirect calls on an object with a zero vtable.
+13. **Login reaches the server.** `client.dll` turned out to contain the whole
+    `CLTLoginMediator` (auth state machine, RSA, Twofish) but only the abstract
+    base of the TCP engine, which exists concretely only in `launcher.exe`. So
+    the launcher is now lifted as a **second guest module** (rebased to
+    `0x58000000`, 6,202 functions, 0 errors), and `MXO_LOGIN=user:password`
+    drives the client's own mediator through the launcher's engine before
+    `InitClientDLL`. Against the server fork (MySQL in Docker) the client
+    connects to auth on TCP 11000, sends `AS_GetPublicKeyRequest`, and receives
+    a signed server key. On the way: `UseLaunchPad` had to be cleared, and three
+    more lifter gaps were fixed in the toolbox (`lock cmpxchg8b`, the engine's
+    lock-free queues; `fucompp`, 783 client sites; `bt` not setting CF).
+    **Current blocker:** the client still rejects the key. The signature is
+    valid and the verifier's inputs are byte-correct, so the fault is in lifted
+    Crypto++: it dispatches to SSE2 code by CPUID (feature bits, and family
+    0xF alone on AMD hosts), which the lift can't run. CPUID is now masked to
+    a Pentium III signature; that build is not yet verified.
 
 See [`docs/HOST.md`](docs/HOST.md) for how each of those was found.
 
@@ -86,7 +102,9 @@ format that took about forty lines to unpack. See
 | window / D3D9 device / DirectInput | not reached | ✅ / ✅ / ✅ |
 | `WSAStartup` | not reached | ✅ |
 | guest threads (fibers) | — | ✅ |
-| login mediator | — | ✅ stand-in (launcher's layout) |
+| login mediator | — | ✅ the client's own, driven via `MXO_LOGIN` |
+| `launcher.exe` lifted (TCP engine) | — | **6,202 functions, 0 errors** |
+| auth server (TCP 11000) | — | ✅ connected, public-key exchange; key verify pending |
 | game Python (`pythonMXO.dll`) | — | ✅ running natively |
 | `InitClientDLL` | returns 0 (failure, misread) | **✅ returns 1** |
 | unimplemented imports hit | 15 | 8 (file I/O, `sscanf`, media player…) |

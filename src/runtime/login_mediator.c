@@ -124,6 +124,7 @@ static int listener_index(uint32_t p)
     return -1;
 }
 static uint32_t g_pending;
+static int g_trace;
 static const char k_empty[1] = "";
 static const char k_class[] = "CLTLoginMediator";
 
@@ -200,6 +201,17 @@ static void med_handler(void)
         break;
     }
     g_eax = r;
+    if (g_trace) {
+        /* MXO_MED_TRACE=1: every call whose (slot, result) differs from that
+         * slot's last one, plus a running count -- a poll loop shows up as
+         * one line and a growing count, a state change as a new line. */
+        static uint32_t last[MED_SLOTS], calls[MED_SLOTS];
+        calls[slot]++;
+        if (calls[slot] == 1 || last[slot] != r)
+            printf("  [mediator] slot %u -> %08X  (call %u, from %08X)\n",
+                   slot, r, calls[slot], g_cur_func);
+        last[slot] = r;
+    }
     g_esp += 4u + 4u * s->argc;      /* return address + args; thiscall callee pops */
 }
 
@@ -216,6 +228,7 @@ recomp_func_t mediator_resolve(uint32_t va)
 uint32_t mediator_object(void)
 {
     if (g_obj) return (uint32_t)(uintptr_t)g_obj;
+    g_trace = getenv("MXO_MED_TRACE") != NULL;
     uint32_t *vt = (uint32_t *)calloc(MED_SLOTS, 4);
     g_obj = (uint8_t *)calloc(1, MED_OBJ_SIZE);
     uint8_t *sub = (uint8_t *)calloc(1, MED_SUB_SIZE);

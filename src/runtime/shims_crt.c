@@ -60,6 +60,17 @@ static double argd(unsigned slot)
 #define ARGD(k)  argd(k)
 #define RETD(x)  do { g_st[0] = (x); } while (0)
 
+/* ---- type_info ------------------------------------------------------ *
+ * thiscall members of MSVCR71's type_info, reached from dynamic_cast and
+ * catch matching. The generator sees an unknown calling convention and makes
+ * them cdecl with no arguments; they pop one. A type_info is
+ * { vfptr, _m_data, char _m_d_name[] }, and equality is name equality --
+ * the client and the launcher each carry their own copies of the same types. */
+static int ti_eq(void) { return strcmp((const char *)(uintptr_t)(g_ecx + 8u),
+                                       (const char *)(uintptr_t)(ARG(0) + 8u)) == 0; }
+void imp___8type_info__QBEHABV0__Z(void) { RET((uint32_t)ti_eq());  STDRET(1); }
+void imp___9type_info__QBEHABV0__Z(void) { RET((uint32_t)!ti_eq()); STDRET(1); }
+
 /* ---- strings ------------------------------------------------------- */
 
 void imp_strchr(void)   { RETP(strchr(ARGCS(0), (int)ARG(1)));            STDRET(0); }

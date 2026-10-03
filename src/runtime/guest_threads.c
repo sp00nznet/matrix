@@ -104,6 +104,22 @@ void gt_yield(void)
     restore(&g_threads[self].cpu);
 }
 
+/* Where every guest thread is parked: the function that last yielded, and
+ * the first words of its stack (return addresses show who called it). */
+void gt_dump(void)
+{
+    for (int i = 0; i < g_nthreads; i++) {
+        const cpu_t *c = &g_threads[i].cpu;
+        uint32_t esp = i == g_cur ? g_esp : c->esp;
+        printf("  [threads] %d%s%s%s func %08X esp %08X:", i, i == g_cur ? " (current)" : "",
+               g_threads[i].done ? " done" : "", g_threads[i].suspended ? " suspended" : "",
+               i == g_cur ? g_cur_func : c->cur_func, esp);
+        for (int k = 0; k < 8 && esp >= g_threads[i].stack_lo && esp + 4u * k < g_threads[i].stack_hi; k++)
+            printf(" %08X", MEM32(esp + 4u * k));
+        printf("\n");
+    }
+}
+
 /* Current guest thread's simulated stack, for native_call.c's TEB swap. */
 void gt_stack_bounds(uint32_t *lo, uint32_t *hi)
 {
@@ -316,6 +332,17 @@ int gt_select(int n, fd_set *r, fd_set *w, fd_set *e, const struct timeval *tv)
         if (w) *w = w0;
         if (e) *e = e0;
         int rc = select(n, r, w, e, gt_others_runnable() ? &zero : tv);
+        if (getenv("MXO_SELECT_TRACE")) {
+            static int last_rc = -2, last_thread = -1;
+            if (rc != last_rc || g_cur != last_thread) {
+                printf("  [select] thread %d r{", g_cur);
+                for (u_int i = 0; r && i < r0.fd_count; i++) printf(" %u", (unsigned)r0.fd_array[i]);
+                printf(" } w{");
+                for (u_int i = 0; w && i < w0.fd_count; i++) printf(" %u", (unsigned)w0.fd_array[i]);
+                printf(" } -> %d (%d)\n", rc, rc < 0 ? WSAGetLastError() : 0);
+                last_rc = rc; last_thread = g_cur;
+            }
+        }
         if (rc != 0 || !gt_others_runnable()) return rc;
         if (ms != INFINITE && GetTickCount() - start >= ms) return 0;
         gt_yield();

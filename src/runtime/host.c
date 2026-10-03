@@ -175,6 +175,11 @@ static void watch_dump(const char *when)
 /* The generated table is address-sorted, so this is a binary search. With
  * 76,528 entries a linear scan would cost ~38k comparisons per indirect call,
  * and this binary makes a great many of them. */
+recomp_func_t launcher_lookup(uint32_t va);          /* launcher_host.c */
+recomp_func_t launcher_lookup_import(uint32_t va);
+int launcher_owns(uint32_t va);
+int launcher_login(const char *client_path, const char *spec, uint32_t *engine, uint32_t *mediator);
+
 recomp_func_t recomp_lookup(uint32_t va)
 {
     uint32_t lo = 0, hi = recomp_dispatch_count;
@@ -185,7 +190,7 @@ recomp_func_t recomp_lookup(uint32_t va)
         if (a < va)  lo = mid + 1;
         else         hi = mid;
     }
-    return NULL;
+    return launcher_lookup(va);   /* the second guest module, when mapped */
 }
 
 /* Consulted before the dispatch table and the import bridges.
@@ -208,6 +213,7 @@ static uint32_t g_image_size;
 recomp_func_t recomp_lookup_manual(uint32_t va)
 {
     if (va - g_image_base < g_image_size) return NULL;   /* lifted: fast path */
+    if (launcher_owns(va)) return NULL;
     recomp_func_t f = mslu_resolve(va);
     if (!f) f = mediator_resolve(va);
     if (!f) f = (recomp_func_t)mxo_iface_resolve(va);
@@ -244,7 +250,7 @@ recomp_func_t recomp_lookup_import(uint32_t va)
     for (uint32_t i = 0; i < mxo_import_bridge_count; i++)
         if (mxo_import_bridges[i].address == va)
             return mxo_import_bridges[i].func;
-    return NULL;
+    return launcher_lookup_import(va);
 }
 
 /* ---- reporting ------------------------------------------------------ */
@@ -485,11 +491,14 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
  * The mediator is the stand-in in login_mediator.c: the launcher's half of
  * login. ponytail: args 4, 6 and 7 stay 0 until something asks for them.
  */
+static uint32_t g_login_engine, g_login_mediator;   /* set by MXO_LOGIN */
+
 static void push_init_args(void)
 {
     static uint32_t argv0[1];                 /* empty, NULL-terminated argv */
     uint32_t a[8] = { 0, (uint32_t)(uintptr_t)argv0, g_image_base,
-                      (uint32_t)(uintptr_t)g_cres, 0, mediator_object(), 0, 0 };
+                      (uint32_t)(uintptr_t)g_cres, g_login_engine,
+                      g_login_mediator ? g_login_mediator : mediator_object(), 0, 0 };
     for (int i = 7; i >= 0; i--) PUSH32(g_esp, a[i]);
 }
 
@@ -527,6 +536,17 @@ int main(int argc, char **argv)
     const char *what = "--init";
     uint32_t manual_va = 0;
     int no_dllmain = 0;
+
+    /* A CPU the lift can run: no SSE/SSE2 (or anything newer) and no 3DNow!.
+     * Those instructions are UNIMPLEMENTED in the lift, and the client picks
+     * code paths by CPUID -- Crypto++'s SSE2 multiply broke every RSA check
+     * in the login. MMX stays: it is lifted. */
+    g_cpuid_mask_edx &= ~((1u << 25) | (1u << 26));       /* SSE, SSE2 */
+    g_cpuid_mask_ecx = 0;                                  /* SSE3 and later */
+    g_cpuid_mask_ext_edx &= ~((1u << 31) | (1u << 30));   /* 3DNow!, 3DNow!+ */
+    /* And family 6: Crypto++ takes its SSE2 add/subtract on family 0xF alone,
+     * which AMD hosts report. 0x686 = Pentium III, the client's own era. */
+    g_cpuid_signature = 0x00000686u;
 
     /* Unbuffered: a fail-fast (0xC0000409) otherwise takes the whole log with it. */
     setvbuf(stdout, NULL, _IONBF, 0);
@@ -610,6 +630,14 @@ int main(int argc, char **argv)
         watch_dump("after DllMain");
         mxo_install_interfaces();
         printf("DllMain returned eax=0x%08X, esp=0x%08X\n", g_eax, g_esp);
+    }
+
+    /* MXO_LOGIN=user:password: log in the way launcher.exe does, with its own
+     * lifted TCP engine and the client's own mediator (launcher_host.c), and
+     * hand both to InitClientDLL. Unset, the stand-in mediator is used. */
+    if (getenv("MXO_LOGIN") && !no_dllmain) {
+        launcher_login(g_client_path, getenv("MXO_LOGIN"), &g_login_engine, &g_login_mediator);
+        pump();
     }
 
     /* --boot follows the LithTech contract: Init, then Run. Calling Run on its

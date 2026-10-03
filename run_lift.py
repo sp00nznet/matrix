@@ -111,6 +111,30 @@ def closure(byaddr, roots, limit):
     return order
 
 
+def rename_module(out, mod):
+    """Make a second image's lift linkable beside client.dll's.
+
+    Function names already differ (sub_<VA>, and the images do not overlap);
+    what collides is everything with a fixed name: the chunk files (one /Fo
+    directory, so recomp_0000.obj twice), the dispatch table, and the
+    contract VAs. The header keeps its name -- it is found next to the file
+    that includes it.
+    """
+    for fn in os.listdir(out):
+        p = os.path.join(out, fn)
+        if fn.startswith('recomp_') and fn.endswith('.c') or fn == 'recomp_dispatch.c':
+            new = os.path.join(out, '%s_%s' % (mod, fn))
+            os.replace(p, new)
+            p = new
+        if fn.endswith(('.c', '.h')):
+            s = open(p).read()
+            s = (s.replace('recomp_dispatch_table', '%s_dispatch_table' % mod)
+                  .replace('recomp_dispatch_count', '%s_dispatch_count' % mod)
+                  .replace('mxo_va_', '%s_va_' % mod)
+                  .replace('mxo_dllmain_va', '%s_entry_va' % mod))
+            open(p, 'w', newline='\n').write(s)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--dll', default=DLL)
@@ -125,6 +149,10 @@ def main():
                     help='addresses a previous lift proved are function starts')
     ap.add_argument('--no-seeds', action='store_true')
     ap.add_argument('--split', type=int, default=400)
+    ap.add_argument('--module', default='',
+                    help='lift a second image into the same host (e.g. "launcher"): '
+                         'prefixes its file names and table symbols so they link '
+                         'beside client.dll\'s, and leaves the tracked stats alone')
     args = ap.parse_args()
 
     if not os.path.exists(args.catalog):
@@ -325,8 +353,11 @@ def main():
     stats = {'catalog': len(funcs), 'lifted': len(chosen_set) - stubbed_lib,
              'errors': errors, 'files': idx, 'entries': len(entries),
              'seeded': seeded, 'missing_found': len(missing)}
-    json.dump(stats, open(os.path.join(_HERE, 'analysis',
-                                       'phase3_codegen.json'), 'w'), indent=1)
+    if args.module:
+        rename_module(args.out, args.module)
+    else:
+        json.dump(stats, open(os.path.join(_HERE, 'analysis',
+                                           'phase3_codegen.json'), 'w'), indent=1)
 
     print('[*] %d functions in %d files, %d lifted, %d stubs, %d errors, %.0fs'
           % (len(entries), idx, len(chosen_set) - stubbed_lib,

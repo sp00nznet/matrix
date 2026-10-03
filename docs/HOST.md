@@ -166,6 +166,68 @@ world record and no state machine. Slot 0 returns the class name, as every
 class's slot 0 does (`CNetMgr`'s returns `"CNetMgr"`). With it in place, the
 -7 is gone.
 
+## Logging in: the launcher as a second guest module
+
+The stand-in answers the client's questions about a login that never
+happened. A real login needs what the launcher does, and most of it turned out
+to be in `client.dll` already:
+
+- **The whole `CLTLoginMediator` is in the client.** Static object
+  `0x62B074E8`, vtable `0x628CAE28`: the same 101 slots as the launcher's
+  `0x004B01C8`, including the login state machine (20 states, table at
+  `0x62B08D40`), the auth protocol (`AS_*`, RSA, Twofish) and the margin
+  connection. It is LithTech library code linked into both binaries.
+- **The TCP engine is not.** The mediator is initialised with the launcher's
+  `CLTThreadPerClientTCPEngine` (argument 4 of `InitClientDLL`, kept at
+  `0x62B073E4` and polled by the frame loop). The client carries the abstract
+  base class (vtable `0x628CC5C8`, nine pure slots) and nothing derived from it.
+
+So `launcher.exe` is lifted too, as a second guest module
+(`run_lift.py --module launcher`, `gen_imports.py --prefix launcher`), from a
+copy rebased to `0x58000000`, clear of every other guest range. The host maps
+the shipped `launcher.exe` there and applies its own relocations
+(`launcher_host.c`), so the lift's input and what runs differ only in the base.
+Dispatch falls back to the launcher's table; its IAT is patched like the
+client's and shares the client's shims.
+
+`MXO_LOGIN=user:password` then does what the launcher's `-nopatch` path does,
+before `InitClientDLL`:
+
+```
+engine = new CLTThreadPerClientTCPEngine(0)   launcher 0x431C30; 0 = polled
+med->vt[7](&ver); med->vt[9](&ver)            version words from "0.1"
+med->vt[2](engine)                            Init: state machine, +0x680 auth object
+med->vt[12](&credentials)                     Login: name +0, password +0x20
+poll engine (0x62532130) and yield to guest threads until the state settles
+InitClientDLL(..., engine, med, ...)
+```
+
+Every byte of auth is the client's own lifted code; the host only supplies
+the order of calls.
+
+Three things stood between that and a packet on the wire:
+
+- **`UseLaunchPad`** (console variable, storage `0x62B090AC`, default 1) sends
+  `Login` through SOE's LaunchPad API (states 15–19) instead of the auth
+  server, and with no LaunchPad session it fails at once. `autoexec.cfg` is
+  read inside `InitClientDLL`, after the launcher has logged in, so the host
+  clears it directly.
+- **The connection's I/O runs on its own guest thread** ("thread per client"),
+  blocked in `select` on the TCP socket and a UDP socket connected to itself.
+  A write is queued and signalled with a 0-byte datagram to that socket. The
+  host's poll loop has to yield to that fiber.
+- **The engine's queues are lock-free, built on `lock cmpxchg8b`**, which the
+  lifter did not implement. A queued write never landed, and the thread woke,
+  found nothing and went back to `select`. Fixed in the toolbox with a
+  differential test. The same pass found **`fucompp` unimplemented** too
+  (783 sites in `client.dll`): no compare and no pops, so the `fnstsw` after it
+  read the previous compare.
+
+`launcher.exe`'s IDA catalog misses functions reached only through vtables
+(227 of them, found by scanning its data sections for pointers to unclaimed
+code), the same gap IDA has on the client. They are seeds
+(`analysis/launcher_missing_targets.json`).
+
 ## Whole DLLs bound natively
 
 `bind_native_dlls()` in `host.c` writes real export addresses into the IAT for

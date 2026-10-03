@@ -313,7 +313,15 @@ void imp_fprintf(void)
  * already handles, which is the truthful answer on this machine.
  */
 void imp_GetSystemInfo(void)             { GetSystemInfo((SYSTEM_INFO *)ARGP(0)); RET(0);                 STDRET(1); }
-void imp_IsProcessorFeaturePresent(void) { RET((uint32_t)IsProcessorFeaturePresent(ARG(0)));             STDRET(1); }
+/* Agrees with the CPUID mask in host.c: no SSE (6), 3DNow! (7), SSE2 (10),
+ * SSE3 (13) or anything numbered later -- the lift cannot run them. */
+void imp_IsProcessorFeaturePresent(void)
+{
+    uint32_t f = ARG(0);
+    int denied = f == 6 || f == 7 || f == 10 || f >= 13;
+    RET(denied ? 0u : (uint32_t)IsProcessorFeaturePresent(f));
+    STDRET(1);
+}
 void imp_RegOpenKeyA(void)     { RET((uint32_t)RegOpenKeyA((HKEY)ARGP(0), ARGCS(1), (PHKEY)ARGP(2)));      STDRET(3); }
 void imp_RegCloseKey(void)     { RET((uint32_t)RegCloseKey((HKEY)ARGP(0)));                               STDRET(1); }
 void imp_RegQueryValueExA(void)

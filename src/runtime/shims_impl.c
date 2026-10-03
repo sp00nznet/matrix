@@ -83,6 +83,9 @@ void recomp_heap_report(void)
                g_bad_free);
 }
 
+/* For host code building guest objects: zeroed, and freeable by guest free(). */
+void *guest_alloc(size_t n) { void *p = calloc(1, n); track_add(p); return p; }
+
 void imp_malloc(void)  { void *p = malloc(ARG(0));  track_add(p); RETP(p); STDRET(0); }
 void imp_calloc(void)  { void *p = calloc(ARG(0), ARG(1)); track_add(p); RETP(p); STDRET(0); }
 

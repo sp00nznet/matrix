@@ -72,7 +72,8 @@ SEARCH = ('', 'p_dlls')
 # MSVC 7.1 emits them as intrinsics, so they are already inside the lifted code.
 ONE_TARGET_ONLY = {'RajkoD3DCreate9', 'Direct3DCreate9', 'GetSystemTime', 'GetTimeFormatA',
                    'GetVersion', '_itoa', 'UuidCreateSequential', '_snwprintf', 'connect', 'send', 'recv',
-                   '?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z', '?GetMediaPlayerLastError@@YAPBDXZ'}
+                   '?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z', '?GetMediaPlayerLastError@@YAPBDXZ',
+                   'shutdown', '__WSAFDIsSet'}   # launcher.exe only
 
 HAND_WRITTEN = {
     # guest_threads.c: guest threads as fibers
@@ -106,7 +107,7 @@ HAND_WRITTEN = {
     'WSAStartup', 'WSACleanup', 'WSAGetLastError', 'socket', 'bind', 'closesocket',
     'sendto', 'recvfrom', 'select', 'ioctlsocket', 'getsockname', 'getsockopt',
     'setsockopt', 'gethostbyname', 'inet_addr', 'inet_ntoa', 'htonl', 'htons',
-    'ntohl', 'ntohs',
+    'ntohl', 'ntohs', 'shutdown', '__WSAFDIsSet',
     # --- Win32 layer, bodies in shims_win32.c ---
     'InitializeCriticalSection', 'DeleteCriticalSection', 'EnterCriticalSection', 'LeaveCriticalSection', 'TlsAlloc', 'TlsFree',
     'TlsGetValue', 'TlsSetValue', 'CreateEventA', 'SetEvent', 'WaitForSingleObject',
@@ -142,6 +143,7 @@ HAND_WRITTEN = {
     '_strdate', '_strtime', '_ftime', 'getenv', 'rand', 'srand',
     'setlocale', '_errno', '_sleep', '_mkdir', '_heapchk', 'exit',
     'abort',
+    '??8type_info@@QBEHABV0@@Z', '??9type_info@@QBEHABV0@@Z',   # thiscall, pop 4
 }
 
 
@@ -229,7 +231,12 @@ def main():
                     help="folder holding the dependency DLLs "
                          "(default: the folder of the target binary)")
     ap.add_argument('-o', '--output', default=OUT)
+    ap.add_argument('--prefix', default='mxo',
+                    help="symbol prefix for the tables; anything but 'mxo' is a "
+                         "secondary module (the launcher), whose imports need "
+                         "not cover HAND_WRITTEN")
     args = ap.parse_args()
+    P = args.prefix
 
     DLL, OUT = args.dll, args.output
     SEARCH = (args.deps,) if args.deps else (os.path.dirname(DLL) or '.',
@@ -259,7 +266,9 @@ def main():
     imported = {r for _, _, r, _ in stdcall + cdecl}
     as_data = {r for _, _, r, _ in data}
     # Names only one of the two targets imports may be absent from the other.
-    bogus = sorted((HAND_WRITTEN - imported - ONE_TARGET_ONLY) | (HAND_WRITTEN & as_data))
+    # A secondary module imports a subset; only the data clash still matters.
+    unused = (HAND_WRITTEN - imported - ONE_TARGET_ONLY) if P == 'mxo' else set()
+    bogus = sorted(unused | (HAND_WRITTEN & as_data))
     if bogus:
         print('[!] HAND_WRITTEN names this binary does not import as code:',
               file=sys.stderr)
@@ -309,24 +318,24 @@ def main():
                  ' * address would be read as a live object.\n'
                  ' */')
     for va, dll, real, _ in data:
-        lines.append('uint32_t imp_data_%s[64] = {0};  /* %s!%s */'
-                     % (ident[real], dll, real))
+        lines.append('uint32_t imp_data_%s%s[64] = {0};  /* %s!%s */'
+                     % ('' if P == 'mxo' else P + '_', ident[real], dll, real))
     lines.append('')
-    lines.append('const recomp_import_data_t mxo_import_data[] = {')
+    lines.append('const recomp_import_data_t %s_import_data[] = {' % P)
     for va, dll, real, _ in data:
-        lines.append('    { 0x%08Xu, imp_data_%s, "%s", "%s" },'
-                     % (va, ident[real], dll, real))
+        lines.append('    { 0x%08Xu, imp_data_%s%s, "%s", "%s" },'
+                     % (va, '' if P == 'mxo' else P + '_', ident[real], dll, real))
     lines.append('};')
-    lines.append('const uint32_t mxo_import_data_count = %d;\n' % len(data))
+    lines.append('const uint32_t %s_import_data_count = %d;\n' % (P, len(data)))
 
     lines.append('/* IAT slot VA -> shim. Installed before entry. */')
-    lines.append('const recomp_dispatch_entry_t mxo_import_bridges[] = {')
+    lines.append('const recomp_dispatch_entry_t %s_import_bridges[] = {' % P)
     for va, dll, real, _ in stdcall + cdecl:
         lines.append('    { 0x%08Xu, imp_%s },  /* %s!%s */'
                      % (va, ident[real], dll, real))
     lines.append('};')
-    lines.append('const uint32_t mxo_import_bridge_count = %d;\n'
-                 % len(stdcall + cdecl))
+    lines.append('const uint32_t %s_import_bridge_count = %d;\n'
+                 % (P, len(stdcall + cdecl)))
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, 'w').write('\n'.join(lines) + '\n')

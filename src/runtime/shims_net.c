@@ -235,10 +235,13 @@ void imp_connect(void)
 void imp_send(void)
 {
     int rc = send((SOCKET)ARG(0), (const char *)ARGP(1), (int)ARG(2), (int)ARG(3));
+    int err = rc < 0 ? WSAGetLastError() : 0;
+    if (rc < 0) printf("  [net] send(%u, len %u) failed (%d)\n", ARG(0), ARG(2), err);
     struct sockaddr_in peer; int pl = sizeof peer;
     if (getpeername((SOCKET)ARG(0), (struct sockaddr *)&peer, &pl)) memset(&peer, 0, sizeof peer);
     if (rc > 0) { g_tx++; g_tx_bytes += (uint64_t)rc; }
     plog("TX", (const struct sockaddr *)&peer, ARGP(1), rc > 0 ? rc : 0);
+    WSASetLastError(err);   /* getpeername above must not mask send's error */
     RET((uint32_t)rc); STDRET(4);
 }
 
@@ -278,6 +281,12 @@ void imp_getsockopt(void)
                              (char *)ARGP(3), (int *)ARGP(4)));
     STDRET(5);
 }
+
+/* launcher.exe only: its TCP engine (lifted for the login, see HOST.md)
+ * closes with shutdown and tests select's result with FD_ISSET, which in
+ * the Winsock headers of the day is a call to __WSAFDIsSet. */
+void imp_shutdown(void) { RET((uint32_t)shutdown((SOCKET)ARG(0), (int)ARG(1))); STDRET(2); }
+void imp___WSAFDIsSet(void) { RET((uint32_t)__WSAFDIsSet((SOCKET)ARG(0), (fd_set *)ARGP(1))); STDRET(2); }
 
 void imp_setsockopt(void)
 {

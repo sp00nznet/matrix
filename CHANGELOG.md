@@ -6,6 +6,15 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 ## [Unreleased]
 
 ### Added
+- **Login through the client's own auth code.** `launcher.exe` lifted as a second guest module
+  (`run_lift.py --module`, `gen_imports.py --prefix`, rebased to `0x58000000`, relocated at load by
+  `src/runtime/launcher_host.c`). `MXO_LOGIN=user:password` builds the launcher's TCP engine and drives
+  the client's `CLTLoginMediator` (Init, Login) before `InitClientDLL`, as the launcher's `-nopatch`
+  path does. `MXO_LOGIN_SECONDS`, `MXO_LOGIN_TRACE`, `MXO_SELECT_TRACE`, `MXO_MED_TRACE`.
+- Host installs the server fork's master public key in the client (the community patched
+  `launcher.exe` the same way); `UseLaunchPad` cleared before login.
+- CPUID reports no SSE/SSE2/SSE3+/3DNow! (the lift cannot run them; Crypto++ picked an SSE2 path).
+- `type_info::operator==`/`!=` (thiscall, pop 4), `shutdown`, `__WSAFDIsSet` shims.
 - **`RunClientDLL`'s frame loop runs.** `MXO_WATCHDOG`, `MXO_RUN_SECONDS`; the client's own window replaces the host's.
 - **`InitClientDLL` returns 1 on the final client.**
 - Guest entry from native code via DEP faults (`src/runtime/guest_call.c`); `pythonMXO.dll` and
@@ -42,6 +51,9 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 - `ROADMAP.md` moved from `docs/` to the repo root.
 
 ### Fixed
+- Lifter (toolbox): `lock cmpxchg8b` implemented (the TCP engine's lock-free queues never delivered a
+  write); `fucompp` implemented (783 client sites did no compare and no pops). Client re-lifted with the
+  current toolbox lifter.
 - Lifter: unordered x87 compares (NaN) now set C3|C2|C0; `jp`/`jnp` compute real parity.
   Both hung the frame loop in MSVC's float-wrap loops.
 - TCP `connect`/`send`/`recv` implemented (were stubs that reported success).
