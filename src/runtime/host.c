@@ -184,6 +184,7 @@ int launcher_login(const char *client_path, const char *spec, uint32_t *engine, 
 
 /* MXO_COUNT_VA=0x...,0x...: count indirect calls to those VAs, print at exit.
  * Answers "which of these does this run reach" without a traced build. */
+static uint32_t g_image_size;
 static uint32_t g_count_va[16], g_count_n[16], g_count_k = 0xFFFFFFFFu;
 
 static void count_va_report(void)
@@ -206,6 +207,22 @@ recomp_func_t recomp_lookup(uint32_t va)
     }
     for (uint32_t i = 0; i < g_count_k; i++)
         if (g_count_va[i] == va) g_count_n[i]++;
+    /* MXO_NEWCALLS=file: log each image VA the first time it is called
+     * indirectly, with a timestamp -- what a new event (a packet, a key) reaches. */
+    {
+        static FILE *nf; static uint8_t *seen; static int init;
+        if (!init) {
+            const char *p = getenv("MXO_NEWCALLS");
+            init = 1;
+            if (p && (nf = fopen(p, "w")) != NULL) seen = calloc(1, (g_image_size >> 3) + 1);
+        }
+        uint32_t off = va - g_image_base;
+        if (seen && off < g_image_size && !(seen[off >> 3] & (1u << (off & 7)))) {
+            seen[off >> 3] |= (uint8_t)(1u << (off & 7));
+            fprintf(nf, "%lu %08X\n", (unsigned long)GetTickCount(), va);
+            fflush(nf);
+        }
+    }
     {
         extern recomp_func_t native_resolve_guest(uint32_t va);   /* native_call.c */
         recomp_func_t n = native_resolve_guest(va);
@@ -238,7 +255,6 @@ void gt_init(uint32_t stack_lo, uint32_t stack_hi);   /* guest_threads.c */
 recomp_func_t native_resolve(uint32_t va); /* native_call.c */
 recomp_func_t mediator_resolve(uint32_t va);   /* login_mediator.c */
 uint32_t mediator_object(void);
-static uint32_t g_image_size;
 
 recomp_func_t recomp_lookup_manual(uint32_t va)
 {
@@ -629,6 +645,9 @@ int main(int argc, char **argv)
     _set_invalid_parameter_handler(invalid_param);
 
     for (int i = 1; i < argc; i++) {
+        extern int recomp_trace_arg(int argc, char **argv, int i);   /* recomp_trace.c */
+        int took = recomp_trace_arg(argc, argv, i);
+        if (took) { i += took - 1; continue; }
         if (!strcmp(argv[i], "--no-dllmain")) no_dllmain = 1;
         else if (!strcmp(argv[i], "--va") && i + 1 < argc)
             manual_va = (uint32_t)strtoul(argv[++i], NULL, 0);

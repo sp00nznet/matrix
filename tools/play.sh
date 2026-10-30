@@ -20,7 +20,7 @@ until grep -q "running" "$ROOT/work/server.log" 2>/dev/null; do sleep 2; done
 cd "$ROOT/game_final" || exit 1
 rm -f pubkey.dat
 : > ClientErrors.txt
-(MXO_LOGIN=loluser:lolpass MXO_RUN_SECONDS=$SECS ../build/mxo_final.exe client.dll --boot \
+(MXO_LOGIN=loluser:lolpass MXO_RUN_SECONDS=$SECS ../build/${MXO_EXE:-mxo_final}.exe client.dll --boot $MXO_ARGS \
     > "$ROOT/work/play_run.log" 2>&1 &)
 # The PDA is the last HUD layout loaded on entering the world.
 t=0
