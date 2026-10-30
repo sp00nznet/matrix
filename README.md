@@ -129,6 +129,6 @@ change, re-lift, copy the toolbox's `recomp_types.h` into `src/runtime`, and reb
 
 ## License
 
-MIT, see [LICENSE](LICENSE). This covers the tools and runtime in this repo only.
+MIT, see [LICENSE](LICENSE); [NOTICE](NOTICE) says what it covers. This covers the tools and runtime in this repo only.
 The Matrix Online and its files belong to their owners; nothing from the game,
 and no code generated from it, is distributed here.

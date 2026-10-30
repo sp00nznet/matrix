@@ -1,0 +1,62 @@
+Notes on the MIT license in LICENSE: what it covers and what it does not.
+
+
+## What this licence actually covers
+
+The MIT grant above covers what is genuinely ours in this repository: the
+analysis scripts, the pipeline drivers, the runtime and shims we write, the
+server we write, the build files and the documentation.
+
+It does not, and cannot, cover three other things.
+
+### 1. The Matrix Online itself
+
+The Matrix Online (2005) is copyright Warner Bros. Interactive Entertainment,
+Monolith Productions, SEGA and Sony Online Entertainment, in whatever
+combination the rights ended up. The servers were shut down on 2009-07-31. That
+is not the same as the game entering the public domain — an abandoned MMO is
+still an in-copyright work.
+
+Nothing from the retail discs is in this repository. `original/`, `disc/` and
+`game/` are excluded by `.gitignore`, and so are `*.iso`, `*.cab`, `*.pkb`,
+`*.ltb`, `*.exe` and `*.dll` anywhere in the tree. You need your own copy of
+the discs to use any of this.
+
+### 2. Lifted code
+
+Lifting a binary produces a derivative work of that binary. Anything the
+pipeline emits into `src/recomp/gen/` carries whatever licence `client.dll`
+does — which is to say, not this one. It is excluded from the repository and it
+is not ours to relicense. This is the rule that gets missed, because generated C
+looks like source we wrote and it sits in `src/`.
+
+Derived *metadata* — function catalogs, symbol maps, vtable lists, import
+tables — is kept out too. Whatever its legal status, the rule here is simpler:
+nothing reconstructed from `client.dll` is committed. The tools that produce it
+are; you run them against your own copy.
+
+### 3. The prior-art emulators
+
+We read two existing server emulators. Their licences are not compatible with
+each other and only one is compatible with this repository:
+
+  * **hdneo/mxo-hd** (Hardline Dreams) is **MIT**. Compatible. If we take
+    anything from it, it gets attributed in the file that takes it and its
+    copyright notice is preserved.
+
+  * **rajkosto/mxoemu** (Reality) is **AGPL-3.0** — the licence file is
+    `Reality/Source/LICENCE.TXT`, which is why GitHub's sidebar shows no licence
+    at all. AGPL is the strongest copyleft there is for network server software:
+    it reaches users who merely *connect* to a running server, not just those
+    who receive a binary. **No code from mxoemu may be copied, adapted or
+    translated into this repository.**
+
+    Facts learned from reading it — opcode numbers, packet field layouts,
+    protocol sequencing — are facts, and facts are not copyrightable. Its
+    expression of those facts is. The distinction is load-bearing here, so when
+    a fact came from mxoemu, `docs/SERVERS.md` says so and says how we
+    re-derived or confirmed it from the client binary.
+
+The point of recompiling the client is that it makes this easy: the client is
+the authoritative source for the protocol, and it is a source we can read
+ourselves without inheriting anyone's licence.

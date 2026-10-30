@@ -61,7 +61,7 @@ or "no licence, therefore free" got it wrong in both directions. AGPL-3.0 is
 specifically designed for this case: run a modified AGPL server as a network
 service and you owe source to everyone who connects to it.
 
-For this project that means: **read it, never copy it.** See `LICENSE`.
+For this project that means: **read it, never copy it.** See `NOTICE`.
 
 ### mxo-hd / Hardline Dreams (MIT)
 
