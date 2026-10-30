@@ -10,6 +10,10 @@ SRV=$ROOT/../mxo-hd-recomp/hds/bin/Debug/net8.0
 taskkill //F //IM hds.exe >/dev/null 2>&1
 taskkill //F //IM mxo_final.exe >/dev/null 2>&1
 docker start mxo-db >/dev/null 2>&1
+# Mission scripts: the game's own (decompiled, never committed) plus constants
+# read from its bytecode by tools/pyc_constants.py.
+export MXO_MISSION_SCRIPTS=$(cygpath -w "$ROOT/work/py_src/Monolith/Missions")
+export MXO_MISSION_STUBS=$(cygpath -w "$ROOT/work/mission_stubs")
 (cd "$SRV" && MXO_PUBKEY_HASH=MD5 ./hds.exe > "$ROOT/work/server.log" 2>&1 &)
 until grep -q "running" "$ROOT/work/server.log" 2>/dev/null; do sleep 2; done
 

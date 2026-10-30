@@ -42,6 +42,9 @@ function Vk([string]$name) { [byte][System.Windows.Forms.Keys]::$name }
 switch ($Action) {
   "click" {
     [I]::SetCursorPos($r.L + [int]$A, $r.T + [int]$B) | Out-Null
+    # A real relative move too: DirectInput sees deltas, not SetCursorPos.
+    [I]::mouse_event(1, 2, 0, 0, [IntPtr]::Zero); Start-Sleep -Milliseconds 40
+    [I]::mouse_event(1, -2, 0, 0, [IntPtr]::Zero)
     Start-Sleep -Milliseconds 150
     [I]::mouse_event(2, 0, 0, 0, [IntPtr]::Zero); Start-Sleep -Milliseconds 80
     [I]::mouse_event(4, 0, 0, 0, [IntPtr]::Zero)
@@ -50,10 +53,16 @@ switch ($Action) {
   "tap"  { Key (Vk $A) 80 }
   "type" {
     foreach ($c in $A.ToCharArray()) {
-      if ($c -eq ' ') { Key 0x20 50; continue }
-      if ($c -match '[A-Za-z]') { Key ([byte][char]$c.ToString().ToUpper()) 50; continue }
+      if ($c -eq ' ') { Key 0x20 90; Start-Sleep -Milliseconds 60; continue }
+      if ($c -match '[A-Za-z]') { Key ([byte][char]$c.ToString().ToUpper()) 90; Start-Sleep -Milliseconds 60; continue }
       if ($c -match '[0-9]')    { Key ([byte][char]$c) 50; continue }
       if ($c -eq '/') { Key 0xBF 50; continue }
+      if ($c -eq '?') {   # shift + /
+        [I]::keybd_event(0x10, [byte][I]::MapVirtualKey(0x10, 0), 0, [IntPtr]::Zero)
+        Key 0xBF 50
+        [I]::keybd_event(0x10, [byte][I]::MapVirtualKey(0x10, 0), 2, [IntPtr]::Zero)
+        continue
+      }
       if ($c -eq '.') { Key 0xBE 50; continue }
     }
   }
