@@ -44,6 +44,8 @@
 /* ---- the register model the lifted code runs on ---- */
 uint32_t  g_eax, g_ecx, g_edx, g_esp, g_ebx, g_esi, g_edi, g_ebp;
 double    g_st[8];
+xmm_t     g_xmm[8];
+uint32_t  g_mxcsr = 0x1F80;   /* reset value: all exceptions masked */
 int       g_fp_top;
 uint16_t  g_fpu_cw = 0x037F;
 uint16_t  g_seg_cs, g_seg_ds, g_seg_es, g_seg_fs, g_seg_gs, g_seg_ss;
@@ -530,6 +532,33 @@ static DWORD WINAPI watchdog(LPVOID p)
     }
 }
 
+/* Windows can place a system DLL (apphelp.dll, seen at 0x626C0000) inside the
+ * client's fixed range before main runs; DLL bases are chosen once per boot.
+ * So the host restarts itself suspended, reserves the range while only ntdll
+ * is mapped, and lets the loader commit into the reservation. */
+static int run_with_range_reserved(int *rc)
+{
+    char exe[MAX_PATH];
+    STARTUPINFOA si = { sizeof si };
+    PROCESS_INFORMATION pi;
+    DWORD code = 1;
+
+    if (GetEnvironmentVariableA("MXO_RANGE_HELD", NULL, 0)) return 0;  /* we are the child */
+    SetEnvironmentVariableA("MXO_RANGE_HELD", "1");
+    GetModuleFileNameA(NULL, exe, sizeof exe);
+    if (!CreateProcessA(exe, GetCommandLineA(), NULL, NULL, TRUE, CREATE_SUSPENDED,
+                        NULL, NULL, &si, &pi)) return 0;
+    /* ponytail: 16 MB covers client.dll's 0xBB4000 image; grow if the span does */
+    if (!VirtualAllocEx(pi.hProcess, (void *)(uintptr_t)MXO_IMAGE_BASE, 0x1000000,
+                        MEM_RESERVE, PAGE_EXECUTE_READWRITE))
+        fprintf(stderr, "[host] could not pre-reserve 0x%08X (%lu)\n", MXO_IMAGE_BASE, GetLastError());
+    ResumeThread(pi.hThread);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    GetExitCodeProcess(pi.hProcess, &code);
+    *rc = (int)code;
+    return 1;
+}
+
 int main(int argc, char **argv)
 {
     const char *path = "game/client.dll";
@@ -541,9 +570,9 @@ int main(int argc, char **argv)
      * Those instructions are UNIMPLEMENTED in the lift, and the client picks
      * code paths by CPUID -- Crypto++'s SSE2 multiply broke every RSA check
      * in the login. MMX stays: it is lifted. */
-    g_cpuid_mask_edx &= ~((1u << 25) | (1u << 26));       /* SSE, SSE2 */
-    g_cpuid_mask_ecx = 0;                                  /* SSE3 and later */
-    g_cpuid_mask_ext_edx &= ~((1u << 31) | (1u << 30));   /* 3DNow!, 3DNow!+ */
+    g_cpuid_edx1 &= ~((1u << 25) | (1u << 26));       /* SSE, SSE2 */
+    g_cpuid_ecx1 = 0;                                  /* SSE3 and later */
+    g_cpuid_edx_ext &= ~((1u << 31) | (1u << 30));   /* 3DNow!, 3DNow!+ */
     /* And family 6: Crypto++ takes its SSE2 add/subtract on family 0xF alone,
      * which AMD hosts report. 0x686 = Pentium III, the client's own era. */
     g_cpuid_signature = 0x00000686u;
@@ -551,8 +580,6 @@ int main(int argc, char **argv)
     /* Unbuffered: a fail-fast (0xC0000409) otherwise takes the whole log with it. */
     setvbuf(stdout, NULL, _IONBF, 0);
     _set_invalid_parameter_handler(invalid_param);
-    if (getenv("MXO_WATCHDOG"))
-        CreateThread(NULL, 0, watchdog, (LPVOID)(uintptr_t)(1000u * (DWORD)atoi(getenv("MXO_WATCHDOG"))), 0, NULL);
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--no-dllmain")) no_dllmain = 1;
@@ -567,6 +594,12 @@ int main(int argc, char **argv)
     uint32_t base = pe_image_base(path);
     if (!base) { fprintf(stderr, "cannot read image base from %s\n", path); return 1; }
     g_image_base = base;
+    {
+        int child_rc;
+        if (run_with_range_reserved(&child_rc)) return child_rc;
+    }
+    if (getenv("MXO_WATCHDOG"))
+        CreateThread(NULL, 0, watchdog, (LPVOID)(uintptr_t)(1000u * (DWORD)atoi(getenv("MXO_WATCHDOG"))), 0, NULL);
     GetFullPathNameA(path, MAX_PATH, g_client_path, NULL);
     {
         char cres[MAX_PATH], *slash;
