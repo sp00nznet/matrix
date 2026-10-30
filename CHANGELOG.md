@@ -5,7 +5,16 @@ Nothing is tagged yet; everything so far is pre-0.1.0.
 
 ## [Unreleased]
 
+### Changed
+- README rewritten for the current state (status table, screenshots, getting started); the old
+  README is kept as `docs/devlog.md`, with the September plan (`PLAN-NOW.md`) appended to it.
+- New `docs/running.md` (session scripts, variables, diagnostics) and `docs/missions.md`.
+
 ### Added
+- **In the world and playing missions.** Lua error handling (`lua_protect.c`), a catalog
+  mid-instruction merge, play tooling (`play.sh`, `mission.sh`, `say.sh`, `input.ps1`,
+  `screenshot.ps1`), `pyc_constants.py`; the game's Mission185 and Mission986 play to
+  completion on the server fork. `MXO_NEWCALLS` first-call log; trace options now reach the host.
 - **Login through the client's own auth code.** `launcher.exe` lifted as a second guest module
   (`run_lift.py --module`, `gen_imports.py --prefix`, rebased to `0x58000000`, relocated at load by
   `src/runtime/launcher_host.c`). `MXO_LOGIN=user:password` builds the launcher's TCP engine and drives

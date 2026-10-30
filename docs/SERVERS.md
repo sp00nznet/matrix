@@ -159,7 +159,7 @@ such code. Either answer is worth having, and neither has been checked.
 
 The quote says those functions need disassembling out of the client. They do
 not. **They are Python 2.3 bytecode**, shipped in `resource/Python/Monolith.ltp`,
-and they decompile. See the README for the module list; the relevant names are
+and they decompile. See [RECON.md](RECON.md) for the module list; the relevant names are
 `combat.pyc`, `combatvalidate.pyc`, `combat_defines.pyc`, the seven-module
 `interlock/` package including **`combat_resolution.pyc`**, the 24-module
 `ability/` tree, `experience.pyc`, `missionvalidate.pyc`, `Missions/`, and a

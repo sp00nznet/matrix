@@ -19,7 +19,7 @@ Two targets are in play, so the naming matters:
 | `ida_funcs.json` / `final_ida_funcs.json` | IDA's function catalog — bounds, names, FLIRT/thunk flags |
 | `ida_xrefs.json` / `final_ida_xrefs.json` | IDA's call graph, import usage, FPU density, fan-in |
 | `functions_ida.json` | The **merged** catalog the lifter consumes (IDA + disasm32 gap fill) |
-| `recovery_score.json` | disasm32 scored against IDA — see the P2 section of the README |
+| `recovery_score.json` | disasm32 scored against IDA — see the P2 section of [docs/devlog.md](../docs/devlog.md) |
 | `engine_interfaces.json` | The 28 LithTech interface holders and their addresses |
 | `engine_api.json` | The 70 engine subsystems the game's Python calls into |
 | `python_modules.json` | Manifest of the three `.ltp` archives (names and sizes only) |
