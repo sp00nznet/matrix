@@ -250,3 +250,8 @@ void imp_abort(void)
     fflush(stdout);
     exit(3);
 }
+
+/* MSVCR71's struct _stat and _utimbuf carry a 32-bit time_t: the UCRT's
+ * _stat32 / _utime32 have the same layout (36 and 8 bytes). */
+void imp__stat(void)  { RET((uint32_t)_stat32(ARGCS(0), (struct _stat32 *)ARGP(1)));       STDRET(0); }
+void imp__utime(void) { RET((uint32_t)_utime32(ARGCS(0), (struct __utimbuf32 *)ARGP(1))); STDRET(0); }

@@ -105,6 +105,48 @@ def augment(out, cand_path, code_start, code_end):
     return len(added), sum(f["size"] for f in added)
 
 
+def merge_mid_instruction(out, dll):
+    """Drop starts that fall inside an instruction of the function before them.
+
+    Found on the final client: `66 8B 81 D4 00 00 00 C3` (mov ax,[ecx+0xD4];
+    ret) was catalogued as a 1-byte function -- the operand-size prefix -- plus
+    a second "function" at +1 that decodes as a 32-bit mov. The lifted body of
+    the first was empty, so it returned without popping its own return address
+    and every caller's stack slid by 8 bytes. Merge the pair back into one.
+
+    ponytail: only short functions (<= 16 bytes to the next start) are checked;
+    a straddle deeper inside a long function would need a full linear decode.
+    """
+    import pefile
+    from capstone import Cs, CS_ARCH_X86, CS_MODE_32
+    pe = pefile.PE(dll, fast_load=True)
+    base = pe.OPTIONAL_HEADER.ImageBase
+    img = pe.get_memory_mapped_image()
+    md = Cs(CS_ARCH_X86, CS_MODE_32)
+    out.sort(key=lambda f: f["address"])
+    keep, merged = [], 0
+    for f in out:
+        prev = keep[-1] if keep else None
+        if prev and 0 < f["address"] - prev["address"] <= 16:
+            straddles = False
+            for ins in md.disasm(img[prev["address"] - base:f["address"] - base + 16],
+                                 prev["address"]):
+                if ins.address >= f["address"]:
+                    break
+                if ins.address + ins.size > f["address"]:
+                    straddles = True
+                    break
+            if straddles:
+                prev["end"] = max(prev["end"], f["end"])
+                prev["size"] = prev["end"] - prev["address"]
+                prev["calls_to"] = sorted(set(prev["calls_to"]) | set(f["calls_to"]))
+                merged += 1
+                continue
+        keep.append(f)
+    out[:] = keep
+    return merged
+
+
 def load(path, what):
     if not os.path.exists(path):
         raise SystemExit(
@@ -124,6 +166,8 @@ def main():
                     help="add disasm32 starts that fall in IDA's unattributed "
                          "gaps (see augment() for why this is not optional in "
                          "practice on this target)")
+    ap.add_argument("--dll", help="the image itself: enables the mid-instruction "
+                                  "merge (see merge_mid_instruction)")
     ap.add_argument("-o", "--output", default="analysis/functions_ida.json")
     args = ap.parse_args()
 
@@ -163,6 +207,8 @@ def main():
     if args.augment:
         n_added, added_bytes = augment(out, args.augment,
                                        pe["code_start"], pe["code_end"])
+    if args.dll:
+        print(f"merged {merge_mid_instruction(out, args.dll)} start(s) that fell mid-instruction")
 
     catalog = {
         "exe": fn["binary"],

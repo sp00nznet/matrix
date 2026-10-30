@@ -83,7 +83,7 @@ HAND_WRITTEN = {
     'CoInitialize', 'CoCreateInstance',   # native_call.c
     'OpenFile', 'GetSystemTime', 'GetVersion', 'GetTimeFormatA', 'CryptAcquireContextA',
     'CryptGenRandom', 'CryptReleaseContext', 'UuidCreateSequential', '_itoa',
-    'CreateFileA', 'ReadFile', 'WriteFile', 'SetFilePointer', 'SetEndOfFile', 'GetFileSize',
+    'CreateFileA', 'ReadFile', 'WriteFile', 'SetFilePointer', 'SetEndOfFile', 'SetErrorMode', 'GetFileSize',
     'sscanf', '_snwprintf', '_setjmp3', 'longjmp', 'connect', 'send', 'recv',
     '?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z', '?GetMediaPlayerLastError@@YAPBDXZ',
     'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',
@@ -98,7 +98,7 @@ HAND_WRITTEN = {
     'GetModuleFileNameA', 'GetCurrentDirectoryA', 'GetEnvironmentVariableA',
     'GetLastError', 'SetLastError', 'GetCurrentProcess', 'GetCurrentProcessId',
     'GetCurrentThreadId', 'GetTickCount',
-    'strncpy', 'fopen', 'fclose', 'fread', 'fwrite', 'fseek', 'ftell', 'feof',
+    'strncpy', 'fopen', '_stat', '_utime', 'fclose', 'fread', 'fwrite', 'fseek', 'ftell', 'feof',
     'SymInitialize', 'SymCleanup', 'SymGetOptions', 'SymSetOptions',
     'CreateToolhelp32Snapshot', 'Module32First', 'Module32Next', 'CloseHandle',
     '_msize', 'SymLoadModule64',

@@ -220,8 +220,17 @@ static void s_GetProcAddress(void)
     STDRET(2);
 }
 
-/* Deliberately absent: wsprintfW (cdecl varargs off the simulated stack -- needs
- * the fmt_from_stack treatment) and CreateProcessW. They report by name if reached. */
+/* wsprintfW(out, fmt, ...), cdecl. Its arguments are words on the simulated
+ * stack, which is host memory, so a va_list can point straight at them (as
+ * _snwprintf does). wsprintf has no floating point, so nothing needs the
+ * fmt_from_stack treatment; its buffer limit is 1024 characters. */
+static void s_wsprintfW(void)
+{
+    RET(_vsnwprintf(ARGW(0), 1024, ARGW(1), (va_list)(uintptr_t)(g_esp + 12)));
+    STDRET(0);
+}
+
+/* Deliberately absent: CreateProcessW. It reports by name if reached. */
 static const struct { const char *name; void (*fn)(void); } k_shims[] = {
     { "RegisterClassExW", s_RegisterClassExW },   { "CreateWindowExW", s_CreateWindowExW },
     { "LoadStringW", s_LoadStringW },             { "LoadIconW", s_LoadIconW },
@@ -239,7 +248,7 @@ static const struct { const char *name; void (*fn)(void); } k_shims[] = {
     { "GetDateFormatW", s_GetDateFormatW },       { "GetNumberFormatW", s_GetNumberFormatW },
     { "GetStringTypeW", s_GetStringTypeW },       { "LCMapStringW", s_LCMapStringW },
     { "CompareStringW", s_CompareStringW },       { "GetCPInfo", s_GetCPInfo },
-    { "GetLocaleInfoW", s_GetLocaleInfoW },
+    { "GetLocaleInfoW", s_GetLocaleInfoW },       { "wsprintfW", s_wsprintfW },
     { "GetProcAddress", s_GetProcAddress },
 };
 

@@ -452,6 +452,15 @@ static uint32_t bind_native_dlls(void)
     return bound;
 }
 
+/* VirtualQuery, never IsBadReadPtr: that one probes by faulting, and this very
+ * handler sees the fault first -- it recursed forever on a float-as-pointer. */
+static int host_readable(uint32_t va)
+{
+    MEMORY_BASIC_INFORMATION mi;
+    if (!VirtualQuery((void *)(uintptr_t)va, &mi, sizeof mi)) return 0;
+    return mi.State == MEM_COMMIT && !(mi.Protect & (PAGE_NOACCESS | PAGE_GUARD));
+}
+
 static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
 {
     fprintf(stderr, "\n[!] exception 0x%08lX at %p, in lifted 0x%08X\n",
@@ -472,8 +481,17 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
         const char *nm[] = { "eax", "ecx", "edx", "ebx", "esi", "edi" };
         uint32_t rv[] = { g_eax, g_ecx, g_edx, g_ebx, g_esi, g_edi };
         for (int i = 0; i < 6; i++)
-            if (rv[i] >= 0x10000u && !IsBadReadPtr((void *)(uintptr_t)rv[i], 4))
+            if (rv[i] >= 0x10000u && host_readable(rv[i]))
                 fprintf(stderr, "    [%s] = %08X\n", nm[i], rd32(rv[i]));
+        /* MXO_DUMP_ESI=N: the first N words of the object in esi (usually `this`). */
+        if (getenv("MXO_DUMP_ESI") && host_readable(g_esi)) {
+            uint32_t n = (uint32_t)atoi(getenv("MXO_DUMP_ESI"));
+            for (uint32_t w = 0; w < n && host_readable(g_esi + 4 * w); w++) {
+                if (w % 8 == 0) fprintf(stderr, "\n    +%03X:", 4 * w);
+                fprintf(stderr, " %08X", rd32(g_esi + 4 * w));
+            }
+            fprintf(stderr, "\n");
+        }
     }
     if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION &&
         ep->ExceptionRecord->NumberParameters >= 2) {
@@ -493,6 +511,7 @@ static LONG CALLBACK veh(EXCEPTION_POINTERS *ep)
                 ep->ExceptionRecord->ExceptionInformation[0] ? "writing" : "reading",
                 (uint32_t)ep->ExceptionRecord->ExceptionInformation[1]);
     }
+    watch_dump("fault");
     report();
 #ifdef RECOMP_TRACE
     /* MXO_RING=N: the last N functions entered (the toolbox dump shows 40). */

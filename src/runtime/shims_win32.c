@@ -385,6 +385,7 @@ void imp_WriteFile(void)
 }
 void imp_SetFilePointer(void) { RET(SetFilePointer(ARGH(0), (LONG)ARG(1), (PLONG)ARGP(2), ARG(3))); STDRET(4); }
 void imp_SetEndOfFile(void) { RET((uint32_t)SetEndOfFile(ARGH(0))); STDRET(1); }
+void imp_SetErrorMode(void) { RET(SetErrorMode(ARG(0))); STDRET(1); }
 void imp_GetFileSize(void)    { RET(GetFileSize(ARGH(0), (LPDWORD)ARGP(1)));                         STDRET(2); }
 
 /* sscanf / _snwprintf: an x86 va_list is the address of the first variadic
@@ -409,6 +410,9 @@ void imp__snwprintf(void)
 void imp__setjmp3(void) { RET(0); STDRET(0); }
 void imp_longjmp(void)
 {
-    printf("\n  [longjmp] reached (jmp_buf %08X, value %u) -- not implemented\n", ARG(0), ARG(1));
+    extern int lua_longjmp(uint32_t buf);   /* lua_protect.c; returns only if not Lua's */
+    lua_longjmp(ARG(0));
+    printf("\n  [longjmp] reached (jmp_buf %08X, value %u, ret %08X, ebp-frame ret %08X) -- not implemented\n",
+           ARG(0), ARG(1), MEM32(g_esp), MEM32(g_ebp + 4));
     exit(1);
 }

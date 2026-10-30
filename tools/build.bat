@@ -28,7 +28,7 @@ set R=src\runtime
 set FILES=%1 %2 %3 %4 %5 %6 %7 %8 %9
 rem The launcher's lift (src\recomp\gen_launcher, imports_gen_launcher.c) links
 rem into both targets; it only runs when MXO_LOGIN asks for a login.
-if "%1"=="" set FILES=%GEN%\*.c src\recomp\gen_launcher\*.c %R%\imports_gen_launcher.c %R%\launcher_host.c %R%\_imports_active.c %R%\_interfaces_active.c %R%\engine_iface.c %R%\host.c %R%\image_loader.c %R%\native_call.c %R%\guest_call.c %R%\guest_threads.c %R%\login_mediator.c %R%\recomp_trace.c %R%\shims_crt.c %R%\shims_impl.c %R%\shims_mslu.c %R%\shims_net.c %R%\shims_win32.c
+if "%1"=="" set FILES=%GEN%\*.c src\recomp\gen_launcher\*.c %R%\imports_gen_launcher.c %R%\launcher_host.c %R%\_imports_active.c %R%\_interfaces_active.c %R%\engine_iface.c %R%\host.c %R%\image_loader.c %R%\native_call.c %R%\guest_call.c %R%\guest_threads.c %R%\login_mediator.c %R%\recomp_trace.c %R%\shims_crt.c %R%\shims_impl.c %R%\shims_mslu.c %R%\shims_net.c %R%\shims_win32.c %R%\lua_protect.c %R%\selftest_bignum.c %R%\esp_check.c
 
 cl /nologo /c /O2 /MP %DEF% /I%R% /I%GEN% /Fo%OBJ%\ %FILES%
 if errorlevel 1 exit /b 1

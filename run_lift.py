@@ -153,6 +153,11 @@ def main():
                     help='lift a second image into the same host (e.g. "launcher"): '
                          'prefixes its file names and table symbols so they link '
                          'beside client.dll\'s, and leaves the tracked stats alone')
+    ap.add_argument('--host-impl', default='',
+                    help='VAs (comma separated) the host implements by hand: the lifted '
+                         'body is renamed sub_<VA>_lifted, so every caller links to the '
+                         'host version of sub_<VA> (e.g. a setjmp caller, which lifted C cannot be '
+                         're-entered into)')
     args = ap.parse_args()
 
     if not os.path.exists(args.catalog):
@@ -353,6 +358,19 @@ def main():
     stats = {'catalog': len(funcs), 'lifted': len(chosen_set) - stubbed_lib,
              'errors': errors, 'files': idx, 'entries': len(entries),
              'seeded': seeded, 'missing_found': len(missing)}
+    for va in filter(None, args.host_impl.split(',')):
+        name = 'sub_%08X' % int(va, 16)
+        hits = 0
+        for fn in os.listdir(args.out):
+            if fn.startswith('recomp_') and fn.endswith('.c') and 'dispatch' not in fn:
+                p = os.path.join(args.out, fn)
+                src = open(p).read()
+                if 'void %s(void) {' % name in src:
+                    open(p, 'w', newline='\n').write(
+                        src.replace('void %s(void) {' % name, 'void %s_lifted(void) {' % name))
+                    hits += 1
+        print('[*] host implements %s (%d body renamed)' % (name, hits))
+
     if args.module:
         rename_module(args.out, args.module)
     else:
