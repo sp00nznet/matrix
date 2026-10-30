@@ -384,6 +384,7 @@ void imp_WriteFile(void)
     STDRET(5);
 }
 void imp_SetFilePointer(void) { RET(SetFilePointer(ARGH(0), (LONG)ARG(1), (PLONG)ARGP(2), ARG(3))); STDRET(4); }
+void imp_SetEndOfFile(void) { RET((uint32_t)SetEndOfFile(ARGH(0))); STDRET(1); }
 void imp_GetFileSize(void)    { RET(GetFileSize(ARGH(0), (LPDWORD)ARGP(1)));                         STDRET(2); }
 
 /* sscanf / _snwprintf: an x86 va_list is the address of the first variadic

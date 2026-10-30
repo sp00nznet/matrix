@@ -110,5 +110,9 @@ void guest_call_install(uint32_t image_size)
     g_image_size = image_size;
     g_host_tid = GetCurrentThreadId();
     VirtualProtect((void *)(uintptr_t)g_image_base, image_size, PAGE_READWRITE, &old);
+    /* Except the hand-written Twofish, which runs on its real bytes (see
+     * k_native_guest in native_call.c). Final client only. */
+    if (g_image_base == 0x62000000u)
+        VirtualProtect((void *)(uintptr_t)0x62589000u, 0x5000, PAGE_EXECUTE_READWRITE, &old);
     AddVectoredExceptionHandler(1, dep_handler);
 }

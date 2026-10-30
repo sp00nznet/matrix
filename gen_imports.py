@@ -83,7 +83,7 @@ HAND_WRITTEN = {
     'CoInitialize', 'CoCreateInstance',   # native_call.c
     'OpenFile', 'GetSystemTime', 'GetVersion', 'GetTimeFormatA', 'CryptAcquireContextA',
     'CryptGenRandom', 'CryptReleaseContext', 'UuidCreateSequential', '_itoa',
-    'CreateFileA', 'ReadFile', 'WriteFile', 'SetFilePointer', 'GetFileSize',
+    'CreateFileA', 'ReadFile', 'WriteFile', 'SetFilePointer', 'SetEndOfFile', 'GetFileSize',
     'sscanf', '_snwprintf', '_setjmp3', 'longjmp', 'connect', 'send', 'recv',
     '?CreateMediaPlayer@@YAPAVIMediaPlayer@@PAUHWND__@@@Z', '?GetMediaPlayerLastError@@YAPBDXZ',
     'GetSystemInfo', 'IsProcessorFeaturePresent', 'RegOpenKeyA', 'RegCloseKey',

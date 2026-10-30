@@ -114,6 +114,30 @@ recomp_func_t native_resolve(uint32_t va)
     return native_handler;
 }
 
+/* Guest code that is better run on its real bytes than lifted: Counterpane's
+ * hand-written Twofish (client.dll 0x62589120-0x6258D6xx). It returns through
+ * `jmp [esp+4]` to addresses it computes, so the lift needs a seed per landing
+ * site and every fix exposed another. It is pure computation -- no imports, no
+ * calls out of the blob -- so the mapped image runs it as is. Only its four
+ * entry stubs are reached from outside, and only through pointers. */
+static const uint32_t k_native_guest[] = {
+    0x6258D536u,   /* encrypt  -> [0x629C8674] */
+    0x6258D541u,   /* decrypt  -> [0x629C8678] */
+    0x6258D54Cu,   /* key setup-> [0x629C867C] */
+    0x6258D557u,   /* context size */
+    /* The stubs' first call picks a CPU flavour and stores it in those three
+     * pointers; every later call goes straight to one of these. */
+    0x62589558u, 0x62589DABu, 0x6258A5F0u,   /* encrypt, decrypt, key setup (P5) */
+    0x6258B4B0u, 0x6258BD6Fu, 0x6258C620u,   /* encrypt, decrypt, key setup (P6) */
+};
+
+recomp_func_t native_resolve_guest(uint32_t va)
+{
+    for (size_t i = 0; i < sizeof k_native_guest / sizeof k_native_guest[0]; i++)
+        if (k_native_guest[i] == va) { g_pending = va; return native_handler; }
+    return NULL;
+}
+
 /* COM factory imports: forward to the system DLL, natively. Every call on the
  * object they return then comes back through native_resolve, so the whole API
  * works without a shim per method. `argc` is only for the failure path (the

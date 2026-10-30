@@ -182,8 +182,36 @@ recomp_func_t launcher_lookup_import(uint32_t va);
 int launcher_owns(uint32_t va);
 int launcher_login(const char *client_path, const char *spec, uint32_t *engine, uint32_t *mediator);
 
+/* MXO_COUNT_VA=0x...,0x...: count indirect calls to those VAs, print at exit.
+ * Answers "which of these does this run reach" without a traced build. */
+static uint32_t g_count_va[16], g_count_n[16], g_count_k = 0xFFFFFFFFu;
+
+static void count_va_report(void)
+{
+    for (uint32_t i = 0; i < g_count_k; i++)
+        printf("[count] %08X: %u indirect calls\n", g_count_va[i], g_count_n[i]);
+}
+
 recomp_func_t recomp_lookup(uint32_t va)
 {
+    if (g_count_k == 0xFFFFFFFFu) {
+        const char *s = getenv("MXO_COUNT_VA");
+        g_count_k = 0;
+        while (s && *s && g_count_k < 16) {
+            char *end;
+            g_count_va[g_count_k++] = (uint32_t)strtoul(s, &end, 0);
+            s = *end ? end + 1 : end;
+        }
+        if (g_count_k) atexit(count_va_report);
+    }
+    for (uint32_t i = 0; i < g_count_k; i++)
+        if (g_count_va[i] == va) g_count_n[i]++;
+    {
+        extern recomp_func_t native_resolve_guest(uint32_t va);   /* native_call.c */
+        recomp_func_t n = native_resolve_guest(va);
+        if (n) return n;
+    }
+
     uint32_t lo = 0, hi = recomp_dispatch_count;
     while (lo < hi) {
         uint32_t mid = lo + (hi - lo) / 2;
@@ -620,6 +648,10 @@ int main(int argc, char **argv)
     if (!stk) { fprintf(stderr, "stack alloc at 0x%08X failed\n", MXO_STACK_BASE); return 1; }
     g_esp = MXO_STACK_BASE + MXO_STACK_SIZE - 0x100;
     g_ebp = g_esp;
+    if (!strcmp(what, "--bignum")) {
+        extern int bignum_selftest(void);
+        return bignum_selftest();
+    }
     printf("stack: 0x%08X..0x%08X, esp=0x%08X\n",
            MXO_STACK_BASE, MXO_STACK_BASE + MXO_STACK_SIZE, g_esp);
 
