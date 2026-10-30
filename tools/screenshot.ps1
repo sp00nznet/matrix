@@ -7,12 +7,14 @@ using System; using System.Runtime.InteropServices;
 public class W {
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
   [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr dc, uint f);
+  [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
   public struct RECT { public int L, T, R, B; }
 }
 "@
 $p = Get-Process mxo_final, mxo_final_trace -ErrorAction SilentlyContinue |
      Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
 if (-not $p) { Write-Error "no client window"; exit 1 }
+[W]::SetProcessDPIAware() | Out-Null   # physical pixels, not the scaled rect
 $r = New-Object W+RECT
 [W]::GetWindowRect($p.MainWindowHandle, [ref]$r) | Out-Null
 $bmp = New-Object System.Drawing.Bitmap ($r.R - $r.L), ($r.B - $r.T)
